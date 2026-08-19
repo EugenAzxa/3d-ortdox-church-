@@ -21,8 +21,14 @@ Rendered live in Three.js and layered with editorial typography.
 - Carries the browsable memorial wall itself: six Memory Pages read from
   `data/memorials.json`, filterable and searchable, each opening a full page with the
   epitaph, life story, timeline, time capsule and candle count.
-- Follows the calendar. The churchyard is in spring, summer, autumn or winter depending on
-  the date, changing foliage, weather, ground, sky, fog and moon.
+- Follows the calendar and the clock. The churchyard is in spring, summer, autumn or winter
+  by date, and in day, dusk or night by hour, changing foliage, weather, ground, sky, fog,
+  sun or moon, window light and the bloom.
+- Flies the Serbian tricolour on a pole by the gate, waved in the vertex shader and painted
+  to a canvas, and puts a flock of birds over the churchyard in every season but winter.
+- Hangs the six people themselves in the arches of the 3D wall, graded to the same sepia as
+  the cards on the page, with smaller unlit niches above and below for the room a parish
+  still has.
 - Includes chapter navigation, a progress rail, a responsive mobile layout, reduced-motion
   behaviour and a custom cursor for precise pointer devices.
 
@@ -54,8 +60,22 @@ the same config. Tree canopies are three overlapping lumps per trunk so a crown 
 silhouette rather than reading as a lollipop; winter draws none and keeps the bare frame.
 The chapter 01 heading names what is underfoot, so it is written from the season too.
 
-Append `?season=spring|summer|autumn|winter` to walk a season that is not the current one.
-The hero carries a switcher for the same purpose.
+Append `?season=spring|summer|autumn|winter` and `?time=day|dusk|night` to walk a season or
+an hour that is not the current one. The hero carries switchers for both.
+
+### Time of day
+
+`TIMES` sits over `SEASONS` rather than replacing it: a night entry leaves a field null and
+the season's own value survives, while day and dusk override sky, key light, ambient, fog
+tint, sun disc, star opacity, window glow, candle strength, bloom and exposure. Day is not
+the night turned up. The windows stop being the brightest thing in frame, the stars go, and
+the page needs its own scrim, because bone-white type on a bright sky is unreadable. That
+scrim is weighted to the left and the top and bottom bands where the type actually sits, so
+the middle of the sky is left alone.
+
+Both pickers rewrite the query string and reload. The world is built once at boot from the
+two values, and rebuilding it live would mean tearing down every material and light for a
+control almost nobody touches.
 
 ### The memorial wall
 
@@ -120,7 +140,7 @@ straight off the disk the wall says so rather than sitting empty.
 | 01 | Threshold | Праг | At the gate, looking down the swept path to the west door |
 | 02 | Iconostasis | Иконостас | Inside, down the nave, facing the gilt screen |
 | 03 | Voices | Гласови | Mid-nave, angled across the candle stand |
-| 04 | Memorial | Спомен-зид | The north wall, thirty-six arches, the six pages in front of it |
+| 04 | Memorial | Спомен-зид | The north wall, the six faces in its arches, the pages in front |
 | 05 | Remembrance | Вечан спомен | Under the crossing, looking up through the drum |
 | -- | Footer | | The ascent out, above the roofline |
 

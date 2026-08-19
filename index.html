@@ -74,6 +74,22 @@ body{
     linear-gradient(to bottom, rgba(4,5,8,.68) 0%, rgba(4,5,8,.2) 24%, transparent 52%, rgba(3,4,6,.62) 84%, rgba(3,4,6,.8) 100%),
     linear-gradient(to right, rgba(4,5,8,.66) 0%, rgba(4,5,8,.3) 20%, transparent 46%);
 }
+/* Daylight puts a bright sky behind bone-white type. This is what keeps the
+   editorial layer readable without turning the scene back into night. */
+#daymask{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(to right,
+      rgba(4,5,8,calc(var(--scrim, 0) * 0.95)) 0%,
+      rgba(4,5,8,calc(var(--scrim, 0) * 0.62)) 34%,
+      rgba(4,5,8,calc(var(--scrim, 0) * 0.16)) 62%,
+      rgba(4,5,8,calc(var(--scrim, 0) * 0.34)) 100%),
+    linear-gradient(to bottom,
+      rgba(4,5,8,calc(var(--scrim, 0) * 0.7)) 0%,
+      rgba(4,5,8,0) 34%,
+      rgba(4,5,8,0) 66%,
+      rgba(4,5,8,calc(var(--scrim, 0) * 0.62)) 100%);
+}
 #grain{
   position:fixed; inset:-120%; z-index:2; pointer-events:none; opacity:.052;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/></filter><rect width='220' height='220' filter='url(%23n)' opacity='.62'/></svg>");
@@ -988,6 +1004,7 @@ img{ max-width:100%; display:block; }
 
 <canvas id="gl" aria-hidden="true"></canvas>
 <div id="vignette" aria-hidden="true"></div>
+<div id="daymask" aria-hidden="true"></div>
 <div id="grain" aria-hidden="true"></div>
 <div class="cur-dot" id="cursor" aria-hidden="true"></div>
 
@@ -1180,6 +1197,14 @@ img{ max-width:100%; display:block; }
           <button data-season="summer" data-cursor>Summer</button>
           <button data-season="autumn" data-cursor>Autumn</button>
           <button data-season="winter" data-cursor>Winter</button>
+        </span>
+      </div>
+      <div class="season-pick" id="timePick" data-rv="fade" role="group" aria-label="Time of day">
+        <span class="season-k">Hour</span>
+        <span class="season-btns">
+          <button data-time="day" data-cursor>Day</button>
+          <button data-time="dusk" data-cursor>Dusk</button>
+          <button data-time="night" data-cursor>Night</button>
         </span>
       </div>
       <div class="hero-cue" data-rv="fade"><span>Scroll to enter</span><span class="track"><i></i></span></div>
@@ -1747,6 +1772,39 @@ function closePage() {
   if (WALL.lastFocus && WALL.lastFocus.focus) WALL.lastFocus.focus();
 }
 
+/* Hang the portraits on the 3D wall once both the room and the data exist.
+   Either can arrive first, so this is safe to call from both sides. */
+function dressWall() {
+  if (!window.THREE || !WORLD.pageArches || !WALL.all.length) return;
+  if (WORLD.wallDressed) return;
+  WORLD.wallDressed = true;
+  WORLD.pageArches.forEach(function (a, i) {
+    var e = WALL.all[i];
+    if (!e || !e.portrait) return;
+    var img = new Image();
+    img.decoding = 'async';
+    img.onload = function () {
+      var cv = document.createElement('canvas');
+      cv.width = 256; cv.height = 340;
+      var x = cv.getContext('2d');
+      /* the same grade the cards get in CSS, so the wall and the page agree */
+      if ('filter' in x) x.filter = 'grayscale(1) sepia(0.34) brightness(0.86) contrast(1.08)';
+      /* crop to the frame instead of squashing a 3:4 plate into a 3:5 arch */
+      var sh = img.height * 0.82;
+      x.drawImage(img, 0, img.height * 0.04, img.width, sh, 0, 0, 256, 340);
+      var t = new THREE.CanvasTexture(cv);
+      if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
+      else t.encoding = THREE.sRGBEncoding;
+      t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+      t.minFilter = THREE.LinearFilter;
+      a.m.map = t;
+      a.m.color.setHex(0xffd6a0);
+      a.m.needsUpdate = true;
+    };
+    img.src = e.portrait;
+  });
+}
+
 function wireWall() {
   var grid = $('#wallGrid');
   if (!grid) return;
@@ -1778,7 +1836,11 @@ function wireWall() {
 
   fetch('data/memorials.json')
     .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error(r.status)); })
-    .then(function (d) { WALL.all = d.entries || []; renderWall(); })
+    .then(function (d) {
+      WALL.all = d.entries || [];
+      renderWall();
+      dressWall();
+    })
     .catch(function () {
       /* Opened straight off the disk, where fetch cannot read a sibling
          file. Say so rather than leaving an empty wall. */
@@ -1794,7 +1856,7 @@ wireWall();
    ?season=spring|summer|autumn|winter overrides it for a walkthrough. */
 var SEASONS = {
   spring: {
-    key: 'spring', ground2: 'new grass', name: 'Spring', sr: 'Пролеће',
+    key: 'spring', birds: 18, ground2: 'new grass', name: 'Spring', sr: 'Пролеће',
     ground: 0x16200f, fog: 0x0a1410, fogD: 0.0188,
     skyTop: 0x04060c, skyHorizon: 0x0d1620, skyGround: 0x141d1c,
     canopy: 0x1f3316, canopyO: 0.92, moon: 0x9fb6d8, moonI: 0.74,
@@ -1803,7 +1865,7 @@ var SEASONS = {
     partFall: 0.62, partSway: 2.6, partAlpha: 0.42
   },
   summer: {
-    key: 'summer', ground2: 'warm dark', name: 'Summer', sr: 'Лето',
+    key: 'summer', birds: 22, ground2: 'warm dark', name: 'Summer', sr: 'Лето',
     ground: 0x141c0d, fog: 0x0a1112, fogD: 0.0152,
     skyTop: 0x04060e, skyHorizon: 0x0c1420, skyGround: 0x121a18,
     canopy: 0x1b2e12, canopyO: 1.0, moon: 0xb2c2dc, moonI: 0.68,
@@ -1812,7 +1874,7 @@ var SEASONS = {
     partFall: -0.16, partSway: 3.4, partAlpha: 0.62
   },
   autumn: {
-    key: 'autumn', ground2: 'wet leaves', name: 'Autumn', sr: 'Јесен',
+    key: 'autumn', birds: 12, ground2: 'wet leaves', name: 'Autumn', sr: 'Јесен',
     ground: 0x1b1409, fog: 0x0d0e10, fogD: 0.0205,
     skyTop: 0x05060b, skyHorizon: 0x11121c, skyGround: 0x1a1712,
     canopy: 0x53300c, canopyO: 0.82, moon: 0xd8b98a, moonI: 0.8,
@@ -1821,7 +1883,7 @@ var SEASONS = {
     partFall: 0.9, partSway: 3.0, partAlpha: 0.5
   },
   winter: {
-    key: 'winter', ground2: 'snow', name: 'Winter', sr: 'Зима',
+    key: 'winter', birds: 0, ground2: 'snow', name: 'Winter', sr: 'Зима',
     ground: 0x0d1017, fog: 0x05070d, fogD: 0.0208,
     skyTop: 0x03040a, skyHorizon: 0x0a1019, skyGround: 0x111722,
     canopy: 0x000000, canopyO: 0, moon: 0x8ea6cd, moonI: 0.72,
@@ -1844,10 +1906,64 @@ var SEASON = (function () {
   return SEASONS[seasonForDate(new Date())];
 })();
 
+/* ══════════════════════════════════════════════ 2c · time of day ═══ */
+/* The season says what is on the ground, the hour says what the light is
+   doing. Day is not simply the night turned up: the sky inverts, the sun
+   replaces the moon, the windows stop being the brightest thing in frame,
+   and the page needs a heavier scrim to keep white type on a bright sky. */
+var TIMES = {
+  day: {
+    key: 'day', name: 'Day', sr: 'Дан',
+    skyTop: 0x2b5f96, skyHorizon: 0x9dbcd6, skyGround: 0xb9c9d2,
+    amb: 0x93a8bd, ambI: 2.5, key1: 0xfff3dc, keyI: 2.6, fill: 0x8fa8c4, fillI: 0.7,
+    disc: 0xfff6e2, discR: 3.0, halo: 0.16, discPos: [-58, 68, -168],
+    stars: 0, fogMul: 0.62, fogTint: 0x9db4c6,
+    windows: 0.16, candle: 0.35, bloom: 0.3, exposure: 0.78, thresh: 0.92,
+    ground: 1.9, wordO: 0.05, scrim: 0.66
+  },
+  dusk: {
+    key: 'dusk', name: 'Dusk', sr: 'Сумрак',
+    skyTop: 0x16233d, skyHorizon: 0x8a5a48, skyGround: 0x4a3a3c,
+    amb: 0x4a4a63, ambI: 1.15, key1: 0xffb277, keyI: 1.25, fill: 0x5a5f80, fillI: 0.3,
+    disc: 0xffc98a, discR: 5.6, halo: 0.3, discPos: [-70, 26, -172],
+    stars: 0.45, fogMul: 0.9, fogTint: 0x4a3a42,
+    windows: 0.72, candle: 0.8, bloom: 0.56, exposure: 0.9, thresh: 0.76,
+    ground: 1.25, wordO: 0.055, scrim: 0.34
+  },
+  night: {
+    key: 'night', name: 'Night', sr: 'Ноћ',
+    skyTop: null, skyHorizon: null, skyGround: null,   /* the season's own */
+    amb: null, ambI: 1, key1: null, keyI: 1, fill: 0x39445e, fillI: 0.16,
+    disc: 0xfff2da, discR: 7.4, halo: 0.3, discPos: [-78, 92, -186],
+    stars: 1, fogMul: 1, fogTint: null,
+    windows: 1, candle: 1, bloom: 1, exposure: 1, thresh: 1,
+    ground: 1, wordO: 0.055, scrim: 0
+  }
+};
+
+function timeForHour(h) {
+  if (h >= 6 && h < 17) return 'day';
+  if (h >= 17 && h < 20) return 'dusk';
+  return 'night';
+}
+
+var TIME = (function () {
+  var q = (location.search.match(/[?&]time=([a-z]+)/i) || [])[1];
+  if (q && TIMES[q.toLowerCase()]) return TIMES[q.toLowerCase()];
+  return TIMES[timeForHour(new Date().getHours())];
+})();
+
+/* Mix a time override over the season's own value. */
+function tCol(field, fallback) {
+  return TIME[field] == null ? fallback : TIME[field];
+}
+
 /* The label in the hero, so the reader knows the churchyard is not generic */
 (function () {
   var el = document.getElementById('seasonNow');
-  if (el) el.textContent = SEASON.name + ' · ' + SEASON.sr;
+  if (el) el.textContent = SEASON.name + ' · ' + TIME.name;
+  document.documentElement.style.setProperty('--scrim', TIME.scrim);
+  document.documentElement.setAttribute('data-time', TIME.key);
 
   /* Chapter 01 says what is on the ground at the gate. In August that is
      not snow, and a line that lies about the season undoes the point of
@@ -1858,16 +1974,22 @@ var SEASON = (function () {
   var c = document.getElementById('chipThreshold');
   if (c) c.textContent = line;
   document.documentElement.setAttribute('data-season', SEASON.key);
-  var sel = document.getElementById('seasonPick');
-  if (!sel) return;
-  $$('#seasonPick button').forEach(function (b) {
-    b.classList.toggle('on', b.getAttribute('data-season') === SEASON.key);
-    b.addEventListener('click', function () {
-      var k = b.getAttribute('data-season');
-      location.search = location.search.replace(/[?&]season=[a-z]+/i, '')
-        .replace(/^\?$/, '') + (location.search && !/^\?$/.test(location.search) ? '&' : '?') + 'season=' + k;
+  /* Both pickers rewrite the query and reload: the world is built once, at
+     boot, from these two values, and rebuilding it live would mean tearing
+     down every material and light for a control almost nobody touches. */
+  function pick(sel, attr, current) {
+    $$(sel + ' button').forEach(function (b) {
+      var k = b.getAttribute(attr);
+      b.classList.toggle('on', k === current);
+      b.addEventListener('click', function () {
+        var q = new URLSearchParams(location.search);
+        q.set(attr.replace('data-', ''), k);
+        location.search = q.toString();
+      });
     });
-  });
+  }
+  pick('#seasonPick', 'data-season', SEASON.key);
+  pick('#timePick', 'data-time', TIME.key);
 })();
 
 /* ═════════════════════════════════════════════════ 2 · preloader ═══ */
@@ -1924,12 +2046,14 @@ function startWorld() {
   renderer.setClearColor(C.night, 1);
 
   scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(SEASON.fog, SEASON.fogD);
+  scene.fog = new THREE.FogExp2(tCol('fogTint', SEASON.fog), SEASON.fogD * TIME.fogMul);
   camera = new THREE.PerspectiveCamera(38, vpW() / vpH(), 0.35, 400);
 
   buildSky(); buildGround(); buildChurch(); buildYard(); buildCandles();
-  buildInterior(); buildTrees(); buildWeather(); buildWordmark();
+  buildInterior(); buildTrees(); buildFlag(); buildBirds();
+  buildWeather(); buildWordmark();
   buildLights(); buildPost(); buildRig();
+  dressWall();
 
   window.addEventListener('resize', onResize, { passive: true });
   onResize();
@@ -1945,9 +2069,9 @@ function buildSky() {
   var g = new THREE.SphereGeometry(280, 32, 20);
   var m = new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite: false, fog: false,
-    uniforms: { uT: { value: new THREE.Color(SEASON.skyTop) },
-                uH: { value: new THREE.Color(SEASON.skyHorizon) },
-                uG: { value: new THREE.Color(SEASON.skyGround) } },
+    uniforms: { uT: { value: new THREE.Color(tCol('skyTop', SEASON.skyTop)) },
+                uH: { value: new THREE.Color(tCol('skyHorizon', SEASON.skyHorizon)) },
+                uG: { value: new THREE.Color(tCol('skyGround', SEASON.skyGround)) } },
     vertexShader:
       'varying vec3 vP; void main(){ vP = position; ' +
       'gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
@@ -1983,6 +2107,8 @@ function buildSky() {
     fragmentShader:
       'varying float vA; void main(){ gl_FragColor = vec4(0.84,0.88,1.0, 0.34 + vA * 0.3); }'
   }));
+  stars.visible = TIME.stars > 0;
+  stars.material.opacity = TIME.stars;
   scene.add(stars);
   WORLD.stars = stars;
 
@@ -1990,26 +2116,26 @@ function buildSky() {
      Warm rather than blue - it has to read as the same light as the candles. */
   var moon = new THREE.Group();
   var disc = new THREE.Mesh(
-    new THREE.CircleGeometry(7.4, 48),
-    new THREE.MeshBasicMaterial({ color: 0xfff2da, fog: false, transparent: true, opacity: 1 })
+    new THREE.CircleGeometry(TIME.discR, 48),
+    new THREE.MeshBasicMaterial({ color: TIME.disc, fog: false, transparent: true, opacity: 1 })
   );
   moon.add(disc);
   var halo = new THREE.Mesh(
     new THREE.CircleGeometry(30, 48),
     new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending,
-      uniforms: { uC: { value: new THREE.Color(0xffdca8) } },
+      uniforms: { uC: { value: new THREE.Color(0xffdca8) }, uA: { value: TIME.halo } },
       vertexShader: 'varying vec2 vU; void main(){ vU = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
       fragmentShader:
-        'uniform vec3 uC; varying vec2 vU;\n' +
+        'uniform vec3 uC; uniform float uA; varying vec2 vU;\n' +
         'void main(){ float d = length(vU - 0.5) * 2.0;\n' +
-        '  float a = pow(max(0.0, 1.0 - d), 3.0) * 0.3;\n' +
+        '  float a = pow(max(0.0, 1.0 - d), 3.0) * uA;\n' +
         '  gl_FragColor = vec4(uC, a); }'
     })
   );
   halo.position.z = -0.6;
   moon.add(halo);
-  moon.position.set(-78, 92, -186);
+  moon.position.set(TIME.discPos[0], TIME.discPos[1], TIME.discPos[2]);
   moon.lookAt(0, 6, 20);
   scene.add(moon);
   WORLD.moon = moon;
@@ -2031,7 +2157,8 @@ function buildGround() {
   g.computeVertexNormals();
   g.rotateX(-Math.PI / 2);
   var m = new THREE.MeshStandardMaterial({
-    color: SEASON.ground, roughness: 0.97, metalness: 0.0, flatShading: false
+    color: new THREE.Color(SEASON.ground).multiplyScalar(TIME.ground),
+    roughness: 0.97, metalness: 0.0, flatShading: false
   });
   var ground = new THREE.Mesh(g, m);
   ground.position.y = -0.02;
@@ -2058,8 +2185,10 @@ function buildChurch() {
   });
   /* Window glass is pure emissive: the light in an Orthodox church at night
      comes from inside, and it has to survive the bright pass to bloom. */
-  var glassM = new THREE.MeshBasicMaterial({ color: 0xffbe73, fog: true });
-  var glassDim = new THREE.MeshBasicMaterial({ color: 0xd8853f, fog: true });
+  var glassM = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(0xffbe73).multiplyScalar(TIME.windows), fog: true });
+  var glassDim = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(0xd8853f).multiplyScalar(TIME.windows), fog: true });
 
   function box(w, h, d, mat, x, y, z) {
     var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -2347,23 +2476,38 @@ function buildInterior() {
   var frameM = reg(new THREE.MeshStandardMaterial({
     color: 0x30240e, roughness: 0.36, metalness: 0.84
   }));
-  var AW = 0.44, AH = 0.86;
-  for (var r = 0; r < 3; r++) {
-    for (var c = 0; c < 12; c++) {
-      var z = -9.4 + c * 0.82;
-      var y = Y0 + 0.45 + r * 1.12;
-      var fr2 = new THREE.Mesh(archShape(AW + 0.085, AH + 0.085), frameM);
-      fr2.position.set(-X + 0.05, y - 0.043, z);
-      fr2.rotation.y = Math.PI / 2;
-      IN.add(fr2);
-      var lit = new THREE.Mesh(archShape(AW, AH), reg(new THREE.MeshBasicMaterial({
-        color: 0xffb267, side: THREE.DoubleSide
-      })));
-      lit.position.set(-X + 0.08, y, z);
-      lit.rotation.y = Math.PI / 2;
-      IN.add(lit);
-      arches.push({ m: lit.material, ph: Math.random() * 100,
-                    base: 0.5 + Math.random() * 0.5 });
+
+  function niche(w, h, x, y, z, portrait) {
+    var fr2 = new THREE.Mesh(archShape(w + 0.1, h + 0.1), frameM);
+    fr2.position.set(x - 0.03, y - 0.05, z);
+    fr2.rotation.y = Math.PI / 2;
+    IN.add(fr2);
+    var m = reg(new THREE.MeshBasicMaterial({ color: 0xffb267, side: THREE.DoubleSide }));
+    var lit = new THREE.Mesh(archShape(w, h), m);
+    lit.position.set(x, y, z);
+    lit.rotation.y = Math.PI / 2;
+    IN.add(lit);
+    var rec = { m: m, ph: Math.random() * 100, base: 0.5 + Math.random() * 0.5,
+                portrait: !!portrait };
+    arches.push(rec);
+    return rec;
+  }
+
+  /* Six pages at eye level, wide enough to be a face rather than a light,
+     and two tiers of smaller niches above and below: the wall a parish
+     already has, and the room it has left. */
+  WORLD.pageArches = [];
+  for (var pi = 0; pi < 6; pi++) {
+    var pa = niche(0.78, 1.4, -X + 0.09, Y0 + 1.02, -8.3 + pi * 1.38, true);
+    pa.base = 0.94;
+    WORLD.pageArches.push(pa);
+  }
+  for (var r = 0; r < 2; r++) {
+    for (var c = 0; c < 13; c++) {
+      var z2 = -9.3 + c * 0.76;
+      var y2 = Y0 + (r ? 3.02 : 0.24);
+      var n = niche(0.4, r ? 0.78 : 0.44, -X + 0.08, y2, z2, false);
+      n.base *= 0.5;
     }
   }
   WORLD.arches = arches;
@@ -2420,6 +2564,115 @@ function buildInterior() {
   scene.add(IN);
   WORLD.interior = IN;
   WORLD.interiorFade = fade;
+}
+
+/* ─────────────────────────────────────────── the Serbian tricolour ── */
+/* Red over blue over white, painted to a canvas rather than fetched, and
+   waved in the vertex shader so the pole is one draw call and no asset. */
+function buildFlag() {
+  var G = new THREE.Group();
+  G.position.set(9.2, 0, 15.2);
+
+  var poleM = new THREE.MeshStandardMaterial({ color: 0x3d4048, roughness: 0.5, metalness: 0.6 });
+  var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 7.8, 10), poleM);
+  pole.position.y = 3.9; G.add(pole);
+  var base = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.55, 0.3, 12), poleM);
+  base.position.y = 0.15; G.add(base);
+  var finial = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8),
+    new THREE.MeshStandardMaterial({ color: 0x8a6524, roughness: 0.5, metalness: 0.75 }));
+  finial.position.y = 7.9; G.add(finial);
+
+  var cv = document.createElement('canvas');
+  cv.width = 300; cv.height = 200;
+  var x = cv.getContext('2d');
+  x.fillStyle = '#c6363c'; x.fillRect(0, 0, 300, 67);        /* red   */
+  x.fillStyle = '#0c4076'; x.fillRect(0, 67, 300, 66);       /* blue  */
+  x.fillStyle = '#f0f0f0'; x.fillRect(0, 133, 300, 67);      /* white */
+  var tex = new THREE.CanvasTexture(cv);
+  if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
+  else tex.encoding = THREE.sRGBEncoding;
+
+  var g = new THREE.PlaneGeometry(2.5, 1.66, 22, 11);
+  var flag = new THREE.Mesh(g, new THREE.ShaderMaterial({
+    side: THREE.DoubleSide, transparent: true,
+    uniforms: { uT: { value: 0 }, uMap: { value: tex },
+                uLit: { value: TIME.key === 'day' ? 1.15 : TIME.key === 'dusk' ? 0.7 : 0.4 } },
+    vertexShader:
+      'uniform float uT; varying vec2 vU; varying float vSh;\n' +
+      'void main(){ vU = uv;\n' +
+      /* the hoist is pinned, so the amplitude has to grow along the fly */
+      '  float k = uv.x;\n' +
+      '  float w = sin(uv.x * 7.0 - uT * 3.4) * 0.16 * k\n' +
+      '          + sin(uv.x * 3.1 + uv.y * 2.0 - uT * 2.1) * 0.1 * k;\n' +
+      '  vSh = 0.72 + 0.28 * cos(uv.x * 7.0 - uT * 3.4);\n' +
+      '  vec3 p = position; p.z += w; p.y += w * 0.22;\n' +
+      '  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }',
+    fragmentShader:
+      'uniform sampler2D uMap; uniform float uLit; varying vec2 vU; varying float vSh;\n' +
+      'void main(){ vec3 c = texture2D(uMap, vU).rgb * vSh * uLit;\n' +
+      '  gl_FragColor = vec4(c, 1.0); }'
+  }));
+  /* hoist against the pole, flying out to the fly edge */
+  flag.geometry.translate(1.25, 0, 0);
+  flag.position.set(0.05, 6.6, 0);
+  flag.rotation.y = -0.5;
+  G.add(flag);
+
+  scene.add(G);
+  WORLD.flag = flag;
+}
+
+/* ───────────────────────────────────────────────────────── the birds ── */
+/* A flock over the churchyard, drawn entirely in the point shader: two
+   wing strokes whose angle is the flap. Cheaper than geometry and it reads
+   correctly at the only distance it is ever seen from. */
+function buildBirds() {
+  var N = SEASON.birds;
+  if (!N) return;
+  var pos = new Float32Array(N * 3), ph = new Float32Array(N), sp = new Float32Array(N);
+  for (var i = 0; i < N; i++) {
+    pos[i * 3]     = 15 + Math.random() * 20;      /* orbit radius */
+    pos[i * 3 + 1] = 11 + Math.random() * 11;      /* height       */
+    pos[i * 3 + 2] = Math.random() * 6.28;         /* phase        */
+    ph[i] = Math.random() * 100;
+    sp[i] = 0.05 + Math.random() * 0.055;
+  }
+  var g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aP', new THREE.BufferAttribute(ph, 1));
+  g.setAttribute('aS', new THREE.BufferAttribute(sp, 1));
+  var birds = new THREE.Points(g, new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, fog: false,
+    uniforms: { uT: { value: 0 }, uPR: { value: 1 },
+                uCol: { value: TIME.key === 'day' ? new THREE.Vector3(0.09, 0.10, 0.12)
+                                                     : new THREE.Vector3(0.04, 0.05, 0.07) } },
+    vertexShader:
+      'attribute float aP, aS; uniform float uT, uPR; varying float vF;\n' +
+      'void main(){\n' +
+      '  float a = position.z + uT * aS;\n' +
+      '  vec3 p = vec3(cos(a) * position.x, position.y + sin(uT * 0.5 + aP) * 1.4,\n' +
+      '                sin(a) * position.x - 6.0);\n' +
+      '  vF = sin(uT * 6.2 + aP * 3.0);\n' +
+      '  vec4 mv = modelViewMatrix * vec4(p, 1.0);\n' +
+      '  gl_PointSize = 15.0 * uPR * (34.0 / max(1.0, -mv.z));\n' +
+      '  gl_Position = projectionMatrix * mv; }',
+    fragmentShader:
+      'uniform vec3 uCol; varying float vF;\n' +
+      /* distance to a wing stroke: a shallow V that opens and closes */
+      'float wing(vec2 p, float k){\n' +
+      '  p.x = abs(p.x);\n' +
+      '  vec2 a = vec2(0.0, 0.0), b = vec2(0.42, k * 0.3);\n' +
+      '  vec2 pa = p - a, ba = b - a;\n' +
+      '  float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);\n' +
+      '  return length(pa - ba * h); }\n' +
+      'void main(){ vec2 p = gl_PointCoord - 0.5;\n' +
+      '  float d = wing(p, vF);\n' +
+      '  float a = smoothstep(0.085, 0.02, d);\n' +
+      '  if (a < 0.01) discard;\n' +
+      '  gl_FragColor = vec4(uCol, a * 0.85); }'
+  }));
+  scene.add(birds);
+  WORLD.birds = birds;
 }
 
 /* ──────────────────────────────────────────────── wall, gate, path ── */
@@ -2730,7 +2983,7 @@ function buildWordmark() {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(paint);
 
   var mat = new THREE.MeshBasicMaterial({
-    map: tex, transparent: true, opacity: 0.055, depthWrite: false, fog: true,
+    map: tex, transparent: true, opacity: TIME.wordO, depthWrite: false, fog: true,
     color: 0xe6e0d4
   });
   var m = new THREE.Mesh(new THREE.PlaneGeometry(78, 19.5), mat);
@@ -2741,22 +2994,22 @@ function buildWordmark() {
 
 /* ────────────────────────────────────────────────────────── lights ── */
 function buildLights() {
-  scene.add(new THREE.AmbientLight(0x141c2c, 0.5));
+  scene.add(new THREE.AmbientLight(tCol('amb', 0x141c2c), 0.5 * TIME.ambI));
 
   /* moonlight: cold, from behind and to the left */
-  var moon = new THREE.DirectionalLight(SEASON.moon, SEASON.moonI);
+  var moon = new THREE.DirectionalLight(tCol('key1', SEASON.moon), SEASON.moonI * TIME.keyI);
   moon.position.set(-30, 24, -34);
   scene.add(moon);
 
   /* a weak fill from the front so the west face is not a silhouette */
-  var fill = new THREE.DirectionalLight(0x39445e, 0.16);
+  var fill = new THREE.DirectionalLight(TIME.fill, TIME.fillI);
   fill.position.set(10, 12, 26);
   scene.add(fill);
 
   /* the candle stand, the door lamp, and the light spilling from the drum */
-  var c1 = new THREE.PointLight(0xffa64a, 2.8, 11, 2.2); c1.position.set(5.6, 2.1, 9.4);
-  var c2 = new THREE.PointLight(0xffc98a, 2.1, 13, 2.0); c2.position.set(0, 4.4, 6.6);
-  var c3 = new THREE.PointLight(0xffb066, 2.6, 24, 2.0); c3.position.set(0, 10.0, -0.6);
+  var c1 = new THREE.PointLight(0xffa64a, 2.8 * TIME.candle, 11, 2.2); c1.position.set(5.6, 2.1, 9.4);
+  var c2 = new THREE.PointLight(0xffc98a, 2.1 * TIME.candle, 13, 2.0); c2.position.set(0, 4.4, 6.6);
+  var c3 = new THREE.PointLight(0xffb066, 2.6 * TIME.candle, 24, 2.0); c3.position.set(0, 10.0, -0.6);
   scene.add(c1, c2, c3);
   WORLD.candleLight = c1;
   WORLD.doorLight = c2;
@@ -2792,7 +3045,7 @@ function buildPost() {
   }
 
   POST.bright = new THREE.ShaderMaterial({
-    uniforms: { tS: { value: null }, uTh: { value: 0.70 }, uSoft: { value: 0.30 } },
+    uniforms: { tS: { value: null }, uTh: { value: 0.70 * TIME.thresh }, uSoft: { value: 0.30 } },
     vertexShader: QUAD_V,
     fragmentShader:
       'uniform sampler2D tS; uniform float uTh, uSoft; varying vec2 vUv;\n' +
@@ -2830,7 +3083,7 @@ function buildPost() {
   POST.comp = new THREE.ShaderMaterial({
     uniforms: {
       tS: { value: null }, tB: { value: null },
-      uBloom: { value: 0.66 }, uExp: { value: 0.92 }
+      uBloom: { value: 0.66 * TIME.bloom }, uExp: { value: 0.92 * TIME.exposure }
     },
     vertexShader: QUAD_V,
     fragmentShader:
@@ -3002,6 +3255,7 @@ function onResize() {
     L.a.setSize(lw, lh); L.b.setSize(lw, lh); L.w = lw; L.h = lh;
   });
   if (WORLD.inFlames) WORLD.inFlames.material.uniforms.uPR.value = pr;
+  if (WORLD.birds) WORLD.birds.material.uniforms.uPR.value = pr;
   if (WORLD.snow)   WORLD.snow.material.uniforms.uPR.value = pr;
   if (WORLD.embers) WORLD.embers.material.uniforms.uPR.value = pr;
   if (WORLD.flames) WORLD.flames.material.uniforms.uPR.value = pr;
@@ -3072,11 +3326,14 @@ function frame(now) {
   if (WORLD.arches && RIG.inside > 0.004) {
     for (var ai = 0; ai < WORLD.arches.length; ai++) {
       var A = WORLD.arches[ai];
+      var sw = A.portrait ? 0.1 : 0.24;
       A.m.opacity = RIG.inside * A.base *
-        (0.76 + 0.24 * Math.sin(T * 2.1 + A.ph) * Math.sin(T * 3.7 + A.ph * 1.9));
+        ((1 - sw) + sw * Math.sin(T * 2.1 + A.ph) * Math.sin(T * 3.7 + A.ph * 1.9));
     }
   }
   if (WORLD.inFlames) WORLD.inFlames.material.uniforms.uT.value = T;
+  if (WORLD.flag)  WORLD.flag.material.uniforms.uT.value = T;
+  if (WORLD.birds) WORLD.birds.material.uniforms.uT.value = T;
 
   /* the weather stops at the door */
   var out = 1 - RIG.inside;
@@ -3086,10 +3343,10 @@ function frame(now) {
 
   /* the candle light breathes with the flames it belongs to */
   if (WORLD.candleLight) {
-    WORLD.candleLight.intensity = 2.8 + Math.sin(T * 5.6) * 0.36 + Math.sin(T * 11.3) * 0.17;
+    WORLD.candleLight.intensity = TIME.candle * (2.8 + Math.sin(T * 5.6) * 0.36 + Math.sin(T * 11.3) * 0.17);
   }
   if (WORLD.doorLight) {
-    WORLD.doorLight.intensity = 2.1 + Math.sin(T * 3.1 + 1.4) * 0.22;
+    WORLD.doorLight.intensity = TIME.candle * (2.1 + Math.sin(T * 3.1 + 1.4) * 0.22);
   }
 
   renderPost();

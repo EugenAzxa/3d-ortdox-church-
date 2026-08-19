@@ -21,8 +21,13 @@ landing page.
 - Put the browsable memorial in front of that wall: Memory Pages read from a JSON file,
   filterable and searchable, each opening a full page with epitaph, story, timeline and
   time capsule. Keep the notice saying the people are fictional.
-- Give the churchyard four seasons chosen from the current date, changing foliage, weather,
-  ground, sky, fog and moon, and write the chapter 01 heading from the season.
+- Give the churchyard four seasons chosen from the current date and three times of day
+  chosen from the current hour, changing foliage, weather, ground, sky, fog, sun or moon,
+  window light and bloom. Write the chapter 01 heading from the season.
+- Layer time over season rather than replacing it, and scrim the page in daylight or the
+  bone-white type will not survive a bright sky.
+- Fly the national flag by the gate and put birds over the churchyard outside winter.
+- Hang the memorial portraits in the arches of the 3D wall, graded to match the cards.
 - Clamp the camera above the floor while indoors: a Catmull-Rom path toward a waypoint
   high above the roof will dip through the flagstones on the way.
 - Leave the drum open: build the ceiling around the opening and split the nave and
