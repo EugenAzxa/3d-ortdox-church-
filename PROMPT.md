@@ -18,6 +18,13 @@ landing page.
   composed shot rather than a hard scene replacement.
 - Take the camera inside. Build a nave interior with an iconostasis, royal doors, hanging
   kandila, a candle stand, and a memorial wall of small lit arches, one per Memory Page.
+- Put the browsable memorial in front of that wall: Memory Pages read from a JSON file,
+  filterable and searchable, each opening a full page with epitaph, story, timeline and
+  time capsule. Keep the notice saying the people are fictional.
+- Give the churchyard four seasons chosen from the current date, changing foliage, weather,
+  ground, sky, fog and moon, and write the chapter 01 heading from the season.
+- Clamp the camera above the floor while indoors: a Catmull-Rom path toward a waypoint
+  high above the roof will dip through the flagstones on the way.
 - Leave the drum open: build the ceiling around the opening and split the nave and
   transept roofs around the crossing, or the cupola is capped from below.
 - Dissolve the interior on the ascent rather than cutting, and fade the snow and embers

@@ -326,7 +326,7 @@ img{ max-width:100%; display:block; }
 .chapters{
   display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
   gap:1px; background:var(--line-soft);
-  border-top:1px solid var(--line); flex:1 1 460px; min-width:min(100%,460px);
+  border-top:1px solid var(--line); flex:1 1 400px; min-width:min(100%,400px);
 }
 .chip{
   background:var(--ink); padding:16px 15px 18px;
@@ -406,6 +406,27 @@ img{ max-width:100%; display:block; }
   color:rgba(230,224,212,.3);
 }
 @media (max-width:1180px){ .hero-side{ display:none; } }
+
+/* The season the churchyard is standing in, and a way to walk the others. */
+.eyebrow-sep{ width:16px; height:1px; background:var(--line); display:inline-block; }
+#seasonNow{ color:var(--gold-lit); }
+
+.hero-lead{ display:flex; flex-direction:column; gap:14px; flex:0 0 auto; }
+.season-pick{ display:flex; flex-direction:column; gap:7px; }
+.season-btns{ display:flex; gap:5px; }
+.season-k{
+  font-family:var(--mono); font-size:8.5px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--muted);
+}
+.season-pick button{
+  font-family:var(--mono); font-size:8.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--bone-dim); background:none; border:1px solid var(--line);
+  padding:6px 10px; cursor:pointer;
+  transition:border-color .4s var(--ease), color .4s var(--ease), background-color .4s var(--ease);
+}
+.season-pick button:hover{ border-color:rgba(231,175,35,.55); color:var(--bone); }
+.season-pick button.on{ border-color:var(--gold-lit); color:var(--gold-lit); background:rgba(201,150,43,.1); }
+@media (max-width:900px){ .hero-lead{ width:100%; } }
 
 /* ══════════════════════════════════════════ 9 · foreground layers ══ */
 /* Cutouts pinned to the bottom of the active viewport. They arrive at full
@@ -635,6 +656,224 @@ img{ max-width:100%; display:block; }
 }
 @media (max-width:520px){
   .mem-feats{ grid-template-columns:1fr; }
+}
+
+
+/* ══════════════════════════════════ 13a · the memorial wall ══ */
+/* The arch is the only strongly curved form in the design. Everything
+   else is nearly square, so it carries the whole religious register. */
+.vh{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+.wall-note{
+  display:flex; gap:12px; align-items:flex-start;
+  margin:clamp(26px,4.4vh,44px) 0 0; padding:15px 17px;
+  border:1px dashed rgba(231,175,35,.34); background:rgba(201,150,43,.05);
+  max-width:78ch;
+}
+.wall-note svg{ width:16px; height:16px; flex:none; margin-top:2px;
+  stroke:var(--gold-lit); stroke-width:1.5; stroke-linecap:round; }
+.wall-note p{ margin:0; font-size:12px; line-height:1.6; color:var(--bone-dim); }
+.wall-note b{ color:var(--bone); font-weight:500; }
+
+.wall-bar{
+  display:flex; align-items:center; justify-content:space-between; gap:18px;
+  flex-wrap:wrap; margin:clamp(22px,3.4vh,34px) 0 clamp(20px,3vh,30px);
+  padding-bottom:16px; border-bottom:1px solid var(--line);
+}
+.wall-filters{ display:flex; gap:8px; flex-wrap:wrap; }
+.fchip{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--bone-dim); background:transparent; border:1px solid var(--line);
+  padding:8px 14px; cursor:pointer;
+  transition:border-color .4s var(--ease), color .4s var(--ease), background-color .4s var(--ease);
+}
+.fchip:hover{ border-color:rgba(231,175,35,.5); color:var(--bone); }
+.fchip.on{ border-color:var(--gold-lit); color:var(--ink); background:var(--gold-lit); }
+
+.wall-search{
+  display:flex; align-items:center; gap:9px; flex:0 1 300px;
+  border:1px solid var(--line); padding:8px 13px;
+  transition:border-color .4s var(--ease);
+}
+.wall-search:focus-within{ border-color:var(--gold-lit); }
+.wall-search svg{ width:14px; height:14px; flex:none; stroke:var(--muted); stroke-width:1.8; }
+.wall-search input{
+  flex:1; min-width:0; background:none; border:0; outline:none; color:var(--bone);
+  font-family:var(--sans); font-size:12.5px; font-weight:300;
+}
+.wall-search input::placeholder{ color:var(--muted); }
+.wall-search input::-webkit-search-cancel-button{ filter:invert(.6); }
+
+.wall-grid{
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(14px,2vw,30px);
+}
+.soul{
+  display:block; width:100%; text-align:left; background:none; border:0; padding:0;
+  cursor:pointer; color:inherit; font:inherit;
+  opacity:0; transform:translate3d(0,18px,0);
+  animation:soulIn .85s var(--ease-out) forwards; animation-delay:var(--d,0ms);
+}
+@keyframes soulIn{ to{ opacity:1; transform:none } }
+.soul-fr{
+  position:relative; display:block; aspect-ratio:3/4; overflow:hidden;
+  border-radius:50% 50% 3px 3px / 38% 38% 3px 3px;
+  border:1px solid rgba(231,175,35,.3); background:var(--ink-2);
+  transition:border-color .5s var(--ease), box-shadow .5s var(--ease);
+}
+.soul:hover .soul-fr,.soul:focus-visible .soul-fr{
+  border-color:var(--gold-lit); box-shadow:0 0 44px rgba(201,150,43,.2);
+}
+.soul-fr img{
+  width:100%; height:100%; object-fit:cover; object-position:50% 22%;
+  filter:grayscale(1) brightness(.6) contrast(1.1) sepia(.22);
+  transition:transform 1.2s var(--ease), filter .6s var(--ease);
+}
+.soul:hover .soul-fr img{ transform:scale(1.045); filter:grayscale(.55) brightness(.94) contrast(1.02) sepia(.1); }
+.soul-veil{
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(to top, rgba(6,7,10,.95) 0%, rgba(6,7,10,.45) 34%, transparent 58%),
+    radial-gradient(120% 78% at 50% 34%, transparent 40%, rgba(6,7,10,.55) 100%);
+}
+.soul-mono{
+  position:absolute; top:12px; left:50%; transform:translateX(-50%);
+  font-family:var(--serif); font-size:12px; letter-spacing:.14em;
+  color:rgba(231,175,35,.7);
+}
+.soul-tx{ position:absolute; left:14px; right:14px; bottom:12px; z-index:2; display:block; }
+.soul-tx b{
+  display:block; font-family:var(--serif); font-weight:400;
+  font-size:clamp(15px,1.45vw,20px); line-height:1.16; color:var(--bone);
+}
+.soul-tx i{
+  display:block; font-style:normal; font-family:var(--serif);
+  font-size:11.5px; color:var(--gold); margin-top:2px;
+}
+.soul-yrs{
+  display:block; margin-top:7px; font-family:var(--mono); font-size:9.5px;
+  letter-spacing:.16em; color:var(--bone-dim);
+}
+.soul-role{
+  display:block; margin-top:4px; font-size:11px; line-height:1.4; color:var(--muted);
+}
+.soul-meta{
+  display:flex; align-items:center; gap:14px; padding-top:9px;
+  font-family:var(--mono); font-size:9px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted);
+}
+.soul-meta span{ display:inline-flex; align-items:center; gap:5px; }
+.soul-meta svg{ width:11px; height:11px; stroke:var(--gold); stroke-width:1.6; fill:none; }
+.wall-empty{
+  margin:26px 0 0; font-size:13px; color:var(--muted); font-family:var(--mono);
+  letter-spacing:.12em; text-transform:uppercase;
+}
+@media (max-width:900px){ .wall-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:560px){
+  .wall-grid{ grid-template-columns:1fr; }
+  .wall-bar{ flex-direction:column; align-items:stretch; }
+  .wall-search{ flex:1 1 auto; }
+}
+
+/* ═════════════════════════════════════ 13c · the Memory Page ══ */
+.mp{ position:fixed; inset:0; z-index:120; display:grid; place-items:center; padding:clamp(12px,3vw,44px); }
+.mp[hidden]{ display:none; }
+.mp-scrim{
+  position:absolute; inset:0; background:rgba(3,4,6,.9);
+  backdrop-filter:blur(9px); -webkit-backdrop-filter:blur(9px);
+  opacity:0; transition:opacity .5s var(--ease);
+}
+.mp.open .mp-scrim{ opacity:1; }
+.mp-sheet{
+  position:relative; z-index:2; width:min(920px,100%); max-height:92vh; overflow-y:auto;
+  background:var(--ink-2); border:1px solid var(--line);
+  padding:clamp(24px,4vw,52px);
+  opacity:0; transform:translate3d(0,26px,0);
+  transition:opacity .55s var(--ease-out), transform .6s var(--ease-out);
+  outline:none;
+}
+.mp.open .mp-sheet{ opacity:1; transform:none; }
+.mp-close{
+  position:absolute; top:14px; right:14px; z-index:3;
+  width:38px; height:38px; background:none; border:1px solid var(--line);
+  display:grid; place-items:center; cursor:pointer;
+  transition:border-color .4s var(--ease), background-color .4s var(--ease);
+}
+.mp-close:hover{ border-color:var(--gold-lit); background:rgba(201,150,43,.12); }
+.mp-close svg{ width:15px; height:15px; stroke:var(--bone); stroke-width:1.4; stroke-linecap:round; }
+
+.mp-top{ display:grid; grid-template-columns:150px minmax(0,1fr); gap:clamp(18px,3vw,34px); align-items:start; }
+.mp-por{
+  aspect-ratio:3/4; overflow:hidden; background:var(--ink);
+  border-radius:50% 50% 3px 3px / 38% 38% 3px 3px;
+  border:1px solid rgba(231,175,35,.4);
+}
+.mp-por img{ width:100%; height:100%; object-fit:cover; object-position:50% 22%;
+  filter:grayscale(.55) brightness(.8) contrast(1.06) sepia(.14); }
+.mp-eyebrow{
+  font-family:var(--mono); font-size:9px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:9px;
+}
+.mp-name{ font-family:var(--serif); font-weight:400; font-size:clamp(24px,3.4vw,42px); line-height:1.08; margin:0; }
+.mp-name-sr{ font-family:var(--serif); font-size:clamp(14px,1.6vw,19px); color:var(--gold); margin:5px 0 0; }
+.mp-role{ margin:11px 0 0; font-size:13px; color:var(--bone-dim); }
+.mp-yrs{
+  margin:14px 0 0; font-family:var(--mono); font-size:11px; letter-spacing:.16em; color:var(--bone);
+  padding-top:12px; border-top:1px solid var(--line);
+}
+.mp-where{ margin:6px 0 0; font-size:12px; color:var(--muted); }
+
+.mp-epi{
+  margin:clamp(20px,3vh,30px) 0 0; padding:18px 0;
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  font-family:var(--serif); font-style:italic; font-size:clamp(14px,1.5vw,19px);
+  line-height:1.55; color:var(--bone);
+}
+.mp-story{ margin:clamp(18px,2.6vh,26px) 0 0; font-size:13.5px; line-height:1.68; color:var(--bone-dim); }
+
+.mp-h{
+  margin:clamp(22px,3.2vh,34px) 0 12px; font-family:var(--mono); font-size:9px;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--gold);
+}
+.mp-tl{ list-style:none; margin:0; padding:0; border-top:1px solid var(--line-soft); }
+.mp-tl li{
+  display:grid; grid-template-columns:124px minmax(0,1fr); gap:14px;
+  padding:10px 0; border-bottom:1px solid var(--line-soft); align-items:baseline;
+}
+.mp-tl time{ font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; color:var(--muted); }
+.mp-tl span{ font-size:12.5px; color:var(--bone-dim); }
+
+.mp-caps{
+  margin-top:16px; padding:15px 17px; border:1px dashed rgba(231,175,35,.34);
+  background:rgba(201,150,43,.05);
+}
+.mp-caps b{ display:block; font-family:var(--mono); font-size:9px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--gold-lit); margin-bottom:6px; }
+.mp-caps p{ margin:0; font-size:12.5px; line-height:1.55; color:var(--bone-dim); }
+
+.mp-foot{
+  margin-top:clamp(22px,3.2vh,34px); padding-top:18px; border-top:1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+}
+.mp-facts{ display:flex; gap:22px; flex-wrap:wrap;
+  font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+.mp-facts b{ display:block; color:var(--bone-dim); font-weight:400; margin-top:3px; letter-spacing:.1em; }
+.mp-candle{
+  display:inline-flex; align-items:center; gap:10px; padding:13px 22px;
+  border:1px solid var(--line); background:none; cursor:pointer; color:var(--bone);
+  font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+  transition:border-color .4s var(--ease), background-color .4s var(--ease), color .4s var(--ease);
+}
+.mp-candle:hover{ border-color:var(--gold-lit); background:rgba(201,150,43,.12); color:var(--gold-lit); }
+.mp-candle svg{ width:14px; height:16px; stroke:currentColor; stroke-width:1.4; fill:none; }
+.mp-candle.lit{ border-color:var(--gold-lit); color:var(--gold-lit); }
+@media (max-width:640px){
+  .mp-top{ grid-template-columns:1fr; }
+  .mp-por{ width:130px; }
+  .mp-tl li{ grid-template-columns:1fr; gap:2px; }
+}
+@media (prefers-reduced-motion:reduce){
+  .soul{ opacity:1 !important; transform:none !important; animation:none !important; }
 }
 
 /* ══════════════════════════════════════ 13b · chapter V · finale ══ */
@@ -918,7 +1157,8 @@ img{ max-width:100%; display:block; }
 <!-- ══════════════════════════════════════════════════ 00 · hero ═══ -->
 <section class="hero" id="hero" data-cam="0">
   <div class="hero-top">
-    <div class="eyebrow" data-rv="fade"><span class="dot"></span> Chapter 00 - Вечан спомен</div>
+    <div class="eyebrow" data-rv="fade"><span class="dot"></span> Chapter 00 - Вечан спомен
+      <span class="eyebrow-sep"></span><span id="seasonNow">Summer</span></div>
     <h1 class="display h-hero">
       <span class="mask-line"><span>Where the names</span></span>
       <span class="mask-line"><span>are read</span></span>
@@ -932,10 +1172,21 @@ img{ max-width:100%; display:block; }
   <div class="hero-spacer"></div>
 
   <div class="hero-foot">
-    <div class="hero-cue" data-rv="fade"><span>Scroll to enter</span><span class="track"><i></i></span></div>
+    <div class="hero-lead">
+      <div class="season-pick" id="seasonPick" data-rv="fade" role="group" aria-label="Season of the churchyard">
+        <span class="season-k">Churchyard</span>
+        <span class="season-btns">
+          <button data-season="spring" data-cursor>Spring</button>
+          <button data-season="summer" data-cursor>Summer</button>
+          <button data-season="autumn" data-cursor>Autumn</button>
+          <button data-season="winter" data-cursor>Winter</button>
+        </span>
+      </div>
+      <div class="hero-cue" data-rv="fade"><span>Scroll to enter</span><span class="track"><i></i></span></div>
+    </div>
     <div class="chapters" id="chips">
       <div class="chip" data-chip="0" data-rv="up" data-cursor><span class="num">01</span>
-        <span class="tx"><b>Threshold</b><p>Stone, snow, and one door left standing open.</p></span></div>
+        <span class="tx"><b>Threshold</b><p id="chipThreshold">Stone, snow, and one door left standing open.</p></span></div>
       <div class="chip" data-chip="1" data-rv="up" data-cursor><span class="num">02</span>
         <span class="tx"><b>Iconostasis</b><p>The screen of icons, and what each mark on it means.</p></span></div>
       <div class="chip" data-chip="2" data-rv="up" data-cursor><span class="num">03</span>
@@ -969,7 +1220,7 @@ img{ max-width:100%; display:block; }
     <span class="k"><b>01</b> - The Threshold</span><span class="rule"></span><span class="k cyr">Праг</span>
   </div>
   <div class="gate-grid">
-    <h2 class="display h-sec" data-rv="up">Stone, snow, and one door left standing open.</h2>
+    <h2 class="display h-sec" id="thresholdH" data-rv="up">Stone, snow, and one door left standing open.</h2>
     <div class="gate-copy">
       <p class="lead" data-rv="up">A Serbian church in Ontario begins the way it began in Ras: a low
         stone wall, a gate that is never locked during a service, and a single lamp burning over the
@@ -1078,7 +1329,7 @@ img{ max-width:100%; display:block; }
   </div>
   <div class="mem-grid">
     <div>
-      <h2 class="display h-sec" data-rv="up">Each arch is a life set down.</h2>
+      <h2 class="display h-sec" data-rv="up">Those we carry to the Holy Liturgy.</h2>
       <p class="lead" data-rv="up" style="margin-top:22px">Every arch on this wall opens a Memory Page:
         a life written down, a recorded voice, photographs, and where a family has chosen it, a time
         capsule that opens on a set day. Kept for good, and never charged by the month.</p>
@@ -1110,9 +1361,34 @@ img{ max-width:100%; display:block; }
       </div>
     </div>
   </div>
+  <div class="wall-note" data-rv="up">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+    <p><b>This is a design demonstration.</b> All six people below are fictional. The names, dates
+      and life stories were written only to show how a Memory Page looks. No real parishioner is
+      represented here.</p>
+  </div>
+
+  <div class="wall-bar" data-rv="up">
+    <div class="wall-filters" id="wallFilters" role="group" aria-label="Filter the memorial">
+      <button class="fchip on" data-filter="all" data-cursor>All</button>
+      <button class="fchip" data-filter="zadusnice" data-cursor>This Zadu&#353;nice</button>
+      <button class="fchip" data-filter="founders" data-cursor>Founders</button>
+      <button class="fchip" data-filter="recent" data-cursor>Recently added</button>
+    </div>
+    <div class="wall-search">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.3-4.3"/></svg>
+      <label class="vh" for="wallSearch">Search the memorial</label>
+      <input type="search" id="wallSearch" placeholder="Search by name or year" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="wall-grid" id="wallGrid" data-rv="fade"></div>
+  <p class="wall-empty" id="wallEmpty" hidden>No one matches that search.</p>
+
   <p class="mem-note" data-rv="up">The parish holds the remembrance, not the data. A family decides what
-    is public and what stays within the family, and may export or close a page at any time. The arches
-    lit on this wall are a design demonstration: no real parishioner is represented.</p>
+    is public and what stays within the family, and may export or close a page at any time. Parish
+    families may submit a Memory Page through the church office or directly with Saylavy: the parish
+    keeps the archive, the family keeps ownership.</p>
 </section>
 
 <!-- ════════════════════════════════════════════ 05 · remembrance ═══ -->
@@ -1166,6 +1442,17 @@ img{ max-width:100%; display:block; }
 </footer>
 
 </div><!-- /.page -->
+
+<!-- ═══════════════════════════════════════════════ the Memory Page ═══ -->
+<div class="mp" id="mp" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="mpName">
+  <div class="mp-scrim" id="mpScrim"></div>
+  <article class="mp-sheet" id="mpSheet" tabindex="-1">
+    <button class="mp-close" id="mpClose" aria-label="Close the Memory Page" data-cursor>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M18.5 5.5l-13 13M5.5 5.5l13 13"/></svg>
+    </button>
+    <div class="mp-body" id="mpBody"></div>
+  </article>
+</div>
 
 <script src="vendor/three.min.js"></script>
 <script>
@@ -1327,6 +1614,262 @@ setTimeout(function () {
   $$('#hero [data-rv], #hero .mask-line').forEach(function (e) { e.classList.add('rv-in'); });
 }, 120);
 
+/* ═══════════════════════════════════════════ 1b · the memorial ═══ */
+/* Six Memory Pages, read from data/memorials.json so the parish can edit
+   the wall without touching the document. Every person here is fictional;
+   the notice above the grid says so and must stay. */
+var WALL = { all: [], filter: 'all', q: '', open: null, lastFocus: null };
+
+var esc = function (v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+};
+var MONTHS = ['January','February','March','April','May','June','July',
+              'August','September','October','November','December'];
+function pDate(v) { var a = String(v || '').split('-'); return new Date(+a[0], +a[1] - 1, +a[2]); }
+function longDate(d) { return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); }
+
+/* Candles lit here are kept on this device only. The real stand is in
+   Richmond Hill, and this page does not pretend otherwise. */
+function litLocal() {
+  try { return JSON.parse(localStorage.getItem('spomen.candles') || '{}'); } catch (e) { return {}; }
+}
+function lightLocal(id) {
+  var m = litLocal(); m[id] = (m[id] || 0) + 1;
+  try { localStorage.setItem('spomen.candles', JSON.stringify(m)); } catch (e) {}
+  return m[id];
+}
+var candlesFor = function (e) { return (e.candles || 0) + (litLocal()[e.id] || 0); };
+
+var IC_FLAME = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2s5.5 4.8 5.5 9.5a5.5 5.5 0 0 1-11 0C6.5 6.8 12 2 12 2z"/></svg>';
+var IC_MIC   = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="10.5" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5"/></svg>';
+
+function soulCard(e, i) {
+  var b = pDate(e.born).getFullYear(), d = pDate(e.died).getFullYear();
+  return '<button class="soul" data-id="' + esc(e.id) + '" style="--d:' + (i * 70) + 'ms" data-cursor>' +
+    '<span class="soul-fr">' +
+      (e.portrait ? '<img src="' + esc(e.portrait) + '" alt="" loading="lazy" decoding="async" width="300" height="400">' : '') +
+      '<span class="soul-mono">' + esc(e.monogram || '') + '</span>' +
+      '<span class="soul-veil"></span>' +
+      '<span class="soul-tx">' +
+        '<b>' + esc(e.name) + '</b>' +
+        '<i>' + esc(e.nameSr) + '</i>' +
+        '<span class="soul-yrs">' + b + ' - ' + d + '</span>' +
+        '<span class="soul-role">' + esc(e.role) + '</span>' +
+      '</span>' +
+    '</span>' +
+    '<span class="soul-meta">' +
+      '<span>' + IC_FLAME + candlesFor(e) + ' candles</span>' +
+      (e.voice ? '<span>' + IC_MIC + 'Voice</span>' : '') +
+    '</span>' +
+  '</button>';
+}
+
+function wallMatches(e) {
+  if (WALL.filter !== 'all' && (e.tags || []).indexOf(WALL.filter) === -1) return false;
+  if (!WALL.q) return true;
+  var hay = [e.name, e.nameSr, e.role, e.roleSr, e.bornPlace, e.diedPlace,
+             pDate(e.born).getFullYear(), pDate(e.died).getFullYear()].join(' ').toLowerCase();
+  return hay.indexOf(WALL.q) > -1;
+}
+
+function renderWall() {
+  var grid = $('#wallGrid'), empty = $('#wallEmpty');
+  if (!grid) return;
+  var list = WALL.all.filter(wallMatches);
+  grid.innerHTML = list.map(soulCard).join('');
+  empty.hidden = list.length > 0;
+}
+
+function openPage(id) {
+  var e = WALL.all.filter(function (x) { return x.id === id; })[0];
+  if (!e) return;
+  var mp = $('#mp'), body = $('#mpBody');
+  var bd = pDate(e.born), dd = pDate(e.died);
+  WALL.lastFocus = document.activeElement;
+
+  var tl = (e.timeline || []).map(function (t) {
+    return '<li><time>' + longDate(pDate(t.date)) + '</time><span>' + esc(t.title) + '</span></li>';
+  }).join('');
+
+  body.innerHTML =
+    '<div class="mp-top">' +
+      '<div class="mp-por">' + (e.portrait ? '<img src="' + esc(e.portrait) + '" alt="Portrait of ' + esc(e.name) + '">' : '') + '</div>' +
+      '<div>' +
+        '<div class="mp-eyebrow">Memory Page · ' + esc(e.saylavyId || '') + '</div>' +
+        '<h3 class="mp-name" id="mpName">' + esc(e.name) + '</h3>' +
+        '<p class="mp-name-sr">' + esc(e.nameSr) + '</p>' +
+        '<p class="mp-role">' + esc(e.role) + '</p>' +
+        '<p class="mp-yrs">' + longDate(bd) + '  ·  ' + longDate(dd) + '</p>' +
+        '<p class="mp-where">' + esc(e.bornPlace) + ' to ' + esc(e.diedPlace) + '</p>' +
+      '</div>' +
+    '</div>' +
+    (e.epitaph ? '<blockquote class="mp-epi">' + esc(e.epitaph) + '</blockquote>' : '') +
+    (e.story ? '<p class="mp-story">' + esc(e.story) + '</p>' : '') +
+    (tl ? '<div class="mp-h">The life</div><ul class="mp-tl">' + tl + '</ul>' : '') +
+    (e.capsule ? '<div class="mp-caps"><b>Time capsule · opens ' + longDate(pDate(e.capsule.unlocks)) + '</b>' +
+       '<p>' + esc(e.capsule.label) + '</p></div>' : '') +
+    '<div class="mp-foot">' +
+      '<div class="mp-facts">' +
+        '<span>Held by<b>' + esc(e.heldBy || 'The family') + '</b></span>' +
+        '<span>Photographs<b>' + esc(e.photos || 0) + '</b></span>' +
+        '<span>Candles<b id="mpCandles">' + candlesFor(e) + '</b></span>' +
+      '</div>' +
+      '<button class="mp-candle" id="mpLight" data-cursor>' + IC_FLAME + '<span>Light a candle</span></button>' +
+    '</div>';
+
+  mp.hidden = false; mp.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(function () { mp.classList.add('open'); });
+  $('#mpSheet').focus();
+  WALL.open = id;
+  document.body.style.overflow = 'hidden';
+
+  $('#mpLight').addEventListener('click', function () {
+    var n = lightLocal(e.id);
+    $('#mpCandles').textContent = (e.candles || 0) + n;
+    this.classList.add('lit');
+    this.querySelector('span').textContent = 'Lit on this device';
+    renderWall();
+  });
+}
+
+function closePage() {
+  var mp = $('#mp');
+  if (!mp || mp.hidden) return;
+  mp.classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(function () {
+    mp.hidden = true; mp.setAttribute('aria-hidden', 'true');
+    $('#mpBody').innerHTML = '';
+  }, 380);
+  WALL.open = null;
+  if (WALL.lastFocus && WALL.lastFocus.focus) WALL.lastFocus.focus();
+}
+
+function wireWall() {
+  var grid = $('#wallGrid');
+  if (!grid) return;
+
+  grid.addEventListener('click', function (ev) {
+    var b = ev.target.closest('.soul');
+    if (b) openPage(b.getAttribute('data-id'));
+  });
+  $$('#wallFilters .fchip').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      $$('#wallFilters .fchip').forEach(function (o) { o.classList.remove('on'); });
+      btn.classList.add('on');
+      WALL.filter = btn.getAttribute('data-filter');
+      renderWall();
+    });
+  });
+  var search = $('#wallSearch');
+  if (search) {
+    search.addEventListener('input', function () {
+      WALL.q = search.value.trim().toLowerCase();
+      renderWall();
+    });
+  }
+  $('#mpClose').addEventListener('click', closePage);
+  $('#mpScrim').addEventListener('click', closePage);
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && WALL.open) closePage();
+  });
+
+  fetch('data/memorials.json')
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error(r.status)); })
+    .then(function (d) { WALL.all = d.entries || []; renderWall(); })
+    .catch(function () {
+      /* Opened straight off the disk, where fetch cannot read a sibling
+         file. Say so rather than leaving an empty wall. */
+      grid.innerHTML = '<p class="wall-empty" style="grid-column:1/-1">The memorial could not be ' +
+        'loaded. Serve the folder over HTTP so data/memorials.json can be read.</p>';
+    });
+}
+wireWall();
+
+/* ═══════════════════════════════════════════════ 2b · the seasons ═══ */
+/* The churchyard follows the calendar. Richmond Hill, northern hemisphere:
+   the parish year is not an abstraction there, it is what is on the ground.
+   ?season=spring|summer|autumn|winter overrides it for a walkthrough. */
+var SEASONS = {
+  spring: {
+    key: 'spring', ground2: 'new grass', name: 'Spring', sr: 'Пролеће',
+    ground: 0x16200f, fog: 0x0a1410, fogD: 0.0188,
+    skyTop: 0x04060c, skyHorizon: 0x0d1620, skyGround: 0x141d1c,
+    canopy: 0x1f3316, canopyO: 0.92, moon: 0x9fb6d8, moonI: 0.74,
+    /* petals, drifting down slowly and sideways */
+    partN: 1.0, partColor: [0.92, 0.78, 0.82], partSize: 2.4,
+    partFall: 0.62, partSway: 2.6, partAlpha: 0.42
+  },
+  summer: {
+    key: 'summer', ground2: 'warm dark', name: 'Summer', sr: 'Лето',
+    ground: 0x141c0d, fog: 0x0a1112, fogD: 0.0152,
+    skyTop: 0x04060e, skyHorizon: 0x0c1420, skyGround: 0x121a18,
+    canopy: 0x1b2e12, canopyO: 1.0, moon: 0xb2c2dc, moonI: 0.68,
+    /* no precipitation: what moves on an August night is the fireflies */
+    partN: 0.22, partColor: [1.0, 0.86, 0.42], partSize: 2.1,
+    partFall: -0.16, partSway: 3.4, partAlpha: 0.62
+  },
+  autumn: {
+    key: 'autumn', ground2: 'wet leaves', name: 'Autumn', sr: 'Јесен',
+    ground: 0x1b1409, fog: 0x0d0e10, fogD: 0.0205,
+    skyTop: 0x05060b, skyHorizon: 0x11121c, skyGround: 0x1a1712,
+    canopy: 0x53300c, canopyO: 0.82, moon: 0xd8b98a, moonI: 0.8,
+    /* leaves, heavier and tumbling */
+    partN: 0.7, partColor: [0.86, 0.5, 0.18], partSize: 3.0,
+    partFall: 0.9, partSway: 3.0, partAlpha: 0.5
+  },
+  winter: {
+    key: 'winter', ground2: 'snow', name: 'Winter', sr: 'Зима',
+    ground: 0x0d1017, fog: 0x05070d, fogD: 0.0208,
+    skyTop: 0x03040a, skyHorizon: 0x0a1019, skyGround: 0x111722,
+    canopy: 0x000000, canopyO: 0, moon: 0x8ea6cd, moonI: 0.72,
+    partN: 1.0, partColor: [0.86, 0.9, 0.98], partSize: 2.2,
+    partFall: 1.35, partSway: 1.5, partAlpha: 0.5
+  }
+};
+
+function seasonForDate(d) {
+  var m = d.getMonth();                       /* 0 = January */
+  if (m <= 1 || m === 11) return 'winter';    /* Dec, Jan, Feb */
+  if (m <= 4) return 'spring';                /* Mar, Apr, May */
+  if (m <= 7) return 'summer';                /* Jun, Jul, Aug */
+  return 'autumn';                            /* Sep, Oct, Nov */
+}
+
+var SEASON = (function () {
+  var q = (location.search.match(/[?&]season=([a-z]+)/i) || [])[1];
+  if (q && SEASONS[q.toLowerCase()]) return SEASONS[q.toLowerCase()];
+  return SEASONS[seasonForDate(new Date())];
+})();
+
+/* The label in the hero, so the reader knows the churchyard is not generic */
+(function () {
+  var el = document.getElementById('seasonNow');
+  if (el) el.textContent = SEASON.name + ' · ' + SEASON.sr;
+
+  /* Chapter 01 says what is on the ground at the gate. In August that is
+     not snow, and a line that lies about the season undoes the point of
+     having one. */
+  var line = 'Stone, ' + SEASON.ground2 + ', and one door left standing open.';
+  var h = document.getElementById('thresholdH');
+  if (h) h.textContent = line;
+  var c = document.getElementById('chipThreshold');
+  if (c) c.textContent = line;
+  document.documentElement.setAttribute('data-season', SEASON.key);
+  var sel = document.getElementById('seasonPick');
+  if (!sel) return;
+  $$('#seasonPick button').forEach(function (b) {
+    b.classList.toggle('on', b.getAttribute('data-season') === SEASON.key);
+    b.addEventListener('click', function () {
+      var k = b.getAttribute('data-season');
+      location.search = location.search.replace(/[?&]season=[a-z]+/i, '')
+        .replace(/^\?$/, '') + (location.search && !/^\?$/.test(location.search) ? '&' : '?') + 'season=' + k;
+    });
+  });
+})();
+
 /* ═════════════════════════════════════════════════ 2 · preloader ═══ */
 var PRE = { el: $('#pre'), fill: $('#pre-fill'), pct: $('#pre-pct'), v: 0, done: false };
 function preTo(p) {
@@ -1381,7 +1924,7 @@ function startWorld() {
   renderer.setClearColor(C.night, 1);
 
   scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x05070d, 0.0208);
+  scene.fog = new THREE.FogExp2(SEASON.fog, SEASON.fogD);
   camera = new THREE.PerspectiveCamera(38, vpW() / vpH(), 0.35, 400);
 
   buildSky(); buildGround(); buildChurch(); buildYard(); buildCandles();
@@ -1402,9 +1945,9 @@ function buildSky() {
   var g = new THREE.SphereGeometry(280, 32, 20);
   var m = new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite: false, fog: false,
-    uniforms: { uT: { value: new THREE.Color(0x03040a) },
-                uH: { value: new THREE.Color(0x0a1019) },
-                uG: { value: new THREE.Color(0x111722) } },
+    uniforms: { uT: { value: new THREE.Color(SEASON.skyTop) },
+                uH: { value: new THREE.Color(SEASON.skyHorizon) },
+                uG: { value: new THREE.Color(SEASON.skyGround) } },
     vertexShader:
       'varying vec3 vP; void main(){ vP = position; ' +
       'gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
@@ -1488,7 +2031,7 @@ function buildGround() {
   g.computeVertexNormals();
   g.rotateX(-Math.PI / 2);
   var m = new THREE.MeshStandardMaterial({
-    color: 0x0d1017, roughness: 0.97, metalness: 0.0, flatShading: false
+    color: SEASON.ground, roughness: 0.97, metalness: 0.0, flatShading: false
   });
   var ground = new THREE.Mesh(g, m);
   ground.position.y = -0.02;
@@ -2007,7 +2550,7 @@ function buildTrees() {
   var N = LOW ? 14 : 26;
   var tm = new THREE.InstancedMesh(trunk, barkM, N);
   var lm = new THREE.InstancedMesh(limb, barkM, N * 4);
-  var d = new THREE.Object3D(), li = 0;
+  var d = new THREE.Object3D(), li = 0, trees = [];
 
   for (var i = 0; i < N; i++) {
     /* Kept to the churchyard edges: a tree in front of the west door would
@@ -2020,6 +2563,7 @@ function buildTrees() {
     d.rotation.set(0, Math.random() * 3, (Math.random() - 0.5) * 0.07);
     d.scale.setScalar(s);
     d.updateMatrix(); tm.setMatrixAt(i, d.matrix);
+    trees.push({ x: x, z: z, s: s });
 
     for (var k = 0; k < 4; k++) {
       var a = Math.random() * Math.PI * 2, tilt = 0.5 + Math.random() * 0.6;
@@ -2032,44 +2576,77 @@ function buildTrees() {
   tm.instanceMatrix.needsUpdate = true;
   lm.count = li; lm.instanceMatrix.needsUpdate = true;
   scene.add(tm, lm);
+
+  /* Foliage. Three overlapping lumps per tree rather than one sphere, so a
+     canopy has a silhouette instead of reading as a lollipop. Winter keeps
+     the bare frame the limbs already give it. */
+  if (SEASON.canopyO > 0) {
+    var leafM = new THREE.MeshStandardMaterial({
+      color: SEASON.canopy, roughness: 1.0, flatShading: true,
+      transparent: true, opacity: SEASON.canopyO
+    });
+    var cm = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), leafM, N * 3);
+    var ci = 0;
+    for (var t = 0; t < N; t++) {
+      var T2 = trees[t];
+      for (var k2 = 0; k2 < 3; k2++) {
+        var ang = Math.random() * Math.PI * 2, rad = (0.5 + Math.random() * 0.8) * T2.s;
+        d.position.set(T2.x + Math.cos(ang) * rad,
+                       (5.9 + Math.random() * 2.1) * T2.s,
+                       T2.z + Math.sin(ang) * rad);
+        d.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+        var sc = (1.5 + Math.random() * 1.3) * T2.s;
+        d.scale.set(sc, sc * 0.78, sc);
+        d.updateMatrix(); cm.setMatrixAt(ci++, d.matrix);
+      }
+    }
+    cm.count = ci; cm.instanceMatrix.needsUpdate = true;
+    scene.add(cm);
+  }
 }
 
 /* ────────────────────────────────────────────── snow, embers, haze ── */
 function buildWeather() {
   /* snow */
-  var N = LOW ? 900 : 2400;
+  var N = Math.max(60, Math.round((LOW ? 900 : 2400) * SEASON.partN));
   var pos = new Float32Array(N * 3), ph = new Float32Array(N), sz = new Float32Array(N);
   for (var i = 0; i < N; i++) {
     pos[i * 3] = (Math.random() - 0.5) * 110;
     pos[i * 3 + 1] = Math.random() * 46;
     pos[i * 3 + 2] = (Math.random() - 0.5) * 110 - 6;
     ph[i] = Math.random() * 100;
-    sz[i] = 1.2 + Math.random() * 2.6;
+    sz[i] = (1.2 + Math.random() * 2.6) * (SEASON.partSize / 2.2);
   }
   var g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   g.setAttribute('aP', new THREE.BufferAttribute(ph, 1));
   g.setAttribute('aS', new THREE.BufferAttribute(sz, 1));
   var snow = new THREE.Points(g, new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, fog: false, blending: THREE.NormalBlending,
-    uniforms: { uT: { value: 0 }, uPR: { value: 1 }, uVis: { value: 1 } },
+    transparent: true, depthWrite: false, fog: false,
+    blending: SEASON.key === 'summer' ? THREE.AdditiveBlending : THREE.NormalBlending,
+    uniforms: { uT: { value: 0 }, uPR: { value: 1 }, uVis: { value: 1 },
+                uFall: { value: SEASON.partFall }, uSway: { value: SEASON.partSway } },
     vertexShader:
-      'attribute float aP, aS; uniform float uT, uPR; varying float vA;\n' +
+      'attribute float aP, aS; uniform float uT, uPR, uFall, uSway; varying float vA;\n' +
       'void main(){ vec3 p = position;\n' +
-      '  p.y = mod(p.y - uT * 1.35 - aP, 46.0);\n' +
-      '  p.x += sin(uT * 0.5 + aP) * 1.5;\n' +
-      '  p.z += cos(uT * 0.37 + aP * 1.7) * 1.1;\n' +
+      /* a negative fall speed is what turns snow into fireflies drifting up */
+      '  p.y = mod(p.y - uT * uFall - aP, 46.0);\n' +
+      '  p.x += sin(uT * 0.5 + aP) * uSway;\n' +
+      '  p.z += cos(uT * 0.37 + aP * 1.7) * uSway * 0.74;\n' +
       '  vec4 mv = modelViewMatrix * vec4(p, 1.0);\n' +
       '  float dist = -mv.z;\n' +
       '  vA = smoothstep(120.0, 22.0, dist) * smoothstep(0.6, 4.0, dist);\n' +
       '  gl_PointSize = aS * uPR * (26.0 / max(1.0, dist));\n' +
       '  gl_Position = projectionMatrix * mv; }',
     fragmentShader:
-      'uniform float uVis; varying float vA;\n' +
+      'uniform float uVis, uAlpha; uniform vec3 uCol; varying float vA;\n' +
       'void main(){ vec2 p = gl_PointCoord - 0.5; float d = length(p) * 2.0;\n' +
-      '  float a = pow(max(0.0, 1.0 - d), 1.7) * vA * 0.5 * uVis;\n' +
-      '  gl_FragColor = vec4(0.86, 0.9, 0.98, a); }'
+      '  float a = pow(max(0.0, 1.0 - d), 1.7) * vA * uAlpha * uVis;\n' +
+      '  gl_FragColor = vec4(uCol, a); }'
   }));
+  snow.material.uniforms.uCol = { value: new THREE.Vector3(
+    SEASON.partColor[0], SEASON.partColor[1], SEASON.partColor[2]) };
+  snow.material.uniforms.uAlpha = { value: SEASON.partAlpha };
   scene.add(snow);
   WORLD.snow = snow;
 
@@ -2113,7 +2690,7 @@ function buildWeather() {
     var m = new THREE.Mesh(
       new THREE.PlaneGeometry(200, 34),
       new THREE.MeshBasicMaterial({
-        color: 0x0a111c, transparent: true, opacity: 0.16 - h * 0.038,
+        color: SEASON.fog, transparent: true, opacity: 0.19 - h * 0.042,
         depthWrite: false, fog: false
       })
     );
@@ -2167,7 +2744,7 @@ function buildLights() {
   scene.add(new THREE.AmbientLight(0x141c2c, 0.5));
 
   /* moonlight: cold, from behind and to the left */
-  var moon = new THREE.DirectionalLight(0x8ea6cd, 0.72);
+  var moon = new THREE.DirectionalLight(SEASON.moon, SEASON.moonI);
   moon.position.set(-30, 24, -34);
   scene.add(moon);
 
@@ -2329,11 +2906,11 @@ var CAM = [
   { p: [ -3.0,  2.30,  19.0 ], t: [  0.4,  5.60,   4.0 ], fov: 47 },  /* 1 threshold   */
   { p: [  0.3,  2.45,   0.4 ], t: [  0.0,  3.50, -10.4 ], fov: 54 },  /* 2 iconostasis */
   { p: [  2.5,  2.05,  -1.4 ], t: [ -3.2,  3.10,  -6.6 ], fov: 57 },  /* 3 voices      */
-  { p: [  2.70, 2.05,  -4.2 ], t: [ -4.5,  2.42,  -6.7 ], fov: 57 },  /* 4 memorial    */
-  { p: [  0.0,  1.85,  -5.4 ], t: [ -0.1,  9.20,  -7.0 ], fov: 62 },  /* 5 remembrance */
+  { p: [  2.70, 2.10,  -4.2 ], t: [ -4.5,  2.42,  -6.7 ], fov: 57 },  /* 4 memorial    */
+  { p: [  0.0,  2.05,  -5.4 ], t: [ -0.1,  9.20,  -7.0 ], fov: 62 },  /* 5 remembrance */
   { p: [-17.0, 25.00,  21.0 ], t: [  0.0,  7.50, -14.0 ], fov: 40 }   /* 6 footer      */
 ];
-var RIG = { prog: 0, smooth: 0, mx: 0, my: 0, tmx: 0, tmy: 0, intro: 0, inside: 0 };
+var RIG = { prog: 0, smooth: 0, mx: 0, my: 0, tmx: 0, tmy: 0, intro: 0, inside: 0, insideT: 0 };
 var curveP, curveT;
 
 function buildRig() {
@@ -2377,6 +2954,13 @@ function applyCamera() {
   var par = 1 - smooth(0, 1.6, RIG.smooth) * 0.55;
   _p.x += RIG.mx * 0.85 * par; _p.y += RIG.my * 0.45 * par;
   _t.x -= RIG.mx * 0.26 * par; _t.y -= RIG.my * 0.15 * par;
+
+  /* Catmull-Rom overshoots. Between the memorial and the ascent - whose next
+     waypoint is 25 units up - the curve dipped to y=0.6, which is under the
+     nave floor at 0.72: the lens went through the flagstones. Clamped to eye
+     height while indoors, released as the shell dissolves. */
+  var eye = 0.72 + 0.72 * (RIG.insideT || 0);
+  if (_p.y < eye) _p.y = eye;
 
   camera.position.copy(_p);
   camera.lookAt(_t);
@@ -2453,6 +3037,7 @@ function frame(now) {
   RIG.smooth += (RIG.prog - RIG.smooth) * Math.min(1, dt * 3.1);
   RIG.mx += (RIG.tmx - RIG.mx) * Math.min(1, dt * 2.4);
   RIG.my += (RIG.tmy - RIG.my) * Math.min(1, dt * 2.4);
+  RIG.insideT = smooth(1.55, 2.1, RIG.smooth) * (1 - smooth(5.3, 5.92, RIG.smooth));
   applyCamera();
 
   if (WORLD.snow)   WORLD.snow.material.uniforms.uT.value = T;
@@ -2462,7 +3047,7 @@ function frame(now) {
 
   /* The room exists between the door and the ascent. It dissolves rather
      than being cut, so the rise out through the cupola reads as one move. */
-  var want = smooth(1.55, 2.1, RIG.smooth) * (1 - smooth(5.3, 5.92, RIG.smooth));
+  var want = RIG.insideT;
   if (Math.abs(want - RIG.inside) > 0.001) {
     RIG.inside = want;
     if (WORLD.interior) {

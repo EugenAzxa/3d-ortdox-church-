@@ -18,6 +18,11 @@ Rendered live in Three.js and layered with editorial typography.
   and graded parish photographs over the live world.
 - Builds the memorial as thirty-six lit arches down the north wall, each one flickering on
   its own clock, standing for a Memory Page kept by Saylavy.
+- Carries the browsable memorial wall itself: six Memory Pages read from
+  `data/memorials.json`, filterable and searchable, each opening a full page with the
+  epitaph, life story, timeline, time capsule and candle count.
+- Follows the calendar. The churchyard is in spring, summer, autumn or winter depending on
+  the date, changing foliage, weather, ground, sky, fog and moon.
 - Includes chapter navigation, a progress rail, a responsive mobile layout, reduced-motion
   behaviour and a custom cursor for precise pointer devices.
 
@@ -39,6 +44,24 @@ pieces around an opening under the drum, and both the nave and transept roofs ar
 around the crossing, because a solid prism over the nave caps the cupola from below. The
 whole interior is registered for a single opacity fade driven by scroll position, and the
 snow and embers are faded out with it - weather belongs to the churchyard.
+
+### The seasons
+
+`SEASONS` holds four palettes and weather profiles, picked from the current month for the
+northern hemisphere. One particle field serves all four: a negative fall speed is what
+turns snow into fireflies drifting up on an August night, and the sway and size come from
+the same config. Tree canopies are three overlapping lumps per trunk so a crown has a
+silhouette rather than reading as a lollipop; winter draws none and keeps the bare frame.
+The chapter 01 heading names what is underfoot, so it is written from the season too.
+
+Append `?season=spring|summer|autumn|winter` to walk a season that is not the current one.
+The hero carries a switcher for the same purpose.
+
+### The memorial wall
+
+The six people are fictional and the notice above the grid says so; that notice is load
+bearing and must stay. Candles lit in the browser are kept in `localStorage` only, because
+the real stand is in Richmond Hill and the page should not pretend otherwise.
 
 ### The bloom
 
@@ -72,6 +95,8 @@ dependency beyond the Google Fonts stylesheet.
 ├── index.html
 ├── PROMPT.md
 ├── README.md
+├── data/
+│   └── memorials.json
 ├── vendor/
 │   └── three.min.js
 └── assets/
@@ -79,9 +104,13 @@ dependency beyond the Google Fonts stylesheet.
     ├── church-3.webp
     ├── church-7.webp
     ├── church-exterior.webp
+    ├── portraits/
     ├── qr/
     └── saints/
 ```
+
+`data/memorials.json` is fetched at runtime, so the site must be served over HTTP. Opened
+straight off the disk the wall says so rather than sitting empty.
 
 ## Chapters
 
@@ -91,7 +120,7 @@ dependency beyond the Google Fonts stylesheet.
 | 01 | Threshold | Праг | At the gate, looking down the swept path to the west door |
 | 02 | Iconostasis | Иконостас | Inside, down the nave, facing the gilt screen |
 | 03 | Voices | Гласови | Mid-nave, angled across the candle stand |
-| 04 | Memorial | Спомен-зид | The north wall, thirty-six arches receding |
+| 04 | Memorial | Спомен-зид | The north wall, thirty-six arches, the six pages in front of it |
 | 05 | Remembrance | Вечан спомен | Under the crossing, looking up through the drum |
 | -- | Footer | | The ascent out, above the roofline |
 
