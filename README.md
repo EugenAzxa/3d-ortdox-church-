@@ -24,8 +24,9 @@ Rendered live in Three.js and layered with editorial typography.
 - Follows the calendar and the clock. The churchyard is in spring, summer, autumn or winter
   by date, and in day, dusk or night by hour, changing foliage, weather, ground, sky, fog,
   sun or moon, window light and the bloom.
-- Flies the Serbian tricolour on a pole by the gate, waved in the vertex shader and painted
-  to a canvas, and puts a flock of birds over the churchyard in every season but winter.
+- Flies the Serbian state flag on a pole by the gate, arms and all, painted to a canvas and
+  waved in the vertex shader, and puts a flock of birds over the churchyard in every season
+  but winter.
 - Hangs the six people themselves in the arches of the 3D wall, graded to the same sepia as
   the cards on the page, with smaller unlit niches above and below for the room a parish
   still has.
@@ -62,6 +63,15 @@ The chapter 01 heading names what is underfoot, so it is written from the season
 
 Append `?season=spring|summer|autumn|winter` and `?time=day|dusk|night` to walk a season or
 an hour that is not the current one. The hero carries switchers for both.
+
+### The flag
+
+Red over blue over white. Russia runs the same three colours the other way up, so the band
+order is already the difference, but a bare tricolour gets read as Russian by almost
+everyone. What identifies the Serbian flag is the lesser coat of arms, so it is drawn:
+crowned red shield, silver double-headed eagle, and on its breast the cross with four
+firesteels. Painted to a canvas at 1200x800 rather than fetched, which keeps the
+no-remote-asset rule and costs one draw call.
 
 ### Time of day
 

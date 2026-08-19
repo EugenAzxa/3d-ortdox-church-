@@ -2566,6 +2566,169 @@ function buildInterior() {
   WORLD.interiorFade = fade;
 }
 
+/* ────────────────────────────────── the lesser arms of Serbia ── */
+/* Drawn rather than fetched, so the page keeps its no-remote-asset rule.
+   Stylised, but the things that have to read at flag size are all here:
+   the crowned red shield, two heads turned outward, wings displayed, and
+   on the breast the cross with four firesteels. */
+function drawSerbianArms(x, cx, cy, h) {
+  var SIL = '#f4f4f4', GOLD = '#e2b13c', RED = '#c6363c';
+  var s = h / 360;
+  x.save();
+  x.translate(cx, cy);
+  x.scale(s, s);
+  x.lineJoin = 'round';
+  x.lineCap = 'round';
+
+  function mirror(fn) { fn(1); fn(-1); }
+
+  /* ---- crown ---- */
+  x.fillStyle = GOLD;
+  x.beginPath();
+  x.moveTo(-60, -108); x.lineTo(60, -108); x.lineTo(54, -132);
+  x.quadraticCurveTo(30, -116, 26, -152);
+  x.quadraticCurveTo(6, -132, 0, -160);
+  x.quadraticCurveTo(-6, -132, -26, -152);
+  x.quadraticCurveTo(-30, -116, -54, -132);
+  x.closePath(); x.fill();
+  x.fillRect(-62, -108, 124, 14);
+  x.beginPath(); x.arc(0, -170, 7.5, 0, 6.284); x.fill();
+  x.fillRect(-3, -188, 6, 21); x.fillRect(-11, -180, 22, 6);
+
+  /* ---- shield ---- */
+  x.fillStyle = RED;
+  x.strokeStyle = SIL;
+  x.lineWidth = 7;
+  x.beginPath();
+  x.moveTo(-108, -88);
+  x.lineTo(108, -88);
+  x.lineTo(108, 34);
+  x.quadraticCurveTo(108, 134, 0, 180);
+  x.quadraticCurveTo(-108, 134, -108, 34);
+  x.closePath();
+  x.fill(); x.stroke();
+
+  /* ---- eagle: wings first, so body and heads sit over them ---- */
+  x.fillStyle = SIL;
+  mirror(function (m) {
+    x.beginPath();
+    x.moveTo(m * 14, -40);
+    x.quadraticCurveTo(m * 52, -86, m * 99, -78);   /* leading edge, swept up */
+    x.quadraticCurveTo(m * 105, -62, m * 95, -50);  /* round the tip */
+    /* trailing edge, four feather scallops held high across the top half */
+    x.quadraticCurveTo(m * 85, -42, m * 89, -30);
+    x.quadraticCurveTo(m * 71, -30, m * 75, -16);
+    x.quadraticCurveTo(m * 57, -16, m * 61, -2);
+    x.quadraticCurveTo(m * 43, -2, m * 45, 11);
+    x.quadraticCurveTo(m * 29, 6, m * 23, -9);
+    x.quadraticCurveTo(m * 18, -25, m * 14, -40);
+    x.closePath(); x.fill();
+  });
+
+  /* body */
+  x.fillStyle = SIL;
+  x.beginPath();
+  x.moveTo(-21, -40);
+  x.quadraticCurveTo(0, -50, 21, -40);
+  x.quadraticCurveTo(25, 10, 17, 58);
+  x.lineTo(-17, 58);
+  x.quadraticCurveTo(-25, 10, -18, -32);
+  x.closePath(); x.fill();
+
+  /* tail */
+  x.beginPath();
+  x.moveTo(-19, 50); x.lineTo(19, 50);
+  x.quadraticCurveTo(34, 88, 26, 124);
+  x.quadraticCurveTo(13, 114, 9, 128);
+  x.quadraticCurveTo(0, 116, -9, 128);
+  x.quadraticCurveTo(-13, 114, -26, 124);
+  x.quadraticCurveTo(-34, 88, -19, 50);
+  x.closePath(); x.fill();
+
+  /* two heads, necks rising from the shoulders and turned outward */
+  mirror(function (m) {
+    x.fillStyle = SIL;
+    x.beginPath();
+    x.moveTo(m * 5, -26);
+    x.quadraticCurveTo(m * 8, -56, m * 26, -68);    /* neck */
+    x.quadraticCurveTo(m * 43, -77, m * 49, -63);   /* skull */
+    x.quadraticCurveTo(m * 51, -51, m * 35, -45);
+    x.quadraticCurveTo(m * 18, -36, m * 5, -26);
+    x.closePath(); x.fill();
+    /* beak, hooked and pointing away from the centre */
+    x.fillStyle = GOLD;
+    x.beginPath();
+    x.moveTo(m * 48, -66);
+    x.lineTo(m * 70, -58);
+    x.quadraticCurveTo(m * 63, -54, m * 65, -49);
+    x.quadraticCurveTo(m * 54, -51, m * 46, -52);
+    x.closePath(); x.fill();
+    /* eye */
+    x.fillStyle = RED;
+    x.beginPath(); x.arc(m * 38, -60, 2.8, 0, 6.284); x.fill();
+  });
+
+  /* legs, talons, and a fleur-de-lis under each foot */
+  mirror(function (m) {
+    x.fillStyle = GOLD;
+    x.beginPath();
+    x.moveTo(m * 14, 44);
+    x.quadraticCurveTo(m * 42, 52, m * 52, 76);
+    x.lineTo(m * 39, 82);
+    x.quadraticCurveTo(m * 31, 60, m * 12, 55);
+    x.closePath(); x.fill();
+    x.beginPath();
+    x.moveTo(m * 52, 74); x.lineTo(m * 64, 84);
+    x.lineTo(m * 50, 82); x.closePath(); x.fill();
+    /* fleur-de-lis */
+    x.beginPath();
+    x.moveTo(m * 66, 96);
+    x.quadraticCurveTo(m * 54, 112, m * 66, 128);
+    x.quadraticCurveTo(m * 78, 112, m * 66, 96);
+    x.closePath(); x.fill();
+    x.fillRect(m * 66 - 13, 122, 26, 6);
+    x.beginPath();
+    x.moveTo(m * 52, 108); x.quadraticCurveTo(m * 60, 114, m * 60, 122);
+    x.quadraticCurveTo(m * 50, 116, m * 52, 108); x.closePath(); x.fill();
+    x.beginPath();
+    x.moveTo(m * 80, 108); x.quadraticCurveTo(m * 72, 114, m * 72, 122);
+    x.quadraticCurveTo(m * 82, 116, m * 80, 108); x.closePath(); x.fill();
+  });
+
+  /* ---- breast shield: the cross and four firesteels ---- */
+  var bw = 34, bh = 42, by = 12;
+  function breast() {
+    x.beginPath();
+    x.moveTo(-bw, by - bh / 2);
+    x.lineTo(bw, by - bh / 2);
+    x.lineTo(bw, by + bh / 5);
+    x.quadraticCurveTo(bw, by + bh * 0.95, 0, by + bh * 1.22);
+    x.quadraticCurveTo(-bw, by + bh * 0.95, -bw, by + bh / 5);
+    x.closePath();
+  }
+  x.fillStyle = RED; x.strokeStyle = SIL; x.lineWidth = 4;
+  breast(); x.fill(); x.stroke();
+
+  x.save();
+  breast(); x.clip();
+  x.fillStyle = SIL;
+  x.fillRect(-5.5, by - bh / 2, 11, bh * 1.8);        /* upright */
+  x.fillRect(-bw, by + 1, bw * 2, 11);                /* arm     */
+
+  /* Four firesteels, one to a quarter, mirrored about the upright. */
+  x.strokeStyle = SIL;
+  x.lineWidth = 6;
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) {
+    var fx = q[0] * 19, fy = by + 6 + q[1] * 17, r = 7.5;
+    x.beginPath();
+    if (q[0] < 0) x.arc(fx, fy, r, -Math.PI * 2 / 3, Math.PI * 2 / 3);
+    else x.arc(fx, fy, r, Math.PI / 3, Math.PI * 5 / 3);
+    x.stroke();
+  });
+  x.restore();
+  x.restore();
+}
+
 /* ─────────────────────────────────────────── the Serbian tricolour ── */
 /* Red over blue over white, painted to a canvas rather than fetched, and
    waved in the vertex shader so the pole is one draw call and no asset. */
@@ -2582,17 +2745,25 @@ function buildFlag() {
     new THREE.MeshStandardMaterial({ color: 0x8a6524, roughness: 0.5, metalness: 0.75 }));
   finial.position.y = 7.9; G.add(finial);
 
+  /* Serbia, not Russia. The band order is already the giveaway - red over
+     blue over white, where Russia runs white over blue over red - but a bare
+     tricolour is read as Russian by almost everyone, because the two use the
+     same three colours. What identifies the Serbian flag is the lesser coat
+     of arms, so it gets drawn: crowned red shield, silver double-headed
+     eagle, and on its breast the cross with four firesteels. */
   var cv = document.createElement('canvas');
-  cv.width = 300; cv.height = 200;
+  cv.width = 1200; cv.height = 800;                          /* 3:2, as spec */
   var x = cv.getContext('2d');
-  x.fillStyle = '#c6363c'; x.fillRect(0, 0, 300, 67);        /* red   */
-  x.fillStyle = '#0c4076'; x.fillRect(0, 67, 300, 66);       /* blue  */
-  x.fillStyle = '#f0f0f0'; x.fillRect(0, 133, 300, 67);      /* white */
+  x.fillStyle = '#c6363c'; x.fillRect(0, 0, 1200, 267);      /* red   */
+  x.fillStyle = '#0c4076'; x.fillRect(0, 267, 1200, 266);    /* blue  */
+  x.fillStyle = '#ffffff'; x.fillRect(0, 533, 1200, 267);    /* white */
+  /* the arms sit on the centre line, shifted toward the hoist */
+  drawSerbianArms(x, 1200 * 0.42, 400, 620);
   var tex = new THREE.CanvasTexture(cv);
   if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
   else tex.encoding = THREE.sRGBEncoding;
 
-  var g = new THREE.PlaneGeometry(2.5, 1.66, 22, 11);
+  var g = new THREE.PlaneGeometry(3.0, 2.0, 24, 12);
   var flag = new THREE.Mesh(g, new THREE.ShaderMaterial({
     side: THREE.DoubleSide, transparent: true,
     uniforms: { uT: { value: 0 }, uMap: { value: tex },
@@ -2613,8 +2784,8 @@ function buildFlag() {
       '  gl_FragColor = vec4(c, 1.0); }'
   }));
   /* hoist against the pole, flying out to the fly edge */
-  flag.geometry.translate(1.25, 0, 0);
-  flag.position.set(0.05, 6.6, 0);
+  flag.geometry.translate(1.5, 0, 0);
+  flag.position.set(0.05, 6.4, 0);
   flag.rotation.y = -0.5;
   G.add(flag);
 

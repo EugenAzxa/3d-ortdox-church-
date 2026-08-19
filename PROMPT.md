@@ -26,7 +26,9 @@ landing page.
   window light and bloom. Write the chapter 01 heading from the season.
 - Layer time over season rather than replacing it, and scrim the page in daylight or the
   bone-white type will not survive a bright sky.
-- Fly the national flag by the gate and put birds over the churchyard outside winter.
+- Fly the national flag by the gate and put birds over the churchyard outside winter. Draw
+  the flag's coat of arms, not just its bands: a bare Slavic tricolour is read as the wrong
+  country, and the arms are what identify it.
 - Hang the memorial portraits in the arches of the 3D wall, graded to match the cards.
 - Clamp the camera above the floor while indoors: a Catmull-Rom path toward a waypoint
   high above the roof will dip through the flagstones on the way.
