@@ -1,7 +1,8 @@
 # Build prompt
 
-Create a single-page, cinematic WebGL experience called **Вечан спомен**: a five-chapter
-night walk through the churchyard of a Serbian Orthodox parish. The result should feel
+Create a single-page, cinematic WebGL experience called **Вечан спомен**: a six-chapter
+night walk into a Serbian Orthodox parish - across the churchyard, through the west door,
+down the nave, and up out through the cupola. The result should feel
 like an editorial art book moving through a live 3D world, not a conventional parish
 landing page.
 
@@ -15,14 +16,20 @@ landing page.
   the west door, and a three-bar cross with its foot bar raised toward the penitent thief.
 - Drive one continuous camera path from page scroll. Each section should feel like a new
   composed shot rather than a hard scene replacement.
+- Take the camera inside. Build a nave interior with an iconostasis, royal doors, hanging
+  kandila, a candle stand, and a memorial wall of small lit arches, one per Memory Page.
+- Leave the drum open: build the ceiling around the opening and split the nave and
+  transept roofs around the crossing, or the cupola is capped from below.
+- Dissolve the interior on the ascent rather than cutting, and fade the snow and embers
+  out with it.
 - Add restrained bloom, film grain, vignette, depth haze, warm candlelight, cold
   moonlight, and a high pale moon.
 - Keep the palette near-black, blue-charcoal, warm bone, gilt bronze, and candle amber.
 
 ## Layout
 
-- Structure the page as a hero, threshold, iconostasis, voices, remembrance closing, and
-  manifesto footer.
+- Structure the page as a hero, threshold, iconostasis, voices, memorial, remembrance
+  closing, and manifesto footer.
 - Use oversized uppercase serif headings, large Cyrillic display type, small technical
   labels in mono, chapter numbers, fine rules, and generous negative space.
 - Layer graded parish photographs into editorial cards, and flat SVG silhouettes of a

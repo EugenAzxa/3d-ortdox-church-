@@ -1,19 +1,23 @@
 # Вечан спомен · Eternal Memory
 
-A five-chapter night walk through the churchyard of the Serbian Orthodox Parish of
-St. Archangel Gabriel in Richmond Hill, rendered live in Three.js and layered with
-editorial typography.
+A six-chapter night walk into the Serbian Orthodox Parish of St. Archangel Gabriel in
+Richmond Hill: across the churchyard, in through the west door, down the nave to a wall
+of lit arches where every page is kept by Saylavy, and up out through the cupola.
+Rendered live in Three.js and layered with editorial typography.
 
 [**View the source**](https://github.com/EugenAzxa/3d-ortdox-church-) · [**Read the build prompt**](PROMPT.md)
 
 ## What it does
 
-- Walks a live WebGL camera through a procedural Orthodox church as the page scrolls:
-  cruciform nave, windowed drum, gilt cupola, three-bar cross, bell tower and apse.
+- Walks a live WebGL camera through a procedural Orthodox church as the page scrolls,
+  outside and in: cruciform nave, windowed drum, gilt cupola, three-bar cross, bell tower,
+  apse, and a full interior with iconostasis, kandila and a memorial wall.
 - Combines moonlight, lit shoji-thin window glass, a burning candle stand, drifting
   snow, rising embers, layered haze and a hand-rolled bloom pipeline.
 - Layers oversized display type, Cyrillic chapter marks, flat foreground silhouettes
   and graded parish photographs over the live world.
+- Builds the memorial as thirty-six lit arches down the north wall, each one flickering on
+  its own clock, standing for a Memory Page kept by Saylavy.
 - Includes chapter navigation, a progress rail, a responsive mobile layout, reduced-motion
   behaviour and a custom cursor for precise pointer devices.
 
@@ -26,6 +30,15 @@ Three.js r149 build provides WebGL rendering with no package manager and no buil
 The church, churchyard wall, gate, candle stand, trees, snow, embers, moon and
 post-processing are all constructed at runtime. There is no model file. The only binary
 assets are the parish photographs, which are graded into the night palette in CSS.
+
+### Going inside
+
+Exterior walls are `FrontSide` boxes, so from within they are back-facing and cull to
+nothing: the interior shell is what closes the room in. The nave ceiling is built in four
+pieces around an opening under the drum, and both the nave and transept roofs are split
+around the crossing, because a solid prism over the nave caps the cupola from below. The
+whole interior is registered for a single opacity fade driven by scroll position, and the
+snow and embers are faded out with it - weather belongs to the churchyard.
 
 ### The bloom
 
@@ -76,9 +89,14 @@ dependency beyond the Google Fonts stylesheet.
 |---|---------|----------|----------|
 | 00 | Hero | Вечан спомен | Outside the gate, three-quarter, the cross against the moon |
 | 01 | Threshold | Праг | At the gate, looking down the swept path to the west door |
-| 02 | Iconostasis | Иконостас | Inside the yard, looking up at the lit drum |
-| 03 | Voices | Гласови | Off the south flank, the candle stand in the near foreground |
-| 04 | Remembrance | Спомен | Above the roofline, the cupola and cross |
+| 02 | Iconostasis | Иконостас | Inside, down the nave, facing the gilt screen |
+| 03 | Voices | Гласови | Mid-nave, angled across the candle stand |
+| 04 | Memorial | Спомен-зид | The north wall, thirty-six arches receding |
+| 05 | Remembrance | Вечан спомен | Under the crossing, looking up through the drum |
+| -- | Footer | | The ascent out, above the roofline |
+
+The camera never cuts. It crosses the threshold at chapter 02 and the interior shell
+dissolves on the way up at chapter 05, so the rise out through the cupola is one move.
 
 ## Accessibility and degradation
 
