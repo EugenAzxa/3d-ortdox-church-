@@ -99,17 +99,22 @@ body{
   background:
     radial-gradient(125% 85% at 50% 44%, rgba(4,5,8,.74) 0%, rgba(4,5,8,.42) 48%, rgba(4,5,8,.7) 100%);
 }
+/* The veil over the moment the room and the shell trade places. */
+#swapmask{
+  position:fixed; inset:0; z-index:2; pointer-events:none;
+  background:#04050a; opacity:var(--swap, 0);
+}
 #grain{
-  position:fixed; inset:-120%; z-index:2; pointer-events:none; opacity:.052;
+  position:fixed; inset:-18%; z-index:3; pointer-events:none; opacity:.052;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/></filter><rect width='220' height='220' filter='url(%23n)' opacity='.62'/></svg>");
   animation:grain 5.2s steps(5) infinite; will-change:transform;
 }
 @keyframes grain{
   0%,100%{ transform:translate3d(0,0,0) }
-  20%{ transform:translate3d(-3%,2%,0) }
-  40%{ transform:translate3d(2%,-3%,0) }
-  60%{ transform:translate3d(-2%,-2%,0) }
-  80%{ transform:translate3d(3%,3%,0) }
+  20%{ transform:translate3d(-2%,1.4%,0) }
+  40%{ transform:translate3d(1.4%,-2%,0) }
+  60%{ transform:translate3d(-1.4%,-1.4%,0) }
+  80%{ transform:translate3d(2%,2%,0) }
 }
 
 ::selection{ background:rgba(201,150,43,.28); color:#fff; }
@@ -229,8 +234,7 @@ img{ max-width:100%; display:block; }
   border-bottom:1px solid transparent;
 }
 .nav.stuck{
-  background:rgba(6,7,10,.72); backdrop-filter:blur(14px) saturate(.9);
-  -webkit-backdrop-filter:blur(14px) saturate(.9);
+  background:linear-gradient(to bottom, rgba(6,7,10,.94), rgba(6,7,10,.82));
   border-bottom-color:var(--line-soft);
 }
 .brand{ display:flex; align-items:center; gap:11px; }
@@ -281,8 +285,7 @@ img{ max-width:100%; display:block; }
   .nav-links{
     position:fixed; inset:var(--nav-h) 0 auto 0;
     flex-direction:column; align-items:flex-start; gap:0;
-    background:rgba(6,7,10,.96); backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
+    background:rgba(6,7,10,.985);
     padding:8px var(--pad) 26px; border-bottom:1px solid var(--line-soft);
     transform:translateY(-8px); opacity:0; visibility:hidden;
     transition:opacity .38s var(--ease), transform .38s var(--ease), visibility .38s;
@@ -404,8 +407,7 @@ img{ max-width:100%; display:block; }
 .peek-play{
   position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
   width:38px; height:38px; border-radius:50%;
-  border:1px solid rgba(230,224,212,.5); background:rgba(6,7,10,.42);
-  backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
+  border:1px solid rgba(230,224,212,.5); background:rgba(6,7,10,.55);
   display:grid; place-items:center; z-index:2;
   transition:background-color .4s var(--ease), border-color .4s var(--ease);
 }
@@ -650,8 +652,7 @@ img{ max-width:100%; display:block; }
   gap:1px; background:var(--line-soft); border-top:1px solid var(--line);
 }
 .mem-feat{
-  background:rgba(6,7,10,.62); backdrop-filter:blur(3px);
-  -webkit-backdrop-filter:blur(3px);
+  background:rgba(6,7,10,.74);
   padding:17px 16px 20px; position:relative;
   transition:background-color .5s var(--ease);
 }
@@ -1015,6 +1016,7 @@ img{ max-width:100%; display:block; }
 <div id="vignette" aria-hidden="true"></div>
 <div id="daymask" aria-hidden="true"></div>
 <div id="roommask" aria-hidden="true"></div>
+<div id="swapmask" aria-hidden="true"></div>
 <div id="grain" aria-hidden="true"></div>
 <div class="cur-dot" id="cursor" aria-hidden="true"></div>
 
@@ -1808,7 +1810,7 @@ function dressWall() {
       t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
       t.minFilter = THREE.LinearFilter;
       a.m.map = t;
-      a.m.color.setHex(0xffd6a0);
+      a.c0 = 1; a.c1 = 0.84; a.c2 = 0.63;
       a.m.needsUpdate = true;
     };
     img.src = e.portrait;
@@ -2047,7 +2049,7 @@ function startWorld() {
     powerPreference: LOW ? 'low-power' : 'high-performance',
     stencil: false, depth: true
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LOW ? 1.35 : 1.85));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LOW ? 1.15 : 1.45));
   renderer.setSize(vpW(), vpH(), false);
   /* The composite pass does its own tonemap and gamma, so three must hand
      the buffer over untouched or the image is corrected twice. */
@@ -2368,7 +2370,7 @@ function canvasTex(w, h, draw, rx, ry) {
 function buildInterior() {
   var IN = new THREE.Group();
   var fade = [];
-  function reg(m) { m.transparent = true; fade.push(m); return m; }
+  function reg(m) { fade.push(m); return m; }
 
   /* The parish church is a low, wide room: a suspended white tile ceiling on
      recessed troffers, a flagstone floor, cream walls, and a white and gold
@@ -2599,7 +2601,8 @@ function buildInterior() {
     lit.position.set(x, y, z);
     lit.rotation.y = Math.PI / 2;
     IN.add(lit);
-    var rec = { m: m, ph: Math.random() * 100, base: 0.5 + Math.random() * 0.5, portrait: !!portrait };
+    var rec = { m: m, ph: Math.random() * 100, base: 0.5 + Math.random() * 0.5,
+                portrait: !!portrait, c0: 1, c1: 0.81, c2: 0.58 };
     arches.push(rec);
     return rec;
   }
@@ -2647,12 +2650,14 @@ function buildInterior() {
 
 /* ────────────────────────────────── the lesser arms of Serbia ── */
 /* Drawn rather than fetched, so the page keeps its no-remote-asset rule.
-   Stylised, but the things that have to read at flag size are all here:
-   the crowned red shield, two heads turned outward, wings displayed, and
-   on the breast the cross with four firesteels. */
+   Crowned red shield, silver double-headed eagle displayed, gold beaks,
+   talons and fleurs-de-lis, and on the breast the cross with four
+   firesteels. Stylised, but it is the arms that tell Serbia's tricolour
+   apart from Russia's, so they have to be there and be legible. */
 function drawSerbianArms(x, cx, cy, h) {
-  var SIL = '#f4f4f4', GOLD = '#e2b13c', RED = '#c6363c';
-  var s = h / 360;
+  var SIL = '#f6f6f4', GOLD = '#e3b23c', GOLD_D = '#b8862a',
+      RED = '#c6363c', RED_D = '#9c2028';
+  var s = h / 380;
   x.save();
   x.translate(cx, cy);
   x.scale(s, s);
@@ -2661,144 +2666,155 @@ function drawSerbianArms(x, cx, cy, h) {
 
   function mirror(fn) { fn(1); fn(-1); }
 
-  /* ---- crown ---- */
-  x.fillStyle = GOLD;
-  x.beginPath();
-  x.moveTo(-60, -108); x.lineTo(60, -108); x.lineTo(54, -132);
-  x.quadraticCurveTo(30, -116, 26, -152);
-  x.quadraticCurveTo(6, -132, 0, -160);
-  x.quadraticCurveTo(-6, -132, -26, -152);
-  x.quadraticCurveTo(-30, -116, -54, -132);
-  x.closePath(); x.fill();
-  x.fillRect(-62, -108, 124, 14);
-  x.beginPath(); x.arc(0, -170, 7.5, 0, 6.284); x.fill();
-  x.fillRect(-3, -188, 6, 21); x.fillRect(-11, -180, 22, 6);
-
-  /* ---- shield ---- */
+  /* ───────────────── crown ───────────────── */
+  /* red cap under gold arches, on a pearled band, orb and cross above */
   x.fillStyle = RED;
-  x.strokeStyle = SIL;
-  x.lineWidth = 7;
   x.beginPath();
-  x.moveTo(-108, -88);
-  x.lineTo(108, -88);
-  x.lineTo(108, 34);
-  x.quadraticCurveTo(108, 134, 0, 180);
-  x.quadraticCurveTo(-108, 134, -108, 34);
+  x.moveTo(-58, -116);
+  x.quadraticCurveTo(-52, -168, 0, -172);
+  x.quadraticCurveTo(52, -168, 58, -116);
+  x.closePath(); x.fill();
+  x.strokeStyle = GOLD; x.lineWidth = 5;
+  [-34, 0, 34].forEach(function (ax) {
+    x.beginPath();
+    x.moveTo(ax * 1.42, -117);
+    x.quadraticCurveTo(ax * 1.1, -166, ax * 0.16, -170);
+    x.stroke();
+  });
+  x.fillStyle = GOLD;
+  x.fillRect(-66, -116, 132, 15);                      /* band */
+  x.fillStyle = GOLD_D;
+  x.fillRect(-66, -103, 132, 4);
+  x.fillStyle = SIL;
+  for (var pi2 = -5; pi2 <= 5; pi2++) {                /* pearls */
+    x.beginPath(); x.arc(pi2 * 11.5, -108.5, 3.4, 0, 6.284); x.fill();
+  }
+  x.fillStyle = GOLD;
+  x.beginPath(); x.arc(0, -180, 8, 0, 6.284); x.fill();
+  x.fillRect(-3, -202, 6, 22);
+  x.fillRect(-11, -194, 22, 6);
+
+  /* ───────────────── shield ───────────────── */
+  x.fillStyle = RED;
+  x.strokeStyle = SIL; x.lineWidth = 7;
+  x.beginPath();
+  x.moveTo(-114, -100);
+  x.lineTo(114, -100);
+  x.lineTo(114, 34);
+  x.quadraticCurveTo(114, 140, 0, 188);
+  x.quadraticCurveTo(-114, 140, -114, 34);
   x.closePath();
   x.fill(); x.stroke();
 
-  /* ---- eagle: wings first, so body and heads sit over them ---- */
+  /* ───────────────── eagle ───────────────── */
+  /* Wings first, broad and displayed, so the heads and body sit over them. */
   x.fillStyle = SIL;
   mirror(function (m) {
     x.beginPath();
-    x.moveTo(m * 14, -40);
-    x.quadraticCurveTo(m * 52, -86, m * 99, -78);   /* leading edge, swept up */
-    x.quadraticCurveTo(m * 105, -62, m * 95, -50);  /* round the tip */
-    /* trailing edge, four feather scallops held high across the top half */
-    x.quadraticCurveTo(m * 85, -42, m * 89, -30);
-    x.quadraticCurveTo(m * 71, -30, m * 75, -16);
-    x.quadraticCurveTo(m * 57, -16, m * 61, -2);
-    x.quadraticCurveTo(m * 43, -2, m * 45, 11);
-    x.quadraticCurveTo(m * 29, 6, m * 23, -9);
-    x.quadraticCurveTo(m * 18, -25, m * 14, -40);
+    x.moveTo(m * 16, -50);
+    x.quadraticCurveTo(m * 56, -96, m * 106, -88);     /* leading edge */
+    x.quadraticCurveTo(m * 113, -70, m * 101, -56);    /* round the tip */
+    /* trailing edge: five feather scallops back toward the waist */
+    x.quadraticCurveTo(m * 90, -48, m * 95, -34);
+    x.quadraticCurveTo(m * 76, -33, m * 81, -18);
+    x.quadraticCurveTo(m * 62, -17, m * 67, -2);
+    x.quadraticCurveTo(m * 49, -1, m * 53, 14);
+    x.quadraticCurveTo(m * 36, 14, m * 39, 28);
+    x.quadraticCurveTo(m * 25, 22, m * 22, 4);
+    x.quadraticCurveTo(m * 18, -22, m * 16, -50);
     x.closePath(); x.fill();
   });
 
   /* body */
-  x.fillStyle = SIL;
   x.beginPath();
-  x.moveTo(-21, -40);
-  x.quadraticCurveTo(0, -50, 21, -40);
-  x.quadraticCurveTo(25, 10, 17, 58);
-  x.lineTo(-17, 58);
-  x.quadraticCurveTo(-25, 10, -18, -32);
+  x.moveTo(-23, -48);
+  x.quadraticCurveTo(0, -58, 23, -48);
+  x.quadraticCurveTo(30, 8, 21, 68);
+  x.lineTo(-21, 68);
+  x.quadraticCurveTo(-30, 8, -23, -48);
   x.closePath(); x.fill();
 
-  /* tail */
+  /* tail, fanned */
   x.beginPath();
-  x.moveTo(-19, 50); x.lineTo(19, 50);
-  x.quadraticCurveTo(34, 88, 26, 124);
-  x.quadraticCurveTo(13, 114, 9, 128);
-  x.quadraticCurveTo(0, 116, -9, 128);
-  x.quadraticCurveTo(-13, 114, -26, 124);
-  x.quadraticCurveTo(-34, 88, -19, 50);
+  x.moveTo(-22, 62); x.lineTo(22, 62);
+  x.quadraticCurveTo(38, 104, 30, 146);
+  x.quadraticCurveTo(15, 134, 10, 150);
+  x.quadraticCurveTo(0, 136, -10, 150);
+  x.quadraticCurveTo(-15, 134, -30, 146);
+  x.quadraticCurveTo(-38, 104, -22, 62);
   x.closePath(); x.fill();
 
-  /* two heads, necks rising from the shoulders and turned outward */
+  /* two heads, necks rising from the shoulders, turned outward */
   mirror(function (m) {
     x.fillStyle = SIL;
     x.beginPath();
-    x.moveTo(m * 5, -26);
-    x.quadraticCurveTo(m * 8, -56, m * 26, -68);    /* neck */
-    x.quadraticCurveTo(m * 43, -77, m * 49, -63);   /* skull */
-    x.quadraticCurveTo(m * 51, -51, m * 35, -45);
-    x.quadraticCurveTo(m * 18, -36, m * 5, -26);
+    x.moveTo(m * 6, -40);
+    x.quadraticCurveTo(m * 10, -74, m * 30, -88);      /* neck */
+    x.quadraticCurveTo(m * 50, -99, m * 57, -83);      /* skull */
+    x.quadraticCurveTo(m * 59, -69, m * 41, -63);
+    x.quadraticCurveTo(m * 21, -53, m * 6, -40);
     x.closePath(); x.fill();
-    /* beak, hooked and pointing away from the centre */
-    x.fillStyle = GOLD;
+    x.fillStyle = GOLD;                                /* hooked beak */
     x.beginPath();
-    x.moveTo(m * 48, -66);
-    x.lineTo(m * 70, -58);
-    x.quadraticCurveTo(m * 63, -54, m * 65, -49);
-    x.quadraticCurveTo(m * 54, -51, m * 46, -52);
+    x.moveTo(m * 55, -87);
+    x.lineTo(m * 82, -77);
+    x.quadraticCurveTo(m * 74, -72, m * 76, -66);
+    x.quadraticCurveTo(m * 62, -69, m * 53, -70);
     x.closePath(); x.fill();
-    /* eye */
-    x.fillStyle = RED;
-    x.beginPath(); x.arc(m * 38, -60, 2.8, 0, 6.284); x.fill();
+    x.fillStyle = RED_D;                               /* eye */
+    x.beginPath(); x.arc(m * 45, -80, 3.2, 0, 6.284); x.fill();
   });
 
   /* legs, talons, and a fleur-de-lis under each foot */
   mirror(function (m) {
     x.fillStyle = GOLD;
     x.beginPath();
-    x.moveTo(m * 14, 44);
-    x.quadraticCurveTo(m * 42, 52, m * 52, 76);
-    x.lineTo(m * 39, 82);
-    x.quadraticCurveTo(m * 31, 60, m * 12, 55);
+    x.moveTo(m * 18, 52);
+    x.quadraticCurveTo(m * 52, 62, m * 64, 92);
+    x.lineTo(m * 49, 99);
+    x.quadraticCurveTo(m * 39, 72, m * 16, 65);
     x.closePath(); x.fill();
     x.beginPath();
-    x.moveTo(m * 52, 74); x.lineTo(m * 64, 84);
-    x.lineTo(m * 50, 82); x.closePath(); x.fill();
+    x.moveTo(m * 64, 90); x.lineTo(m * 78, 102);
+    x.lineTo(m * 62, 100); x.closePath(); x.fill();
     /* fleur-de-lis */
     x.beginPath();
-    x.moveTo(m * 66, 96);
-    x.quadraticCurveTo(m * 54, 112, m * 66, 128);
-    x.quadraticCurveTo(m * 78, 112, m * 66, 96);
+    x.moveTo(m * 80, 112);
+    x.quadraticCurveTo(m * 66, 131, m * 80, 150);
+    x.quadraticCurveTo(m * 94, 131, m * 80, 112);
     x.closePath(); x.fill();
-    x.fillRect(m * 66 - 13, 122, 26, 6);
+    x.fillRect(m * 80 - 15, 143, 30, 7);
     x.beginPath();
-    x.moveTo(m * 52, 108); x.quadraticCurveTo(m * 60, 114, m * 60, 122);
-    x.quadraticCurveTo(m * 50, 116, m * 52, 108); x.closePath(); x.fill();
+    x.moveTo(m * 63, 126); x.quadraticCurveTo(m * 73, 133, m * 73, 143);
+    x.quadraticCurveTo(m * 61, 136, m * 63, 126); x.closePath(); x.fill();
     x.beginPath();
-    x.moveTo(m * 80, 108); x.quadraticCurveTo(m * 72, 114, m * 72, 122);
-    x.quadraticCurveTo(m * 82, 116, m * 80, 108); x.closePath(); x.fill();
+    x.moveTo(m * 97, 126); x.quadraticCurveTo(m * 87, 133, m * 87, 143);
+    x.quadraticCurveTo(m * 99, 136, m * 97, 126); x.closePath(); x.fill();
   });
 
-  /* ---- breast shield: the cross and four firesteels ---- */
-  var bw = 34, bh = 42, by = 12;
+  /* ────────── breast shield: the cross and four firesteels ────────── */
+  var bw = 40, bh = 50, by = 8;
   function breast() {
     x.beginPath();
     x.moveTo(-bw, by - bh / 2);
     x.lineTo(bw, by - bh / 2);
     x.lineTo(bw, by + bh / 5);
-    x.quadraticCurveTo(bw, by + bh * 0.95, 0, by + bh * 1.22);
-    x.quadraticCurveTo(-bw, by + bh * 0.95, -bw, by + bh / 5);
+    x.quadraticCurveTo(bw, by + bh, 0, by + bh * 1.3);
+    x.quadraticCurveTo(-bw, by + bh, -bw, by + bh / 5);
     x.closePath();
   }
-  x.fillStyle = RED; x.strokeStyle = SIL; x.lineWidth = 4;
+  x.fillStyle = RED; x.strokeStyle = SIL; x.lineWidth = 5;
   breast(); x.fill(); x.stroke();
 
   x.save();
   breast(); x.clip();
   x.fillStyle = SIL;
-  x.fillRect(-5.5, by - bh / 2, 11, bh * 1.8);        /* upright */
-  x.fillRect(-bw, by + 1, bw * 2, 11);                /* arm     */
+  x.fillRect(-6.5, by - bh / 2, 13, bh * 1.9);         /* upright */
+  x.fillRect(-bw, by + 2, bw * 2, 13);                 /* arm     */
 
-  /* Four firesteels, one to a quarter, mirrored about the upright. */
-  x.strokeStyle = SIL;
-  x.lineWidth = 6;
+  x.strokeStyle = SIL; x.lineWidth = 7;
   [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) {
-    var fx = q[0] * 19, fy = by + 6 + q[1] * 17, r = 7.5;
+    var fx = q[0] * 23, fy = by + 8 + q[1] * 21, r = 8.5;
     x.beginPath();
     if (q[0] < 0) x.arc(fx, fy, r, -Math.PI * 2 / 3, Math.PI * 2 / 3);
     else x.arc(fx, fy, r, Math.PI / 3, Math.PI * 5 / 3);
@@ -2837,7 +2853,7 @@ function buildFlag() {
   x.fillStyle = '#0c4076'; x.fillRect(0, 267, 1200, 266);    /* blue  */
   x.fillStyle = '#ffffff'; x.fillRect(0, 533, 1200, 267);    /* white */
   /* the arms sit on the centre line, shifted toward the hoist */
-  drawSerbianArms(x, 1200 * 0.42, 400, 620);
+  drawSerbianArms(x, 1200 * 0.41, 400, 690);
   var tex = new THREE.CanvasTexture(cv);
   if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
   else tex.encoding = THREE.sRGBEncoding;
@@ -3292,7 +3308,9 @@ function buildPost() {
     Object.assign({}, O, { depthBuffer: true, samples: LOW ? 0 : 2 }));
 
   POST.levels = [];
-  var lw = w, lh = h, N = LOW ? 3 : 4;
+  /* The bright pass lands at quarter resolution rather than half: four
+     fewer megapixels of blur per frame, and bloom this wide cannot tell. */
+  var lw = w >> 1, lh = h >> 1, N = LOW ? 2 : 3;
   for (var i = 0; i < N; i++) {
     lw = Math.max(2, lw >> 1); lh = Math.max(2, lh >> 1);
     POST.levels.push({
@@ -3421,7 +3439,8 @@ var CAM = [
   { p: [  0.0,  1.55,  -2.6 ], t: [  0.0,  1.80,  -9.6 ], fov: 50 },  /* 5 remembrance */
   { p: [-17.0, 25.00,  21.0 ], t: [  0.0,  7.50, -14.0 ], fov: 40 }   /* 6 footer      */
 ];
-var RIG = { prog: 0, smooth: 0, mx: 0, my: 0, tmx: 0, tmy: 0, intro: 0, inside: 0, insideT: 0 };
+var RIG = { prog: 0, smooth: 0, mx: 0, my: 0, tmx: 0, tmy: 0, intro: 0, inside: 0,
+            insideT: 0, indoors: false, veil: 0, lastVeil: -1 };
 var curveP, curveT;
 
 function buildRig() {
@@ -3507,7 +3526,7 @@ function onResize() {
   var pr = renderer.getPixelRatio();
   var pw = Math.floor(w * pr), ph = Math.floor(h * pr);
   POST.scene.setSize(pw, ph);
-  var lw = pw, lh = ph;
+  var lw = pw >> 1, lh = ph >> 1;
   POST.levels.forEach(function (L) {
     lw = Math.max(2, lw >> 1); lh = Math.max(2, lh >> 1);
     L.a.setSize(lw, lh); L.b.setSize(lw, lh); L.w = lw; L.h = lh;
@@ -3549,7 +3568,7 @@ function frame(now) {
   RIG.smooth += (RIG.prog - RIG.smooth) * Math.min(1, dt * 3.1);
   RIG.mx += (RIG.tmx - RIG.mx) * Math.min(1, dt * 2.4);
   RIG.my += (RIG.tmy - RIG.my) * Math.min(1, dt * 2.4);
-  RIG.insideT = smooth(1.55, 2.1, RIG.smooth) * (1 - smooth(5.3, 5.92, RIG.smooth));
+  RIG.insideT = smooth(1.62, 2.02, RIG.smooth) * (1 - smooth(5.22, 5.58, RIG.smooth));
   applyCamera();
 
   if (WORLD.snow)   WORLD.snow.material.uniforms.uT.value = T;
@@ -3560,27 +3579,44 @@ function frame(now) {
   /* The room exists between the door and the ascent. It dissolves rather
      than being cut, so the rise out through the cupola reads as one move. */
   var want = RIG.insideT;
-  if (Math.abs(want - RIG.inside) > 0.001) {
-    RIG.inside = want;
-    if (WORLD.interior) {
-      WORLD.interior.visible = want > 0.004;
-      if (WORLD.interiorFade) {
-        for (var q = 0; q < WORLD.interiorFade.length; q++) {
-          var FM = WORLD.interiorFade[q];
-          FM.opacity = want;
-          if (FM.uniforms && FM.uniforms.uO) FM.uniforms.uO.value = want;
-        }
-      }
-      /* The room is closed on all four sides, so nothing is lost by
-         dropping the shell while the camera is in it. */
-      if (WORLD.church) WORLD.church.visible = want < 0.55;
-      document.documentElement.style.setProperty('--room', want.toFixed(3));
-      if (WORLD.inLights) {
-        for (var w2 = 0; w2 < WORLD.inLights.length; w2++) {
-          WORLD.inLights[w2].intensity = WORLD.inLights[w2].userData.base * want;
-        }
+
+  /* The room and the shell trade places rather than cross-fading: doing it
+     with alpha meant 115 transparent meshes and no early-z for the whole
+     walk, which is what was costing the frame rate. The room is closed on
+     all four sides, so nothing is lost by dropping the shell while the
+     camera is in it.
+
+     The swap is driven by where the lens actually is, not by how far the
+     page has scrolled. Keyed to scroll alone, the rise out through the roof
+     left the room on screen for half a second after the camera had cleared
+     it, and it read as a pale slab lying over the churchyard. */
+  var cp = camera.position;
+  var inRoom = want > 0.5 && cp.y < 4.15 && cp.y > 0.4 &&
+               Math.abs(cp.x) < 5.1 && cp.z > -13.4 && cp.z < 2.1;
+  if (inRoom !== RIG.indoors) {
+    RIG.indoors = inRoom;
+    RIG.veil = 1;                       /* a blink over the cut */
+    if (WORLD.interior) WORLD.interior.visible = inRoom;
+    if (WORLD.church) WORLD.church.visible = !inRoom;
+    /* Six point lights and a hemisphere leave the scene with the room, so
+       the shader outside is not still looping over them. */
+    if (WORLD.inLights) {
+      for (var w2 = 0; w2 < WORLD.inLights.length; w2++) {
+        WORLD.inLights[w2].visible = inRoom;
       }
     }
+  }
+  if (RIG.veil > 0) RIG.veil = Math.max(0, RIG.veil - dt * 2.4);
+  var veil = Math.max(RIG.veil, 1 - Math.min(1, Math.abs(want - 0.5) * 5));
+  var css = document.documentElement.style;
+  if (veil !== RIG.lastVeil) {
+    RIG.lastVeil = veil;
+    css.setProperty('--swap', veil.toFixed(3));
+  }
+  var room = inRoom ? want : 0;
+  if (Math.abs(room - RIG.inside) > 0.002) {
+    RIG.inside = room;
+    css.setProperty('--room', room.toFixed(3));
   }
 
   /* Each arch keeps its own flame. Nothing on this wall is on a shared
@@ -3588,9 +3624,9 @@ function frame(now) {
   if (WORLD.arches && RIG.inside > 0.004) {
     for (var ai = 0; ai < WORLD.arches.length; ai++) {
       var A = WORLD.arches[ai];
-      var sw = A.portrait ? 0.1 : 0.24;
-      A.m.opacity = RIG.inside * A.base *
-        ((1 - sw) + sw * Math.sin(T * 2.1 + A.ph) * Math.sin(T * 3.7 + A.ph * 1.9));
+      var sw = A.portrait ? 0.1 : 0.26;
+      var k = A.base * ((1 - sw) + sw * Math.sin(T * 2.1 + A.ph) * Math.sin(T * 3.7 + A.ph * 1.9));
+      A.m.color.setRGB(A.c0 * k, A.c1 * k, A.c2 * k);
     }
   }
   if (WORLD.inFlames) WORLD.inFlames.material.uniforms.uT.value = T;
@@ -3641,7 +3677,8 @@ setTimeout(measure, 400);
 setTimeout(measure, 1600);
 
 window.__spomen = { RIG: RIG, WORLD: WORLD, CAM: CAM, POST: POST,
-  cam: function () { return camera; }, scene: function () { return scene; } };
+  cam: function () { return camera; }, scene: function () { return scene; },
+  r: function () { return renderer; } };
 
 })();
 </script>

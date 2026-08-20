@@ -76,9 +76,29 @@ an hour that is not the current one. The hero carries switchers for both.
 Red over blue over white. Russia runs the same three colours the other way up, so the band
 order is already the difference, but a bare tricolour gets read as Russian by almost
 everyone. What identifies the Serbian flag is the lesser coat of arms, so it is drawn:
-crowned red shield, silver double-headed eagle, and on its breast the cross with four
-firesteels. Painted to a canvas at 1200x800 rather than fetched, which keeps the
-no-remote-asset rule and costs one draw call.
+crowned red shield with a red velvet cap under gold arches on a pearled band, silver
+double-headed eagle displayed, gold beaks, talons and fleurs-de-lis, and on the breast the
+cross with four firesteels. Painted to a canvas at 1200x800 rather than fetched, which
+keeps the no-remote-asset rule and costs one draw call.
+
+### Performance
+
+The scene is small - about 29k triangles - so nothing here is geometry bound. What cost
+frames was fill rate and compositing, and the profile said so plainly:
+
+- The room faded in and out on per-material alpha, which meant 115 transparent meshes, no
+  early-z, and heavy overdraw with every fragment looping 13 lights. The room and the shell
+  now trade places behind a brief veil instead, keyed to where the camera actually is. That
+  took transparent meshes from 115 to 8, and the interior's seven lights leave the scene
+  with it.
+- Device pixel ratio was capped at 1.85, so a retina panel rendered a 2664x1665 target with
+  a bloom chain over it. Capped at 1.45.
+- The bright pass now lands at quarter resolution rather than half, taking the blur chain
+  from 1332x832 down to 522x326 and full-screen blits from 16 to 12.
+- Six backdrop-filters, one of them on the nav, which repaints its backdrop on every scroll
+  frame. Down to one, on the Memory Page scrim, which only exists while the page is open.
+- The grain layer was inset by 120%, making it 4896x3060 of composited noise under an
+  animated transform. Now 1958x1224.
 
 ### Time of day
 

@@ -72,6 +72,12 @@ landing page.
   upsample, filmic composite. Do not pull in `examples/jsm`.
 - Survive a WebGL failure: remove the canvas, drop in a gradient ground, keep the page
   readable as a flat editorial document.
+- Swap the room and the shell rather than cross-fading them, keyed to where the camera is
+  rather than to scroll position, and cover the cut with a brief veil. Alpha-fading a whole
+  interior costs early-z on every mesh in it, and keying the swap to scroll leaves the room
+  on screen after the lens has left it.
+- Watch fill rate, not triangle count: cap the pixel ratio, start the bloom chain low, and
+  keep backdrop-filters off anything that repaints while scrolling.
 - Avoid frameworks, build tooling, analytics, trackers, placeholder imagery, generic
   glassmorphism, excessive glow, em dashes, emoji, and decorative motion without
   narrative purpose.
