@@ -90,6 +90,15 @@ body{
       rgba(4,5,8,0) 66%,
       rgba(4,5,8,calc(var(--scrim, 0) * 0.62)) 100%);
 }
+/* The parish room is lit - troffers, not candles - which is faithful and
+   also the brightest ground the type ever sits on. This rides the same
+   fade as the room itself. */
+#roommask{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  opacity:var(--room, 0);
+  background:
+    radial-gradient(125% 85% at 50% 44%, rgba(4,5,8,.74) 0%, rgba(4,5,8,.42) 48%, rgba(4,5,8,.7) 100%);
+}
 #grain{
   position:fixed; inset:-120%; z-index:2; pointer-events:none; opacity:.052;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/></filter><rect width='220' height='220' filter='url(%23n)' opacity='.62'/></svg>");
@@ -1005,6 +1014,7 @@ img{ max-width:100%; display:block; }
 <canvas id="gl" aria-hidden="true"></canvas>
 <div id="vignette" aria-hidden="true"></div>
 <div id="daymask" aria-hidden="true"></div>
+<div id="roommask" aria-hidden="true"></div>
 <div id="grain" aria-hidden="true"></div>
 <div class="cur-dot" id="cursor" aria-hidden="true"></div>
 
@@ -2341,205 +2351,204 @@ function archShape(w, h) {
   return g;
 }
 
+/* Small canvas textures, drawn rather than fetched. */
+function canvasTex(w, h, draw, rx, ry) {
+  var cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  draw(cv.getContext('2d'), w, h);
+  var t = new THREE.CanvasTexture(cv);
+  if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
+  else t.encoding = THREE.sRGBEncoding;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(rx || 1, ry || 1);
+  t.anisotropy = 4;
+  return t;
+}
+
 function buildInterior() {
   var IN = new THREE.Group();
   var fade = [];
   function reg(m) { m.transparent = true; fade.push(m); return m; }
 
-  var Z0 = -13.0, Z1 = 1.5, X = 4.6, Y0 = 0.72, Y1 = 7.12, DZ = -6.6;
-
-  var plaster = reg(new THREE.MeshStandardMaterial({
-    color: 0x171410, roughness: 0.98, side: THREE.DoubleSide
-  }));
-  var floorM = reg(new THREE.MeshStandardMaterial({
-    color: 0x0a0806, roughness: 0.72, metalness: 0.06
-  }));
+  /* The parish church is a low, wide room: a suspended white tile ceiling on
+     recessed troffers, a flagstone floor, cream walls, and a white and gold
+     screen across the east end. Nothing here is a cathedral, and building it
+     as one was the wrong room. */
+  var X = 4.5, Y0 = 0.72, Y1 = 4.02, ZE = -13.0, ZW = 1.4;
+  var ICZ = -9.6;
 
   function plane(w, h, mat, x, y, z, rx, ry) {
     var m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
     m.position.set(x, y, z); m.rotation.set(rx || 0, ry || 0, 0);
     IN.add(m); return m;
   }
-
-  /* floor, side walls, east wall */
-  plane(X * 2, Z1 - Z0, floorM, 0, Y0, (Z0 + Z1) / 2, -Math.PI / 2, 0);
-  plane(Z1 - Z0, Y1 - Y0, plaster, -X, (Y0 + Y1) / 2, (Z0 + Z1) / 2, 0,  Math.PI / 2);
-  plane(Z1 - Z0, Y1 - Y0, plaster,  X, (Y0 + Y1) / 2, (Z0 + Z1) / 2, 0, -Math.PI / 2);
-  plane(X * 2, Y1 - Y0, plaster, 0, (Y0 + Y1) / 2, Z0, 0, 0);
-
-  /* Ceiling in four pieces, leaving the drum open overhead. A solid slab
-     here and the dome may as well not exist. */
-  var OX = 3.3, OA = DZ - 3.3, OB = DZ + 3.3;
-  plane(X * 2, OA - Z0,  plaster, 0, Y1, (Z0 + OA) / 2, Math.PI / 2, 0);
-  plane(X * 2, Z1 - OB,  plaster, 0, Y1, (OB + Z1) / 2, Math.PI / 2, 0);
-  plane(X - OX, OB - OA, plaster, -(OX + X) / 2, Y1, DZ, Math.PI / 2, 0);
-  plane(X - OX, OB - OA, plaster,  (OX + X) / 2, Y1, DZ, Math.PI / 2, 0);
-
-  /* the cupola from underneath, and the band of drum light around its foot */
-  var domeIn = new THREE.Mesh(
-    new THREE.SphereGeometry(3.34, 26, 16, 0, Math.PI * 2, 0, Math.PI / 2),
-    reg(new THREE.ShaderMaterial({
-      side: THREE.BackSide, transparent: true, fog: false, depthWrite: false,
-      uniforms: { uO: { value: 1 } },
-      vertexShader:
-        'varying vec3 vP; void main(){ vP = position;\n' +
-        '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-      fragmentShader:
-        'uniform float uO; varying vec3 vP;\n' +
-        'void main(){ float h = clamp(vP.y / 3.0, 0.0, 1.0);\n' +
-        '  vec3 c = mix(vec3(0.052,0.036,0.016), vec3(0.30,0.205,0.078), pow(h, 1.5));\n' +
-        '  float band = smoothstep(0.0, 0.10, h) * (1.0 - smoothstep(0.10, 0.36, h));\n' +
-        '  c += vec3(0.40, 0.26, 0.10) * band;\n' +
-        '  float crown = pow(h, 7.0) * 0.24;\n' +
-        '  gl_FragColor = vec4(c + vec3(0.5,0.36,0.16) * crown, uO); }'
-    }))
-  );
-  domeIn.position.set(0, Y1, DZ); domeIn.scale.y = 0.9;
-  IN.add(domeIn);
-  var band = new THREE.Mesh(
-    new THREE.CylinderGeometry(3.32, 3.32, 2.0, 24, 1, true),
-    reg(new THREE.MeshBasicMaterial({ color: 0x8a6026, side: THREE.BackSide }))
-  );
-  band.position.set(0, Y1 + 1.0, DZ);
-  IN.add(band);
-
-  /* the eight drum windows, from inside */
-  var winM = reg(new THREE.MeshBasicMaterial({ color: 0xffc98a, side: THREE.DoubleSide }));
-  for (var dw = 0; dw < 8; dw++) {
-    var da = (dw / 8) * Math.PI * 2 + Math.PI / 8;
-    var win = new THREE.Mesh(archShape(0.72, 1.5), winM);
-    win.position.set(Math.sin(da) * 3.26, Y1 + 0.42, DZ + Math.cos(da) * 3.26);
-    win.rotation.y = da + Math.PI;
-    IN.add(win);
+  function box(w, h, d, mat, x, y, z, ry) {
+    var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    m.position.set(x, y, z); if (ry) m.rotation.y = ry;
+    IN.add(m); return m;
   }
 
-  /* the medallion at the crown */
-  var med = new THREE.Mesh(new THREE.CircleGeometry(1.9, 40), reg(new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, side: THREE.DoubleSide,
-    uniforms: { uO: { value: 1 } },
-    vertexShader: 'varying vec2 vU; void main(){ vU = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-    fragmentShader:
-      'uniform float uO; varying vec2 vU;\n' +
-      'void main(){ float d = length(vU - 0.5) * 2.0;\n' +
-      '  float ring = smoothstep(0.98, 0.86, d) * smoothstep(0.66, 0.8, d);\n' +
-      '  float core = pow(max(0.0, 1.0 - d), 2.4) * 0.5;\n' +
-      '  gl_FragColor = vec4(1.0, 0.80, 0.48, (ring * 0.8 + core * 1.5) * uO); }'
-  })));
-  med.position.set(0, Y1 + 2.78, DZ); med.rotation.x = Math.PI / 2;
-  IN.add(med);
-  var domeLight = new THREE.PointLight(0xffbb70, 1.35, 9.5, 2.0);
-  domeLight.position.set(0, Y1 + 0.9, DZ);
-  IN.add(domeLight);
+  /* ---- floor: irregular flagstone, the warm tan of the real one ---- */
+  var floorTex = canvasTex(512, 512, function (x, w, h) {
+    x.fillStyle = '#a2977f'; x.fillRect(0, 0, w, h);
+    /* A jittered grid,each cell stroked as one closed slab. Loose segments
+       read as twigs on the floor; closed cells read as flagstone. */
+    var N = 6, cell = w / N, jit = cell * 0.3;
+    var grid = [];
+    for (var gy = 0; gy <= N; gy++) {
+      grid[gy] = [];
+      for (var gx = 0; gx <= N; gx++) {
+        var edge = gx === 0 || gy === 0 || gx === N || gy === N;
+        grid[gy][gx] = [gx * cell + (edge ? 0 : (Math.random() - 0.5) * jit),
+                        gy * cell + (edge ? 0 : (Math.random() - 0.5) * jit)];
+      }
+    }
+    x.strokeStyle = '#8d7a5c'; x.lineWidth = 3.5; x.lineJoin = 'round';
+    for (var cy = 0; cy < N; cy++) {
+      for (var cx = 0; cx < N; cx++) {
+        var a1 = grid[cy][cx], b1 = grid[cy][cx + 1],
+            c1 = grid[cy + 1][cx + 1], d1 = grid[cy + 1][cx];
+        x.fillStyle = 'rgba(' + (158 + Math.random() * 22 | 0) + ',' +
+          (150 + Math.random() * 20 | 0) + ',' + (131 + Math.random() * 18 | 0) + ',1)';
+        x.beginPath();
+        x.moveTo(a1[0], a1[1]); x.lineTo(b1[0], b1[1]);
+        x.lineTo(c1[0], c1[1]); x.lineTo(d1[0], d1[1]);
+        x.closePath(); x.fill(); x.stroke();
+      }
+    }
+    /* mottling, so it does not read as flat paint */
+    for (var k = 0; k < 260; k++) {
+      x.fillStyle = 'rgba(' + (146 + Math.random() * 34 | 0) + ',' +
+        (140 + Math.random() * 30 | 0) + ',' + (122 + Math.random() * 26 | 0) + ',0.2)';
+      x.beginPath();
+      x.arc(Math.random() * w, Math.random() * h, 2 + Math.random() * 12, 0, 6.284);
+      x.fill();
+    }
+  }, 3, 4);
+  plane(X * 2, ZW - ZE, reg(new THREE.MeshStandardMaterial({
+    map: floorTex, roughness: 0.82, metalness: 0.02
+  })), 0, Y0, (ZE + ZW) / 2, -Math.PI / 2, 0);
 
-  /* ── the iconostasis ── */
-  /* Two tiers of icons in a gilt screen, with the royal doors at the centre.
-     The saint plates are the parish photographs, so the screen the reader
-     sees in the cards is the screen the camera is standing in front of. */
-  var ICZ = -10.4;
-  var gilt = reg(new THREE.MeshStandardMaterial({
-    color: 0x3a2a10, roughness: 0.3, metalness: 0.92,
-    emissive: new THREE.Color(0x0e0902), emissiveIntensity: 1
+  /* ---- walls ---- */
+  var wallM = reg(new THREE.MeshStandardMaterial({
+    color: 0xa39c8c, roughness: 0.96, side: THREE.DoubleSide
   }));
-  plane(X * 2, 5.4, gilt, 0, Y0 + 2.7, ICZ);
+  plane(ZW - ZE, Y1 - Y0, wallM, -X, (Y0 + Y1) / 2, (ZE + ZW) / 2, 0,  Math.PI / 2);
+  plane(ZW - ZE, Y1 - Y0, wallM,  X, (Y0 + Y1) / 2, (ZE + ZW) / 2, 0, -Math.PI / 2);
+  plane(X * 2, Y1 - Y0, wallM, 0, (Y0 + Y1) / 2, ZE, 0, 0);
+  plane(X * 2, Y1 - Y0, wallM, 0, (Y0 + Y1) / 2, ZW, 0, Math.PI);
+
+  /* ---- ceiling: square acoustic tile, with recessed troffers ---- */
+  var ceilTex = canvasTex(256, 256, function (x, w, h) {
+    x.fillStyle = '#e8e6df'; x.fillRect(0, 0, w, h);
+    x.strokeStyle = '#c8c5bb'; x.lineWidth = 4;
+    x.strokeRect(0, 0, w, h);
+    x.strokeStyle = '#d6d3ca'; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(w / 2, 0); x.lineTo(w / 2, h);
+    x.moveTo(0, h / 2); x.lineTo(w, h / 2); x.stroke();
+  }, 9, 15);
+  plane(X * 2, ZW - ZE, reg(new THREE.MeshStandardMaterial({
+    map: ceilTex, roughness: 1.0, side: THREE.DoubleSide
+  })), 0, Y1, (ZE + ZW) / 2, Math.PI / 2, 0);
+
+  /* Two runs of troffers down the room. These are the light in here: a
+     parish hall ceiling, not a candle-lit cathedral. */
+  var troffer = reg(new THREE.MeshBasicMaterial({ color: 0xfff0d2 }));
+  WORLD.troffers = [];
+  for (var ti = 0; ti < 6; ti++) {
+    [-2.2, 2.2].forEach(function (tx) {
+      var m = plane(0.62, 1.24, troffer, tx, Y1 - 0.012, -11.4 + ti * 2.3, Math.PI / 2, 0);
+      WORLD.troffers.push(m);
+    });
+  }
+
+  /* ---- the iconostasis ---- */
+  /* White boards with gold trim, a run of arched icons, black and white
+     striped pilasters between them, and the royal doors at the centre. */
+  var whiteM = reg(new THREE.MeshStandardMaterial({ color: 0xbdb6a6, roughness: 0.8 }));
+  var goldM = reg(new THREE.MeshStandardMaterial({
+    color: 0xb08c34, roughness: 0.36, metalness: 0.72
+  }));
+  var stripeTex = canvasTex(64, 64, function (x, w, h) {
+    x.fillStyle = '#f0ece2'; x.fillRect(0, 0, w, h);
+    x.fillStyle = '#1c1c1e';
+    for (var i = 0; i < 8; i++) x.fillRect(i * 8, 0, 4, h);
+  }, 1, 1);
+  var stripeM = reg(new THREE.MeshStandardMaterial({ map: stripeTex, roughness: 0.8 }));
+
+  box(X * 2, 3.0, 0.26, whiteM, 0, Y0 + 1.5, ICZ);          /* the screen */
+  box(X * 2, 0.17, 0.42, goldM, 0, Y0 + 3.02, ICZ);         /* cornice     */
+  box(X * 2, 0.13, 0.34, goldM, 0, Y0 + 0.06, ICZ);         /* plinth      */
 
   var loader = new THREE.TextureLoader();
   var ICONS = ['assets/saints/john-chrysostom.webp', 'assets/saints/basil-the-great.webp',
                'assets/saints/saint-nicholas.webp', 'assets/saints/seraphim-of-sarov.webp'];
-  [-3.3, -1.75, 1.75, 3.3].forEach(function (x, i) {
-    var t = loader.load(ICONS[i]);
+  var bays = [-3.62, -2.62, -1.62, 1.62, 2.62, 3.62];
+  bays.forEach(function (bx, i) {
+    /* striped pilaster to the left of each bay */
+    box(0.2, 2.5, 0.06, stripeM, bx - 0.5, Y0 + 1.55, ICZ + 0.16);
+    var t = loader.load(ICONS[i % 4]);
     if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
     else t.encoding = THREE.sRGBEncoding;
-    var m = new THREE.Mesh(archShape(1.2, 1.9), reg(new THREE.MeshBasicMaterial({
-      map: t, color: 0x6a6155, side: THREE.DoubleSide
+    t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+    var ic = new THREE.Mesh(archShape(0.62, 0.95), reg(new THREE.MeshBasicMaterial({
+      map: t, color: 0x9a8f78, side: THREE.DoubleSide
     })));
-    m.position.set(x, Y0 + 1.2, ICZ + 0.06);
-    IN.add(m);
-    var fr = new THREE.Mesh(archShape(1.34, 2.03), gilt);
-    fr.position.set(x, Y0 + 1.13, ICZ + 0.04);
+    ic.position.set(bx, Y0 + 1.16, ICZ + 0.15);
+    IN.add(ic);
+    var fr = new THREE.Mesh(archShape(0.74, 1.07), goldM);
+    fr.position.set(bx, Y0 + 1.1, ICZ + 0.14);
     IN.add(fr);
   });
-
-  /* the royal doors, lit from the sanctuary behind */
-  var doors = new THREE.Mesh(archShape(2.5, 3.3), reg(new THREE.MeshBasicMaterial({
-    color: 0xc98f4e, side: THREE.DoubleSide
-  })));
-  doors.position.set(0, Y0 + 0.02, ICZ + 0.05);
-  IN.add(doors);
-  var dfr = new THREE.Mesh(archShape(2.78, 3.5), gilt);
-  dfr.position.set(0, Y0 - 0.04, ICZ + 0.03);
-  IN.add(dfr);
-
-  /* ── the memorial wall ── */
-  /* Eighteen arches down the north wall. Each one is a page: it holds its
-     own light, and the light is not steady, because a candle is not. */
-  var arches = [];
-  var frameM = reg(new THREE.MeshStandardMaterial({
-    color: 0x30240e, roughness: 0.36, metalness: 0.84
+  /* the royal doors, and the sanctuary light behind them */
+  var doorsM = reg(new THREE.MeshStandardMaterial({
+    color: 0xd8cdb2, roughness: 0.6, metalness: 0.2
   }));
+  [-0.42, 0.42].forEach(function (dx) {
+    box(0.78, 2.0, 0.08, doorsM, dx, Y0 + 1.0, ICZ + 0.17);
+    box(0.06, 2.0, 0.1, goldM, dx + (dx < 0 ? -0.4 : 0.4), Y0 + 1.0, ICZ + 0.18);
+  });
+  var sanct = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.1),
+    reg(new THREE.MeshBasicMaterial({ color: 0xffc98a, side: THREE.DoubleSide })));
+  sanct.position.set(0, Y0 + 1.05, ICZ - 0.3);
+  IN.add(sanct);
 
-  function niche(w, h, x, y, z, portrait) {
-    var fr2 = new THREE.Mesh(archShape(w + 0.1, h + 0.1), frameM);
-    fr2.position.set(x - 0.03, y - 0.05, z);
-    fr2.rotation.y = Math.PI / 2;
-    IN.add(fr2);
-    var m = reg(new THREE.MeshBasicMaterial({ color: 0xffb267, side: THREE.DoubleSide }));
-    var lit = new THREE.Mesh(archShape(w, h), m);
-    lit.position.set(x, y, z);
-    lit.rotation.y = Math.PI / 2;
-    IN.add(lit);
-    var rec = { m: m, ph: Math.random() * 100, base: 0.5 + Math.random() * 0.5,
-                portrait: !!portrait };
-    arches.push(rec);
-    return rec;
-  }
+  /* ---- solea: the raised step in front of the screen ---- */
+  box(X * 2, 0.16, 1.5, reg(new THREE.MeshStandardMaterial({
+    map: floorTex.clone(), roughness: 0.8
+  })), 0, Y0 + 0.08, ICZ + 0.95);
 
-  /* Six pages at eye level, wide enough to be a face rather than a light,
-     and two tiers of smaller niches above and below: the wall a parish
-     already has, and the room it has left. */
-  WORLD.pageArches = [];
-  for (var pi = 0; pi < 6; pi++) {
-    var pa = niche(0.78, 1.4, -X + 0.09, Y0 + 1.02, -8.3 + pi * 1.38, true);
-    pa.base = 0.94;
-    WORLD.pageArches.push(pa);
-  }
-  for (var r = 0; r < 2; r++) {
-    for (var c = 0; c < 13; c++) {
-      var z2 = -9.3 + c * 0.76;
-      var y2 = Y0 + (r ? 3.02 : 0.24);
-      var n = niche(0.4, r ? 0.78 : 0.44, -X + 0.08, y2, z2, false);
-      n.base *= 0.5;
-    }
-  }
-  WORLD.arches = arches;
-
-  /* kandila on their chains, down the centre of the nave */
-  var chainM = reg(new THREE.MeshBasicMaterial({ color: 0x2a2418 }));
-  var glassM = reg(new THREE.MeshBasicMaterial({ color: 0xffb066 }));
-  [-9.4, -3.6, -0.6].forEach(function (z, i) {
-    var kx = i % 2 ? 1.35 : -1.35;
-    var ch = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1.5, 4), chainM);
-    ch.position.set(kx, Y1 - 0.75, z); IN.add(ch);
-    var g = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), glassM);
-    g.position.set(kx, Y1 - 1.55, z); IN.add(g);
+  /* ---- analogion: an icon stand under a red cloth ---- */
+  var clothM = reg(new THREE.MeshStandardMaterial({ color: 0x3d0d14, roughness: 0.92 }));
+  [-3.5, 3.5].forEach(function (ax) {
+    box(0.34, 0.9, 0.3, clothM, ax, Y0 + 0.61, ICZ + 2.9);
+    var t2 = loader.load(ICONS[ax < 0 ? 1 : 2]);
+    if ('colorSpace' in t2) t2.colorSpace = THREE.SRGBColorSpace;
+    else t2.encoding = THREE.sRGBEncoding;
+    var ic2 = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.44),
+      reg(new THREE.MeshBasicMaterial({ map: t2, color: 0xa89c84, side: THREE.DoubleSide })));
+    ic2.position.set(ax, Y0 + 1.1, ICZ + 2.79);
+    ic2.rotation.x = -0.36;
+    IN.add(ic2);
   });
 
-  /* the stand for the departed, just inside the door */
-  var trayM = reg(new THREE.MeshStandardMaterial({
-    color: 0x3a3226, roughness: 0.4, metalness: 0.72
+  /* ---- the candle stand: a long low box against the south wall ---- */
+  var metalM = reg(new THREE.MeshStandardMaterial({
+    color: 0x2e2c28, roughness: 0.45, metalness: 0.6
   }));
-  var tr = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.05, 0.1, 18), trayM);
-  tr.position.set(2.5, Y0 + 1.0, -1.2); IN.add(tr);
-  var st = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.13, 1.0, 8), trayM);
-  st.position.set(2.5, Y0 + 0.5, -1.2); IN.add(st);
+  var sandM = reg(new THREE.MeshStandardMaterial({ color: 0x9a927f, roughness: 1 }));
+  box(0.7, 0.86, 2.6, metalM, X - 0.5, Y0 + 0.43, -6.4);
+  box(0.56, 0.06, 2.4, sandM, X - 0.5, Y0 + 0.89, -6.4);
+  box(0.72, 0.9, 0.08, reg(new THREE.MeshStandardMaterial({
+    color: 0xdad3c2, roughness: 0.9 })), X - 0.5, Y0 + 1.42, -6.4);
 
-  var N = LOW ? 12 : 20;
-  var fp = new Float32Array(N * 3), fph = new Float32Array(N), fsz = new Float32Array(N);
-  for (var k = 0; k < N; k++) {
-    var a = (k / N) * Math.PI * 2 * 1.8, rr = k < N * 0.4 ? 0.4 : 0.82;
-    fp[k * 3] = 2.5 + Math.cos(a) * rr;
-    fp[k * 3 + 1] = Y0 + 1.62;
-    fp[k * 3 + 2] = -1.2 + Math.sin(a) * rr;
-    fph[k] = Math.random() * 100; fsz[k] = 18 + Math.random() * 14;
+  var NF = LOW ? 10 : 16;
+  var fp = new Float32Array(NF * 3), fph = new Float32Array(NF), fsz = new Float32Array(NF);
+  for (var k = 0; k < NF; k++) {
+    fp[k * 3] = X - 0.5 + (Math.random() - 0.5) * 0.34;
+    fp[k * 3 + 1] = Y0 + 1.06 + Math.random() * 0.05;
+    fp[k * 3 + 2] = -7.5 + (k / NF) * 2.2 + Math.random() * 0.08;
+    fph[k] = Math.random() * 100; fsz[k] = 16 + Math.random() * 10;
   }
   var fg2 = new THREE.BufferGeometry();
   fg2.setAttribute('position', new THREE.BufferAttribute(fp, 3));
@@ -2550,15 +2559,85 @@ function buildInterior() {
   IN.add(inFlames);
   WORLD.inFlames = inFlames;
 
-  /* interior light: two kandila, the royal doors, and the stand */
-  var l1 = new THREE.PointLight(0xffa858, 0.78, 7.6, 2.2); l1.position.set(0, Y1 - 1.7, -7.0);
-  var l2 = new THREE.PointLight(0xffb066, 0.66, 7.2, 2.2); l2.position.set(0, Y1 - 1.7, -2.6);
-  var l3 = new THREE.PointLight(0xffc98a, 1.05, 6.8, 2.2); l3.position.set(0, Y0 + 1.8, ICZ + 1.6);
-  var l4 = new THREE.PointLight(0xffa64a, 1.00, 5.4, 2.3); l4.position.set(2.5, Y0 + 1.9, -1.2);
-  var l5 = new THREE.PointLight(0xffb066, 0.58, 5.8, 2.2); l5.position.set(-3.4, Y0 + 1.6, -5.0);
-  WORLD.inLights = [];
-  IN.add(l1, l2, l3, l4, l5);
-  WORLD.inLights = [l1, l2, l3, l4, l5, domeLight];
+  /* ---- the donation desk by the door, under its burgundy cloth ---- */
+  box(1.5, 0.9, 0.66, reg(new THREE.MeshStandardMaterial({
+    color: 0x5f1620, roughness: 0.72 })), -2.6, Y0 + 0.45, 0.4);
+  box(1.56, 0.05, 0.72, reg(new THREE.MeshStandardMaterial({
+    color: 0x7a2130, roughness: 0.5, metalness: 0.15 })), -2.6, Y0 + 0.92, 0.4);
+  /* the glass vitrine beside it */
+  box(0.8, 1.5, 0.5, reg(new THREE.MeshStandardMaterial({
+    color: 0x3a2b1c, roughness: 0.55 })), -1.3, Y0 + 0.75, 0.4);
+
+  /* ---- banners on the north wall, and chairs down both sides ---- */
+  [-9.0, -8.3].forEach(function (bz, i) {
+    box(0.06, 0.85, 0.42, reg(new THREE.MeshStandardMaterial({
+      color: i % 2 ? 0x7c1f28 : 0x9c7326, roughness: 0.85 })), -X + 0.1, Y0 + 2.6, bz);
+    box(0.06, 0.85, 0.42, reg(new THREE.MeshStandardMaterial({
+      color: i % 2 ? 0x9c7326 : 0x7c1f28, roughness: 0.85 })),  X - 0.1, Y0 + 2.6, bz);
+  });
+  var chairM = reg(new THREE.MeshStandardMaterial({ color: 0x24211d, roughness: 0.8 }));
+  for (var ci = 0; ci < 7; ci++) {
+    box(0.48, 0.46, 0.48, chairM,  X - 0.34, Y0 + 0.23, -2.6 + ci * 0.62);
+    box(0.48, 0.46, 0.48, chairM, -X + 0.34, Y0 + 0.23, -2.6 + ci * 0.62);
+  }
+
+  /* ---- the memorial wall ---- */
+  /* The real church hangs a long run of small framed icons down the north
+     wall. The memorial takes that same line: six faces at eye level, and
+     smaller empty frames carrying on past them. */
+  var arches = [];
+  var frameM = reg(new THREE.MeshStandardMaterial({
+    color: 0x4a3617, roughness: 0.42, metalness: 0.7
+  }));
+  function niche(w, h, x, y, z, portrait) {
+    var fr2 = new THREE.Mesh(archShape(w + 0.08, h + 0.08), frameM);
+    fr2.position.set(x - 0.02, y - 0.04, z);
+    fr2.rotation.y = Math.PI / 2;
+    IN.add(fr2);
+    var m = reg(new THREE.MeshBasicMaterial({ color: 0xffcf95, side: THREE.DoubleSide }));
+    var lit = new THREE.Mesh(archShape(w, h), m);
+    lit.position.set(x, y, z);
+    lit.rotation.y = Math.PI / 2;
+    IN.add(lit);
+    var rec = { m: m, ph: Math.random() * 100, base: 0.5 + Math.random() * 0.5, portrait: !!portrait };
+    arches.push(rec);
+    return rec;
+  }
+  WORLD.arches = arches;
+  WORLD.pageArches = [];
+  for (var pi = 0; pi < 6; pi++) {
+    var pa = niche(0.62, 1.02, -X + 0.09, Y0 + 1.42, -8.0 + pi * 1.24, true);
+    pa.base = 0.95;
+    WORLD.pageArches.push(pa);
+  }
+  for (var c = 0; c < 8; c++) {
+    var n = niche(0.3, 0.42, -X + 0.08, Y0 + 2.42, -8.0 + c * 0.86, false);
+    n.base *= 0.45;
+  }
+
+  /* ---- kandila on their chains ---- */
+  var chainM = reg(new THREE.MeshBasicMaterial({ color: 0x2a2418 }));
+  var glassM = reg(new THREE.MeshBasicMaterial({ color: 0xffb066 }));
+  [-8.4, -5.6, -2.8].forEach(function (z, i) {
+    var kx = i % 2 ? 1.5 : -1.5;
+    var ch = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.55, 4), chainM);
+    ch.position.set(kx, Y1 - 0.28, z); IN.add(ch);
+    var g = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8), glassM);
+    g.position.set(kx, Y1 - 0.6, z); IN.add(g);
+  });
+
+  /* ---- light ---- */
+  /* The troffers do the work, so the fixtures get lamps rather than the
+     candles: this room is lit, not gloomy, however late it is outside. */
+  var l1 = new THREE.PointLight(0xffeccd, 0.36, 6.5, 2.0); l1.position.set(-2.2, Y1 - 0.4, -9.0);
+  var l2 = new THREE.PointLight(0xffeccd, 0.36, 6.5, 2.0); l2.position.set(2.2, Y1 - 0.4, -6.6);
+  var l3 = new THREE.PointLight(0xffeccd, 0.32, 6.5, 2.0); l3.position.set(-2.2, Y1 - 0.4, -3.6);
+  var l4 = new THREE.PointLight(0xffeccd, 0.28, 6.0, 2.0); l4.position.set(2.2, Y1 - 0.4, -0.8);
+  var l5 = new THREE.PointLight(0xffc98a, 0.9, 4.5, 2.2); l5.position.set(X - 0.6, Y0 + 1.3, -6.4);
+  var l6 = new THREE.PointLight(0xffc07a, 0.75, 5.0, 2.1); l6.position.set(0, Y0 + 1.2, ICZ + 0.7);
+  IN.add(l1, l2, l3, l4, l5, l6);
+  IN.add(new THREE.HemisphereLight(0xa8a294, 0x322d26, 0.16));
+  WORLD.inLights = [l1, l2, l3, l4, l5, l6];
   WORLD.inLights.forEach(function (L) { L.userData.base = L.intensity; L.intensity = 0; });
 
   scene.add(IN);
@@ -2950,14 +3029,22 @@ function buildCandles() {
       '  float f = 0.72 + 0.28 * sin(uT * 7.3 + aP) * sin(uT * 4.1 + aP * 2.3);\n' +
       '  vF = f;\n' +
       '  vec4 mv = modelViewMatrix * vec4(position, 1.0);\n' +
-      '  gl_PointSize = aS * uPR * f * (11.0 / max(1.0, -mv.z));\n' +
+      '  float sz = aS * uPR * f * (30.0 / max(1.0, -mv.z));\n' +
+      '  gl_PointSize = clamp(sz, 2.0, 54.0 * uPR);\n' +
       '  gl_Position = projectionMatrix * mv; }',
     fragmentShader:
       'varying float vF;\n' +
-      'void main(){ vec2 p = gl_PointCoord - 0.5; float d = length(p) * 2.0;\n' +
-      '  float core = pow(max(0.0, 1.0 - d), 2.6);\n' +
-      '  vec3 c = mix(vec3(1.0, 0.55, 0.16), vec3(1.0, 0.94, 0.76), core);\n' +
-      '  gl_FragColor = vec4(c, core * vF * 0.95); }'
+      'void main(){ vec2 q = gl_PointCoord - 0.5;\n' +
+      /* a flame is taller than it is wide, and sits low in its own sprite */
+      '  vec2 p = vec2(q.x * 2.05, q.y + 0.07);\n' +
+      '  float d = length(p) * 2.0;\n' +
+      '  float core = pow(max(0.0, 1.0 - d), 2.0);\n' +
+      '  float halo = pow(max(0.0, 1.0 - length(q) * 2.0), 1.5) * 0.4;\n' +
+      '  float a = clamp(core * 1.45 + halo, 0.0, 1.0) * vF;\n' +
+      '  if (a < 0.004) discard;\n' +
+      '  vec3 c = mix(vec3(1.0, 0.40, 0.09), vec3(1.0, 0.96, 0.84), core * core);\n' +
+      /* the centre is driven above 1.0 so the bright pass finds it */
+      '  gl_FragColor = vec4(c * (1.0 + core * 1.8), a); }'
   }));
   G.add(flames);
   WORLD.flames = flames;
@@ -3098,7 +3185,7 @@ function buildWeather() {
       '  p.z += cos(uT * 0.63 + aP) * life * 1.2;\n' +
       '  vA = sin(life * 3.14159) * 0.85;\n' +
       '  vec4 mv = modelViewMatrix * vec4(p, 1.0);\n' +
-      '  gl_PointSize = (2.2 + 2.0 * (1.0 - life)) * uPR * (26.0 / max(1.0, -mv.z));\n' +
+      '  gl_PointSize = clamp((2.6 + 2.4 * (1.0 - life)) * uPR * (46.0 / max(1.0, -mv.z)), 1.5, 22.0 * uPR);\n' +
       '  gl_Position = projectionMatrix * mv; }',
     fragmentShader:
       'uniform float uVis; varying float vA;\n' +
@@ -3328,10 +3415,10 @@ function renderPost() {
 var CAM = [
   { p: [ 17.0,  4.20,  47.0 ], t: [ -1.0,  9.00,  -3.0 ], fov: 33 },  /* 0 hero        */
   { p: [ -3.0,  2.30,  19.0 ], t: [  0.4,  5.60,   4.0 ], fov: 47 },  /* 1 threshold   */
-  { p: [  0.3,  2.45,   0.4 ], t: [  0.0,  3.50, -10.4 ], fov: 54 },  /* 2 iconostasis */
-  { p: [  2.5,  2.05,  -1.4 ], t: [ -3.2,  3.10,  -6.6 ], fov: 57 },  /* 3 voices      */
-  { p: [  2.70, 2.10,  -4.2 ], t: [ -4.5,  2.42,  -6.7 ], fov: 57 },  /* 4 memorial    */
-  { p: [  0.0,  2.05,  -5.4 ], t: [ -0.1,  9.20,  -7.0 ], fov: 62 },  /* 5 remembrance */
+  { p: [  0.4,  1.62,   0.6 ], t: [  0.0,  1.88,  -9.6 ], fov: 56 },  /* 2 iconostasis */
+  { p: [ -1.2,  1.58,  -2.4 ], t: [  3.9,  1.30,  -6.9 ], fov: 54 },  /* 3 voices      */
+  { p: [  0.7,  1.75,  -4.3 ], t: [ -4.4,  2.02,  -5.6 ], fov: 46 },  /* 4 memorial    */
+  { p: [  0.0,  1.55,  -2.6 ], t: [  0.0,  1.80,  -9.6 ], fov: 50 },  /* 5 remembrance */
   { p: [-17.0, 25.00,  21.0 ], t: [  0.0,  7.50, -14.0 ], fov: 40 }   /* 6 footer      */
 ];
 var RIG = { prog: 0, smooth: 0, mx: 0, my: 0, tmx: 0, tmy: 0, intro: 0, inside: 0, insideT: 0 };
@@ -3383,7 +3470,7 @@ function applyCamera() {
      waypoint is 25 units up - the curve dipped to y=0.6, which is under the
      nave floor at 0.72: the lens went through the flagstones. Clamped to eye
      height while indoors, released as the shell dissolves. */
-  var eye = 0.72 + 0.72 * (RIG.insideT || 0);
+  var eye = 0.72 + 0.62 * (RIG.insideT || 0);
   if (_p.y < eye) _p.y = eye;
 
   camera.position.copy(_p);
@@ -3484,6 +3571,10 @@ function frame(now) {
           if (FM.uniforms && FM.uniforms.uO) FM.uniforms.uO.value = want;
         }
       }
+      /* The room is closed on all four sides, so nothing is lost by
+         dropping the shell while the camera is in it. */
+      if (WORLD.church) WORLD.church.visible = want < 0.55;
+      document.documentElement.style.setProperty('--room', want.toFixed(3));
       if (WORLD.inLights) {
         for (var w2 = 0; w2 < WORLD.inLights.length; w2++) {
           WORLD.inLights[w2].intensity = WORLD.inLights[w2].userData.base * want;

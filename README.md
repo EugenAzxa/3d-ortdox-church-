@@ -45,12 +45,19 @@ assets are the parish photographs, which are graded into the night palette in CS
 
 ### Going inside
 
-Exterior walls are `FrontSide` boxes, so from within they are back-facing and cull to
-nothing: the interior shell is what closes the room in. The nave ceiling is built in four
-pieces around an opening under the drum, and both the nave and transept roofs are split
-around the crossing, because a solid prism over the nave caps the cupola from below. The
-whole interior is registered for a single opacity fade driven by scroll position, and the
-snow and embers are faded out with it - weather belongs to the churchyard.
+The room is modelled from photographs of the parish, and it is not a cathedral: a low, wide
+hall about 3.3m to a suspended white tile ceiling on recessed troffers, a flagstone floor, cream
+walls, and a white and gold screen across the east end with striped pilasters between arched
+icons. Building it as a tall stone nave was the wrong room.
+
+Two things make it work. The exterior shell is opaque, and its cross-arm wall stands between
+the lens and the room from chapter 02 onward, so the shell is hidden while the camera is
+inside it - the room is closed on all four sides, so nothing is lost. And the troffers make
+this the brightest ground the type ever sits on, so a scrim rides the same fade as the room
+itself, keeping bone-white headings readable against a lit ceiling.
+
+The whole interior is registered for one opacity fade driven by scroll position, and the snow
+and embers fade with it - weather belongs to the churchyard.
 
 ### The seasons
 
@@ -148,14 +155,16 @@ straight off the disk the wall says so rather than sitting empty.
 |---|---------|----------|----------|
 | 00 | Hero | Вечан спомен | Outside the gate, three-quarter, the cross against the moon |
 | 01 | Threshold | Праг | At the gate, looking down the swept path to the west door |
-| 02 | Iconostasis | Иконостас | Inside, down the nave, facing the gilt screen |
-| 03 | Voices | Гласови | Mid-nave, angled across the candle stand |
+| 02 | Iconostasis | Иконостас | Inside, down the hall, facing the white and gold screen |
+| 03 | Voices | Гласови | Mid-room, angled across the candle stand |
 | 04 | Memorial | Спомен-зид | The north wall, the six faces in its arches, the pages in front |
-| 05 | Remembrance | Вечан спомен | Under the crossing, looking up through the drum |
+| 05 | Remembrance | Вечан спомен | Centred on the iconostasis, the kontakion over it |
 | -- | Footer | | The ascent out, above the roofline |
 
-The camera never cuts. It crosses the threshold at chapter 02 and the interior shell
-dissolves on the way up at chapter 05, so the rise out through the cupola is one move.
+The camera never cuts. It crosses the threshold at chapter 02 and the room dissolves on the
+way out at chapter 05, so the rise back over the roofline is one move. Section anchors sit at
+each section's centre, so the memorial - which is much taller than the others - holds its
+waypoint while the reader browses the wall.
 
 ## Accessibility and degradation
 
