@@ -2830,10 +2830,37 @@ function buildChurch() {
   });
   /* Window glass is pure emissive: the light in an Orthodox church at night
      comes from inside, and it has to survive the bright pass to bloom. */
+  /* A church window at night is not a lit panel: it is a hole with a room
+     behind it. The texture carries that depth - dark at the head where the
+     vault is, warm low down where the candles are, shadowed at the reveals,
+     with the leading across it - so the glass reads as something you see
+     through rather than something that glows. */
+  var glassTex = canvasTex(64, 256, function (x, w, h) {
+    var g2 = x.createLinearGradient(0, h, 0, 0);
+    g2.addColorStop(0.00, '#ffd7a0');
+    g2.addColorStop(0.22, '#f0b273');
+    g2.addColorStop(0.55, '#a86a34');
+    g2.addColorStop(0.82, '#4e2c13');
+    g2.addColorStop(1.00, '#241505');
+    x.fillStyle = g2; x.fillRect(0, 0, w, h);
+    /* the reveal, dark down both edges */
+    var s2 = x.createLinearGradient(0, 0, w, 0);
+    s2.addColorStop(0, 'rgba(24,12,4,.9)'); s2.addColorStop(0.3, 'rgba(24,12,4,0)');
+    s2.addColorStop(0.7, 'rgba(24,12,4,0)'); s2.addColorStop(1, 'rgba(24,12,4,.9)');
+    x.fillStyle = s2; x.fillRect(0, 0, w, h);
+    /* a lamp burning somewhere behind the glass */
+    var rg = x.createRadialGradient(w * 0.5, h * 0.74, 1, w * 0.5, h * 0.74, w * 0.85);
+    rg.addColorStop(0, 'rgba(255,226,170,.85)'); rg.addColorStop(1, 'rgba(255,226,170,0)');
+    x.fillStyle = rg; x.fillRect(0, 0, w, h);
+    /* leading */
+    x.fillStyle = 'rgba(20,12,6,.55)';
+    for (var i = 1; i < 7; i++) x.fillRect(0, i * (h / 7), w, 2.5);
+    x.fillRect(w * 0.5 - 1.2, 0, 2.4, h);
+  }, 1, 1);
   var glassM = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(0xffbe73).multiplyScalar(TIME.windows), fog: true });
+    map: glassTex, color: new THREE.Color(0xffffff).multiplyScalar(TIME.windows), fog: true });
   var glassDim = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(0xd8853f).multiplyScalar(TIME.windows), fog: true });
+    map: glassTex, color: new THREE.Color(0xd6c0a4).multiplyScalar(TIME.windows), fog: true });
   WORLD.glassM = glassM; WORLD.glassDim = glassDim;
 
   function box(w, h, d, mat, x, y, z) {
@@ -2870,6 +2897,10 @@ function buildChurch() {
         var mh = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.94, w * 0.04), mullionM);
         mh.position.set(0, h * fy, 0.012); g.add(mh);
       });
+    } else {
+      /* a slit is too narrow for a mullion but still takes a transom */
+      var mt = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.96, w * 0.1), mullionM);
+      mt.position.set(0, h * 0.52, 0.012); g.add(mt);
     }
     g.position.set(x, y, z); g.rotation.y = rotY || 0;
     K.add(g); return g;
@@ -3194,9 +3225,11 @@ function buildChurch() {
   [4.9, 6.0, -5.1, -6.3].forEach(function (z, i) {
     arch(0.34, 2.5, i % 2 ? glassM : glassDim,  4.76, 2.5, z,  Math.PI / 2);
     arch(0.34, 2.5, i % 2 ? glassDim : glassM, -4.76, 2.5, z, -Math.PI / 2);
-    /* a stone surround, so the slit sits in the wall rather than on it */
-    box(0.06, 3.1, 0.62, stoneLit,  4.73, 2.7, z);
-    box(0.06, 3.1, 0.62, stoneLit, -4.73, 2.7, z);
+    /* The stone surround has to be centred on the window it frames. It was
+       set at y=2.7 against a window running from 2.5 to about 5.2, so it
+       hung below the glass as a dark slab in the wall. */
+    box(0.07, 3.24, 0.64, stoneLit,  4.7, 3.78, z);
+    box(0.07, 3.24, 0.64, stoneLit, -4.7, 3.78, z);
   });
   /* transept ends */
   arch(0.44, 3.0, glassM, 7.76, 2.4, -0.6, Math.PI / 2);
@@ -4868,8 +4901,8 @@ function applyLook(A, B, k) {
   if (W.birds) W.birds.visible = lerp(A.birds, B.birds, k) > 0.5;
 
   var win = lerp(A.windows, B.windows, k);
-  if (W.glassM) W.glassM.color.setHex(0xffbe73).multiplyScalar(win);
-  if (W.glassDim) W.glassDim.color.setHex(0xd8853f).multiplyScalar(win);
+  if (W.glassM) W.glassM.color.setHex(0xffffff).multiplyScalar(win);
+  if (W.glassDim) W.glassDim.color.setHex(0xd6c0a4).multiplyScalar(win);
   LOOK.candle = lerp(A.candle, B.candle, k);
   if (W.outLights) {
     for (var i = 0; i < W.outLights.length; i++) {

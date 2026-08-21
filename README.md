@@ -133,6 +133,18 @@ By default the churchyard walks a year and a day on its own, twelve stations of 
 seconds. Touching either picker holds it where you put it, on the assumption that somebody
 who picks winter would like to stay in it.
 
+### Windows
+
+A church window at night is not a lit panel, it is a hole with a room behind it. The glass
+carries that as a texture: dark at the head where the vault is, warm low down where the
+candles are, shadowed down both reveals, a lamp burning somewhere behind, and the leading
+across it. That reads as something seen through rather than something glowing.
+
+Two faults were hiding in them. The stone surrounds were centred at y=2.7 against windows
+running from 2.5 to about 5.2, so they hung below the glass as dark slabs in the wall. And
+each surround is 0.07 thick, so centring it at 4.735 spanned 4.70 to 4.77 and swallowed the
+light sitting at 4.76 - which is why some windows lit and others did not.
+
 ### The seasons
 
 `SEASONS` holds four palettes and weather profiles, picked from the current month for the
