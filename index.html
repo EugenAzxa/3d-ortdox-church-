@@ -3210,13 +3210,51 @@ function buildChurch() {
     box(4.6 - st2 * 0.45, 0.16, 0.52, stoneLit, 0, 0.08 + st2 * 0.16, 13.5 - st2 * 0.46);
   }
 
-  var lamp = new THREE.Mesh(
-    new THREE.SphereGeometry(0.19, 10, 8),
-    new THREE.MeshBasicMaterial({ color: 0xffd79a })
-  );
-  lamp.position.set(0, 4.7, 12.3);
-  K.add(lamp);
-  WORLD.doorLamp = lamp;
+  /* A wall lantern on a bracket: back plate, arm, a six-sided glass on a
+     dark frame, a capped roof and a finial. A bare emissive sphere on a
+     wall is a floating ball, not a light fitting. */
+  var lampIron = new THREE.MeshStandardMaterial({
+    color: 0x1e1c20, roughness: 0.5, metalness: 0.66 });
+  var lampGlass = new THREE.MeshBasicMaterial({ color: 0xffcf94 });
+
+  var LX = 0, LY = 4.62, LZ = 12.18;
+  box(0.2, 0.3, 0.06, lampIron, LX, LY + 0.32, LZ + 0.03);       /* back plate */
+  var armM = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.026, 0.42, 6), lampIron);
+  armM.position.set(LX, LY + 0.44, LZ + 0.21); armM.rotation.x = Math.PI / 2;
+  K.add(armM);
+  var stay = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.3, 5), lampIron);
+  stay.position.set(LX, LY + 0.28, LZ + 0.16); stay.rotation.x = -Math.PI / 4;
+  K.add(stay);
+  var hook = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.12, 5), lampIron);
+  hook.position.set(LX, LY + 0.38, LZ + 0.4);
+  K.add(hook);
+
+  /* the lantern itself */
+  var lampGl = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.105, 0.128, 0.26, 6), lampGlass);
+  lampGl.position.set(LX, LY + 0.14, LZ + 0.4);
+  K.add(lampGl);
+  var lampTop = new THREE.Mesh(new THREE.ConeGeometry(0.175, 0.13, 6), lampIron);
+  lampTop.position.set(LX, LY + 0.33, LZ + 0.4);
+  K.add(lampTop);
+  var lampRim = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.028, 6), lampIron);
+  lampRim.position.set(LX, LY + 0.27, LZ + 0.4);
+  K.add(lampRim);
+  var lampFoot = new THREE.Mesh(new THREE.CylinderGeometry(0.138, 0.1, 0.05, 6), lampIron);
+  lampFoot.position.set(LX, LY - 0.005, LZ + 0.4);
+  K.add(lampFoot);
+  var lampPip = new THREE.Mesh(new THREE.SphereGeometry(0.026, 8, 6), lampIron);
+  lampPip.position.set(LX, LY + 0.41, LZ + 0.4);
+  K.add(lampPip);
+  /* the uprights of the frame, between the panes */
+  for (var lb = 0; lb < 6; lb++) {
+    var la = (lb / 6) * Math.PI * 2 + Math.PI / 6;
+    var bar = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.26, 0.016), lampIron);
+    bar.position.set(LX + Math.cos(la) * 0.118, LY + 0.14, LZ + 0.4 + Math.sin(la) * 0.118);
+    bar.rotation.y = -la;
+    K.add(bar);
+  }
+  WORLD.doorLamp = lampGl;
 
   /* Nave windows, north and south. Only on the wall the transept leaves
      exposed - between the cross arm and the narthex, and behind it toward
@@ -4126,9 +4164,20 @@ function buildYard() {
     p.position.set(x, 1.6, 16); scene.add(p);
     var c = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.2, 1.0), capM);
     c.position.set(x, 3.3, 16); scene.add(c);
-    var l = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 6),
+    /* a small lantern on each gate post, not a ball balanced on it */
+    var gi = new THREE.MeshStandardMaterial({
+      color: 0x1e1c20, roughness: 0.5, metalness: 0.66 });
+    var gGlass = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.105, 0.22, 6),
       new THREE.MeshBasicMaterial({ color: 0xffca88 }));
-    l.position.set(x, 3.62, 16); scene.add(l);
+    gGlass.position.set(x, 3.58, 16); scene.add(gGlass);
+    var gTop = new THREE.Mesh(new THREE.ConeGeometry(0.145, 0.11, 6), gi);
+    gTop.position.set(x, 3.74, 16); scene.add(gTop);
+    var gRim = new THREE.Mesh(new THREE.CylinderGeometry(0.122, 0.122, 0.024, 6), gi);
+    gRim.position.set(x, 3.69, 16); scene.add(gRim);
+    var gFoot = new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.085, 0.045, 6), gi);
+    gFoot.position.set(x, 3.46, 16); scene.add(gFoot);
+    var gPip = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 6), gi);
+    gPip.position.set(x, 3.81, 16); scene.add(gPip);
   });
 
   /* the path from the gate to the west door, swept clear of snow */
