@@ -219,7 +219,11 @@ that reads separately from the skin, under a cap of hair that stops at the brow 
 length falling behind to the collar. Any hair mesh that wraps the front of the skull leaves
 no face at all, and a pale sphere inside a dark one reads as a bowl.
 
-Judge it at the distance the site actually uses. Several passes were spent fixing faults
+Judge it at the distance the site actually uses. At the threshold he is 168 pixels tall and
+his head is 18, so an eye is one pixel. Below that size, detail is not detail: it is noise,
+and a bright face ringed by dark hair reads as a mask rather than a man. What survives at
+eighteen pixels is silhouette and value, so the geometry stays and the contrast came out.
+That is where this stopped, deliberately. Several passes were spent fixing faults
 visible only from two metres, which the walk never gets to.
 
 It is deliberately a fixed set, not a generative chat, and it takes no free text. Father

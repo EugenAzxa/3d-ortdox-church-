@@ -3219,8 +3219,8 @@ function buildPriestFigure() {
   var gold    = new THREE.MeshStandardMaterial({
     color: 0xb8912f, roughness: 0.36, metalness: 0.8 });
   var skin    = new THREE.MeshStandardMaterial({
-    color: 0xa8825f, roughness: 0.8,
-    emissive: new THREE.Color(0x140a04), emissiveIntensity: 1 });
+    color: 0x8a6a4c, roughness: 0.86,
+    emissive: new THREE.Color(0x0d0603), emissiveIntensity: 1 });
   var hairM   = new THREE.MeshStandardMaterial({ color: 0x3b2f26, roughness: 1 });
   var waxM    = new THREE.MeshStandardMaterial({ color: 0xe6d7b4, roughness: 0.6 });
 
@@ -3276,9 +3276,9 @@ function buildPriestFigure() {
      beard that reads separately from the skin, a pale sphere inside a dark
      one is a bowl, which is exactly what it looked like. */
   var HY = SHO + 0.27;
-  var brow  = new THREE.MeshStandardMaterial({ color: 0x8f6d4e, roughness: 0.84 });
+  var brow  = new THREE.MeshStandardMaterial({ color: 0x7d6047, roughness: 0.88 });
   var dark  = new THREE.MeshStandardMaterial({ color: 0x2b231c, roughness: 0.95 });
-  var eyeM  = new THREE.MeshStandardMaterial({ color: 0x1d1712, roughness: 0.6 });
+  var eyeM  = new THREE.MeshStandardMaterial({ color: 0x5c463a, roughness: 0.9 });
 
   var head = new THREE.Mesh(new THREE.SphereGeometry(0.108, 18, 14), skin);
   head.position.set(0, HY, 0.012);
@@ -3293,8 +3293,10 @@ function buildPriestFigure() {
   var browM = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.022, 0.03), brow);
   browM.position.set(0, HY + 0.038, 0.088); browM.rotation.x = -0.16; G.add(browM);
   [-1, 1].forEach(function (m) {
-    var eye = new THREE.Mesh(new THREE.SphereGeometry(0.0135, 8, 6), eyeM);
-    eye.position.set(m * 0.038, HY + 0.012, 0.088); G.add(eye);
+    /* sockets, not eyeballs: a shading cue rather than two dark dots */
+    var soc = new THREE.Mesh(new THREE.SphereGeometry(0.019, 8, 6), eyeM);
+    soc.position.set(m * 0.04, HY + 0.014, 0.078);
+    soc.scale.set(1.25, 0.62, 0.5); G.add(soc);
   });
 
   /* nose */
