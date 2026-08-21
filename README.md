@@ -43,6 +43,23 @@ The church, churchyard wall, gate, candle stand, trees, snow, embers, moon and
 post-processing are all constructed at runtime. There is no model file. The only binary
 assets are the parish photographs, which are graded into the night palette in CSS.
 
+### Crossing between the two
+
+The veil and the swap must come off the same number. They did not: the veil was a function
+of scroll and the swap a function of camera position, so the blink happened at one moment
+and the world changed half a second later with nothing covering it. Both now derive from the
+signed distance from the lens to the room taken as a box - negative inside, positive
+outside, its size being the distance to the nearest face either way.
+
+Distance to the wall planes is not the same as distance to the room. Using the planes lit the
+veil to 94% at the top of the page, because the opening shot sits at y=4.07 and that is the
+ceiling's height thirty metres away.
+
+The room also has to be built hidden. The swap only acts on a change and both groups are
+created visible, so until the first crossing the interior was being drawn inside the church
+for nothing. And no waypoint should rest within the veil's ramp: chapter 02 sat at z=1.2
+against a wall at z=1.4 and came to rest inside its own transition.
+
 ### Going inside
 
 The room is modelled from photographs of the parish, and it is not a cathedral: a low, wide
