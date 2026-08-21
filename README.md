@@ -79,10 +79,20 @@ surrounds, an arcaded west porch with archivolts over dark bays, and a recessed 
 two timber leaves standing open on strap hinges.
 
 There is no arcade or portico. The west front is the bell tower, and the entrance is a
-single arched portal in its base: an outer archivolt, a reveal, two timber leaves standing
-open on strap hinges, and behind them a lit depth with the candle stand in it. An earlier
-pass invented a five-bay porch across the front, which is not on the building and read as
-wrong from every angle.
+single arched portal in its base. An earlier pass invented a five-bay porch across the
+front, which is not on the building and read as wrong from every angle.
+
+The opening is real, not painted. The tower shaft is hollow for its lower storey and its
+west wall is an extruded shape with an arch-shaped hole cut in it, so what shows through
+parallaxes as the camera moves: a vestibule with a stone floor, a red runner, plastered
+reveals, an icon, a candle stand burning inside, and the nave lit through a second arch at
+the back. Painting the doorway as a gradient plane on a solid wall, which is what it was,
+reads as a poster hung on the tower.
+
+Two things fought this. `arch()` adds a mullion and two transoms to anything wider than
+half a metre, so the doorway was being glazed like a window. And `ExtrudeGeometry` writes
+UVs in shape units - metres - so a texture set to repeat across a box tiles several times
+per metre on an extrusion and reads as a pale panel beside the coursed walls.
 
 Stone and copper are both canvas textures. If you retint them, tint light: the map is
 multiplied by the material colour, so a near-black tint erases the masonry drawn into it,

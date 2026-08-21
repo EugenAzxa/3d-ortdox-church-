@@ -2269,12 +2269,12 @@ function buildChurch() {
   /* nave, transept, narthex */
   box(9.4, 7.2, 15.0, stone, 0, 3.6, 0);
   box(15.4, 6.4, 7.6, stone, 0, 3.2, -0.6);        /* the cross arms */
-  box(7.6, 5.6, 4.4, stoneLit, 0, 2.8, 8.6);       /* narthex, west */
+  box(7.6, 5.6, 3.0, stoneLit, 0, 2.8, 7.9);       /* narthex, west */
 
   /* a plinth course, so the walls meet the snow on a line rather than a seam */
   box(10.2, 0.7, 15.8, stoneLit, 0, 0.35, 0);
   box(16.2, 0.7, 8.4, stoneLit, 0, 0.35, -0.6);
-  box(8.4, 0.7, 5.2, stoneLit, 0, 0.35, 8.6);
+  box(8.4, 0.7, 3.8, stoneLit, 0, 0.35, 7.9);
 
   /* apse, east: a half cylinder with its own conch roof */
   var apse = new THREE.Mesh(
@@ -2292,7 +2292,7 @@ function buildChurch() {
   gable( 4.7, 4.8, 2.6, roofM,  0.00, 7.2,  5.25, 0);            /* nave, west of the crossing */
   gable( 4.1, 3.9, 2.3, roofM, -5.65, 6.4, -0.60, Math.PI / 2);  /* north cross arm */
   gable( 4.1, 3.9, 2.3, roofM,  5.65, 6.4, -0.60, Math.PI / 2);  /* south cross arm */
-  gable( 4.5, 3.9, 1.9, roofM,  0.00, 5.6,  8.60, 0);            /* narthex */
+  gable( 3.1, 3.9, 1.9, roofM,  0.00, 5.6,  7.90, 0);            /* narthex */
 
   /* the drum: twelve faces, eight of them windowed */
   var drum = new THREE.Mesh(new THREE.CylinderGeometry(3.35, 3.35, 4.3, 12), stoneLit);
@@ -2352,7 +2352,32 @@ function buildChurch() {
   /* Bell tower over the west door: square shaft with a string course, an
      octagonal belfry stage pierced on every face, and a conical copper
      roof. This is the shape that reads from the road. */
-  box(3.5, 11.4, 3.5, stoneLit, 0, 5.7, 10.4);
+  var TW = 1.75, TZ0 = 9.45, TZ1 = 12.15, VCEIL = 4.55;
+  /* upper shaft: solid, nobody sees inside it */
+  box(3.5, 11.4 - VCEIL, 3.5, stoneLit, 0, VCEIL + (11.4 - VCEIL) / 2, 10.4);
+  /* lower shaft: four walls round a vestibule */
+  box(0.35, VCEIL, TZ1 - TZ0, stoneLit, -TW + 0.175, VCEIL / 2, 10.4);
+  box(0.35, VCEIL, TZ1 - TZ0, stoneLit,  TW - 0.175, VCEIL / 2, 10.4);
+
+  /* the pierced west wall: a rectangle with an arch cut out of it */
+  (function () {
+    var W = TW, H = VCEIL, ow = 1.12, oh = 3.3;
+    var sh2 = new THREE.Shape();
+    sh2.moveTo(-W, 0); sh2.lineTo(W, 0); sh2.lineTo(W, H); sh2.lineTo(-W, H); sh2.closePath();
+    var hole = new THREE.Path();
+    hole.moveTo(-ow, 0);
+    hole.lineTo(-ow, oh - ow);
+    hole.absarc(0, oh - ow, ow, Math.PI, 0, true);
+    hole.lineTo(ow, 0);
+    hole.closePath();
+    sh2.holes.push(hole);
+    var wg = new THREE.ExtrudeGeometry(sh2, { depth: 0.4, bevelEnabled: false, curveSegments: 14 });
+    var pierceM = new THREE.MeshStandardMaterial({
+      map: stoneTex(0.32, 0.32), color: 0xc4bba6, roughness: 0.92 });
+    var wm = new THREE.Mesh(wg, pierceM);
+    wm.position.set(0, 0.64, TZ1 - 0.4);
+    K.add(wm);
+  })();
   box(3.86, 0.22, 3.86, stone, 0, 7.3, 10.4);            /* string course */
   box(3.9, 0.3, 3.9, stone, 0, 11.5, 10.4);              /* tower cornice */
   var belfry = new THREE.Mesh(new THREE.CylinderGeometry(1.95, 2.05, 3.3, 8), stone);
@@ -2376,44 +2401,97 @@ function buildChurch() {
 
   /* The west portal: a recessed order of stone, two timber leaves standing
      open, and the light of the nave on the step. */
-  var timberM = new THREE.MeshStandardMaterial({ color: 0x9a6a38, roughness: 0.72 });
+  var timberM = new THREE.MeshStandardMaterial({ color: 0x6e4520, roughness: 0.76 });
   var ironM = new THREE.MeshStandardMaterial({
     color: 0x1a1a1e, roughness: 0.5, metalness: 0.65 });
-  /* A recessed order of stone in the tower face: outer archivolt, a reveal,
-     then the lit nave beyond. */
-  var portalArch = new THREE.Mesh(archShape(3.0, 4.3), stoneLit);
-  portalArch.position.set(0, 0.55, 12.16);
-  K.add(portalArch);
-  var portalBand = new THREE.Mesh(archShape(2.62, 4.0), stone);
-  portalBand.position.set(0, 0.6, 12.2);
-  K.add(portalBand);
-  var portalVoid = new THREE.Mesh(archShape(2.24, 3.72), voidM);
-  portalVoid.position.set(0, 0.64, 12.24);
-  K.add(portalVoid);
-  var glowTex = canvasTex(128, 256, function (x, w, h) {
+  /* A proud archivolt round the opening, and jambs down each side. */
+  var archivolt = new THREE.Mesh(
+    new THREE.TorusGeometry(1.26, 0.15, 6, 18, Math.PI), stone);
+  archivolt.position.set(0, 0.64 + 3.3 - 1.12, TZ1 + 0.02);
+  K.add(archivolt);
+  [-1, 1].forEach(function (m3) {
+    box(0.3, 2.2, 0.14, stone, m3 * 1.26, 0.64 + 1.1, TZ1 + 0.02);
+  });
+
+  /* ---- the vestibule ---- */
+  /* Real geometry, not a painted panel: floor, runner, plastered reveals,
+     a candle stand burning inside, and the nave showing through an arch at
+     the back. It is what makes the door read as a way in. */
+  var plasterM = new THREE.MeshStandardMaterial({ color: 0x8a7458, roughness: 0.95 });
+  var vFloorM = new THREE.MeshStandardMaterial({ color: 0x4a443a, roughness: 0.82 });
+  var runnerM = new THREE.MeshStandardMaterial({ color: 0x5e1218, roughness: 0.94 });
+  var VZ1 = TZ1 - 0.46, VD = VZ1 - TZ0, VZC = (TZ0 + VZ1) / 2;
+  box(TW * 2 - 0.7, 0.06, VD, vFloorM, 0, 0.67, VZC);
+  box(1.4, 0.02, VD - 0.25, runnerM, 0, 0.71, VZC);
+  box(TW * 2 - 0.7, 0.1, VD, plasterM, 0, VCEIL - 0.05, VZC);            /* soffit */
+  box(0.06, VCEIL - 0.7, VD, plasterM, -TW + 0.38, 0.64 + (VCEIL - 0.7) / 2, VZC);
+  box(0.06, VCEIL - 0.7, VD, plasterM,  TW - 0.38, 0.64 + (VCEIL - 0.7) / 2, VZC);
+
+  /* the back wall, with the nave lit through its arch */
+  box(TW * 2 - 0.7, VCEIL - 0.64, 0.12, plasterM, 0, 0.64 + (VCEIL - 0.64) / 2, TZ0 + 0.06);
+  var glowTex2 = canvasTex(128, 256, function (x, w, h) {
     var g2 = x.createLinearGradient(0, h, 0, 0);
-    g2.addColorStop(0.00, '#ffd9a2');
-    g2.addColorStop(0.28, '#e8a862');
-    g2.addColorStop(0.62, '#7a4a24');
-    g2.addColorStop(1.00, '#241408');
+    g2.addColorStop(0.00, '#ffdda8'); g2.addColorStop(0.34, '#e8a55c');
+    g2.addColorStop(0.72, '#7c4a20'); g2.addColorStop(1.00, '#1e1206');
     x.fillStyle = g2; x.fillRect(0, 0, w, h);
-    /* the dark of the reveal down each side */
-    var s2 = x.createLinearGradient(0, 0, w, 0);
-    s2.addColorStop(0, 'rgba(20,10,4,.85)'); s2.addColorStop(0.22, 'rgba(20,10,4,0)');
-    s2.addColorStop(0.78, 'rgba(20,10,4,0)'); s2.addColorStop(1, 'rgba(20,10,4,.85)');
-    x.fillStyle = s2; x.fillRect(0, 0, w, h);
-    /* a few candle flames on the stand inside */
-    for (var i = 0; i < 7; i++) {
-      x.fillStyle = 'rgba(255,236,190,' + (0.5 + Math.random() * 0.4) + ')';
+    for (var i = 0; i < 6; i++) {
+      x.fillStyle = 'rgba(255,238,196,' + (0.55 + Math.random() * 0.35) + ')';
       x.beginPath();
-      x.ellipse(30 + i * 11, h - 54 - Math.random() * 8, 2.6, 7, 0, 0, 6.284);
+      x.ellipse(34 + i * 12, h - 60 - Math.random() * 10, 2.4, 6.5, 0, 0, 6.284);
       x.fill();
     }
   }, 1, 1);
-  var naveGlow = new THREE.Mesh(archShape(2.0, 3.35),
-    new THREE.MeshBasicMaterial({ map: glowTex }));
-  naveGlow.position.set(0, 0.68, 12.3);
+  var naveGlow = new THREE.Mesh(archShape(1.5, 2.5),
+    new THREE.MeshBasicMaterial({ map: glowTex2 }));
+  naveGlow.position.set(0, 0.72, TZ0 + 0.13);
   K.add(naveGlow);
+  var naveJamb = new THREE.Mesh(archShape(1.72, 2.62), new THREE.MeshStandardMaterial({
+    color: 0x4a3d2e, roughness: 0.95 }));
+  naveJamb.position.set(0, 0.68, TZ0 + 0.12);
+  K.add(naveJamb);
+
+  /* an icon on the left reveal, lit by the stand */
+  var vIcon = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.54),
+    new THREE.MeshBasicMaterial({
+      map: (function () {
+        var t4 = new THREE.TextureLoader().load('assets/saints/saint-nicholas.webp');
+        if ('colorSpace' in t4) t4.colorSpace = THREE.SRGBColorSpace;
+        else t4.encoding = THREE.sRGBEncoding;
+        return t4;
+      })(), color: 0xbca882
+    }));
+  vIcon.position.set(-TW + 0.43, 1.8, 10.5);
+  vIcon.rotation.y = Math.PI / 2;
+  K.add(vIcon);
+
+  /* the candle stand just inside the door */
+  var vStandM = new THREE.MeshStandardMaterial({
+    color: 0x3a352c, roughness: 0.42, metalness: 0.6 });
+  box(0.44, 0.5, 0.6, vStandM, 0.86, 0.95, 10.95);
+  box(0.5, 0.06, 0.66, vStandM, 0.86, 1.23, 10.95);
+  var vN = 9;
+  var vp = new Float32Array(vN * 3), vph = new Float32Array(vN), vsz = new Float32Array(vN);
+  for (var vi = 0; vi < vN; vi++) {
+    vp[vi * 3] = 0.86 + (Math.random() - 0.5) * 0.34;
+    vp[vi * 3 + 1] = 1.34 + Math.random() * 0.04;
+    vp[vi * 3 + 2] = 10.95 + (Math.random() - 0.5) * 0.46;
+    vph[vi] = Math.random() * 100; vsz[vi] = 15 + Math.random() * 9;
+  }
+  var vg = new THREE.BufferGeometry();
+  vg.setAttribute('position', new THREE.BufferAttribute(vp, 3));
+  vg.setAttribute('aP', new THREE.BufferAttribute(vph, 1));
+  vg.setAttribute('aS', new THREE.BufferAttribute(vsz, 1));
+  var vFlames = new THREE.Points(vg, flameMat());
+  K.add(vFlames);
+  WORLD.vFlames = vFlames;
+
+  /* light inside the porch, so it spills onto the steps and the leaves */
+  var vLight = new THREE.PointLight(0xffb469, 0.85, 4.6, 2.3);
+  vLight.position.set(0.55, 1.5, 10.95);
+  K.add(vLight);
+  var vLight2 = new THREE.PointLight(0xffc98a, 0.55, 3.8, 2.3);
+  vLight2.position.set(0, 1.5, TZ0 + 0.7);
+  K.add(vLight2);
   /* the two leaves, swung back against the reveal */
   [-1, 1].forEach(function (m2) {
     var leaf = new THREE.Group();
@@ -2433,7 +2511,7 @@ function buildChurch() {
       hg.position.set(m2 * 0.44, hy, 0.065);
       leaf.add(hg);
     });
-    leaf.position.set(m2 * 1.06, 0.68, 12.34);
+    leaf.position.set(m2 * 1.14, 0.66, 12.18);
     leaf.rotation.y = m2 * 0.52;                        /* standing open */
     K.add(leaf);
   });
@@ -2734,8 +2812,7 @@ function buildInterior() {
   fg2.setAttribute('position', new THREE.BufferAttribute(fp, 3));
   fg2.setAttribute('aP', new THREE.BufferAttribute(fph, 1));
   fg2.setAttribute('aS', new THREE.BufferAttribute(fsz, 1));
-  var inFlames = new THREE.Points(fg2, WORLD.flames.material.clone());
-  inFlames.material.uniforms = THREE.UniformsUtils.clone(WORLD.flames.material.uniforms);
+  var inFlames = new THREE.Points(fg2, flameMat());
   IN.add(inFlames);
   WORLD.inFlames = inFlames;
 
@@ -3081,6 +3158,37 @@ function drawSerbianArms(x, cx, cy, h) {
   x.restore();
 }
 
+/* The flame shader, shared by the churchyard stand, the vestibule and the
+   nave: the church is built before the stand, so neither can own it. */
+function flameMat() {
+  return new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
+    uniforms: { uT: { value: 0 }, uPR: { value: 1 } },
+    vertexShader:
+      'attribute float aP, aS; uniform float uT, uPR; varying float vF;\n' +
+      'void main(){\n' +
+      '  float f = 0.72 + 0.28 * sin(uT * 7.3 + aP) * sin(uT * 4.1 + aP * 2.3);\n' +
+      '  vF = f;\n' +
+      '  vec4 mv = modelViewMatrix * vec4(position, 1.0);\n' +
+      '  float sz = aS * uPR * f * (30.0 / max(1.0, -mv.z));\n' +
+      '  gl_PointSize = clamp(sz, 2.0, 54.0 * uPR);\n' +
+      '  gl_Position = projectionMatrix * mv; }',
+    fragmentShader:
+      'varying float vF;\n' +
+      'void main(){ vec2 q = gl_PointCoord - 0.5;\n' +
+      /* a flame is taller than it is wide, and sits low in its own sprite */
+      '  vec2 p = vec2(q.x * 2.05, q.y + 0.07);\n' +
+      '  float d = length(p) * 2.0;\n' +
+      '  float core = pow(max(0.0, 1.0 - d), 2.0);\n' +
+      '  float halo = pow(max(0.0, 1.0 - length(q) * 2.0), 1.5) * 0.4;\n' +
+      '  float a = clamp(core * 1.45 + halo, 0.0, 1.0) * vF;\n' +
+      '  if (a < 0.004) discard;\n' +
+      '  vec3 c = mix(vec3(1.0, 0.40, 0.09), vec3(1.0, 0.96, 0.84), core * core);\n' +
+      /* the centre is driven above 1.0 so the bright pass finds it */
+      '  gl_FragColor = vec4(c * (1.0 + core * 1.8), a); }'
+  });
+}
+
 /* ───────────────────────────────────────── stone and copper ── */
 /* Coursed ashlar and standing-seam copper are what the eye reads as "a
    built church" rather than "grey boxes". Both drawn to canvas so the site
@@ -3342,32 +3450,7 @@ function buildCandles() {
   fg.setAttribute('position', new THREE.BufferAttribute(fpos, 3));
   fg.setAttribute('aP', new THREE.BufferAttribute(fph, 1));
   fg.setAttribute('aS', new THREE.BufferAttribute(fsz, 1));
-  var flames = new THREE.Points(fg, new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
-    uniforms: { uT: { value: 0 }, uPR: { value: 1 } },
-    vertexShader:
-      'attribute float aP, aS; uniform float uT, uPR; varying float vF;\n' +
-      'void main(){\n' +
-      '  float f = 0.72 + 0.28 * sin(uT * 7.3 + aP) * sin(uT * 4.1 + aP * 2.3);\n' +
-      '  vF = f;\n' +
-      '  vec4 mv = modelViewMatrix * vec4(position, 1.0);\n' +
-      '  float sz = aS * uPR * f * (30.0 / max(1.0, -mv.z));\n' +
-      '  gl_PointSize = clamp(sz, 2.0, 54.0 * uPR);\n' +
-      '  gl_Position = projectionMatrix * mv; }',
-    fragmentShader:
-      'varying float vF;\n' +
-      'void main(){ vec2 q = gl_PointCoord - 0.5;\n' +
-      /* a flame is taller than it is wide, and sits low in its own sprite */
-      '  vec2 p = vec2(q.x * 2.05, q.y + 0.07);\n' +
-      '  float d = length(p) * 2.0;\n' +
-      '  float core = pow(max(0.0, 1.0 - d), 2.0);\n' +
-      '  float halo = pow(max(0.0, 1.0 - length(q) * 2.0), 1.5) * 0.4;\n' +
-      '  float a = clamp(core * 1.45 + halo, 0.0, 1.0) * vF;\n' +
-      '  if (a < 0.004) discard;\n' +
-      '  vec3 c = mix(vec3(1.0, 0.40, 0.09), vec3(1.0, 0.96, 0.84), core * core);\n' +
-      /* the centre is driven above 1.0 so the bright pass finds it */
-      '  gl_FragColor = vec4(c * (1.0 + core * 1.8), a); }'
-  }));
+  var flames = new THREE.Points(fg, flameMat());
   G.add(flames);
   WORLD.flames = flames;
 
@@ -3843,6 +3926,7 @@ function onResize() {
     L.a.setSize(lw, lh); L.b.setSize(lw, lh); L.w = lw; L.h = lh;
   });
   if (WORLD.inFlames) WORLD.inFlames.material.uniforms.uPR.value = pr;
+  if (WORLD.vFlames) WORLD.vFlames.material.uniforms.uPR.value = pr;
   if (WORLD.birds) WORLD.birds.material.uniforms.uPR.value = pr;
   if (WORLD.snow)   WORLD.snow.material.uniforms.uPR.value = pr;
   if (WORLD.embers) WORLD.embers.material.uniforms.uPR.value = pr;
@@ -3941,6 +4025,7 @@ function frame(now) {
     }
   }
   if (WORLD.inFlames) WORLD.inFlames.material.uniforms.uT.value = T;
+  if (WORLD.vFlames) WORLD.vFlames.material.uniforms.uT.value = T;
   if (WORLD.flag)  WORLD.flag.material.uniforms.uT.value = T;
   if (WORLD.birds) WORLD.birds.material.uniforms.uT.value = T;
 
