@@ -201,6 +201,45 @@ img{ max-width:100%; display:block; }
 }
 @media not all and (hover:hover){ .cur-dot{ display:none; } }
 
+/* ══════════════════════════════════════ 4b · the figure marker ══ */
+.figpin{
+  position:fixed; z-index:40; display:flex; align-items:center; gap:9px;
+  transform:translate(-50%,-100%); pointer-events:auto;
+  opacity:0; transition:opacity .5s var(--ease);
+}
+.figpin[hidden]{ display:none; }
+.figpin.on{ opacity:1; }
+.figpin-dot{
+  width:9px; height:9px; border-radius:50%; flex:none;
+  background:var(--gold-lit); box-shadow:0 0 0 1px rgba(231,175,35,.5);
+  position:relative;
+}
+.figpin-dot::after{
+  content:""; position:absolute; inset:-6px; border-radius:50%;
+  border:1px solid rgba(231,175,35,.55);
+  animation:figping 2.6s var(--ease-out) infinite;
+}
+@keyframes figping{
+  0%{ transform:scale(.6); opacity:.9 }
+  70%,100%{ transform:scale(1.9); opacity:0 }
+}
+.figpin-tx{
+  display:flex; flex-direction:column; line-height:1.2;
+  padding:5px 10px; background:rgba(6,7,10,.86);
+  border:1px solid var(--line); white-space:nowrap;
+  transition:border-color .4s var(--ease);
+}
+.figpin:hover .figpin-tx{ border-color:var(--gold-lit); }
+.figpin-tx b{
+  font-family:var(--serif); font-weight:400; font-size:12.5px; color:var(--bone);
+}
+.figpin-tx i{
+  font-style:normal; font-family:var(--mono); font-size:8px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--gold);
+}
+@media (max-width:760px){ .figpin-tx{ display:none; } }
+@media (prefers-reduced-motion:reduce){ .figpin-dot::after{ animation:none; opacity:.5; } }
+
 /* ══════════════════════════════════════════════════════ 5 · preloader ══ */
 #pre{
   position:fixed; inset:0; z-index:100; background:var(--ink);
@@ -1255,6 +1294,14 @@ img{ max-width:100%; display:block; }
 <div id="swapmask" aria-hidden="true"></div>
 <div id="grain" aria-hidden="true"></div>
 <div class="cur-dot" id="cursor" aria-hidden="true"></div>
+
+<!-- A marker that rides over the priest standing at the door. It is a real
+     anchor into his section, so it works from the keyboard and without the
+     canvas; the script only moves it and hides it when he is out of shot. -->
+<a class="figpin" id="priestPin" href="#priest" hidden data-cursor>
+  <span class="figpin-dot" aria-hidden="true"></span>
+  <span class="figpin-tx"><b>Father &#272;ura&#273;</b><i>Ask him</i></span>
+</a>
 
 <!-- ═════════════════════════════════════════════════════ preloader ═══ -->
 <div id="pre">
@@ -2576,6 +2623,7 @@ function startWorld() {
   buildLights(); buildPost(); buildRig();
   dressWall();
 
+  PIN.el = $('#priestPin');
   window.addEventListener('resize', onResize, { passive: true });
   onResize();
   preTo(0.9);
@@ -3101,6 +3149,74 @@ function buildChurch() {
   /* transept ends */
   arch(0.44, 3.0, glassM, 7.76, 2.4, -0.6, Math.PI / 2);
   arch(0.44, 3.0, glassM, -7.76, 2.4, -0.6, -Math.PI / 2);
+
+
+/* ──────────────────────────────────────── the priest at the door ── */
+/* Stylised, and deliberately so: this is a real man, and a low-poly
+   silhouette in a riasa at his own church door is a figure standing there,
+   not a likeness of his face. Read at fifteen metres it is the black robe,
+   the beard and the kamilavka that say who it is. */
+function buildPriestFigure() {
+  var G = new THREE.Group();
+  var black = new THREE.MeshStandardMaterial({ color: 0x1e1d26, roughness: 0.94 });
+  var blackLit = new THREE.MeshStandardMaterial({ color: 0x2a2934, roughness: 0.9 });
+  var skin  = new THREE.MeshStandardMaterial({
+    color: 0xa8825f, roughness: 0.8,
+    emissive: new THREE.Color(0x140a04), emissiveIntensity: 1 });
+  var hair  = new THREE.MeshStandardMaterial({ color: 0x3a322c, roughness: 1 });
+  var gold  = new THREE.MeshStandardMaterial({
+    color: 0xb08c34, roughness: 0.38, metalness: 0.75 });
+
+  /* the riasa, one fall from shoulder to floor */
+  var robe = new THREE.Mesh(new THREE.CylinderGeometry(0.205, 0.38, 1.5, 14), black);
+  robe.position.y = 0.76; G.add(robe);
+  var yoke = new THREE.Mesh(new THREE.CylinderGeometry(0.225, 0.205, 0.32, 14), blackLit);
+  yoke.position.y = 1.66; G.add(yoke);
+  [-1, 1].forEach(function (m) {
+    var arm = new THREE.Mesh(new THREE.CylinderGeometry(0.064, 0.096, 0.66, 8), blackLit);
+    arm.position.set(m * 0.205, 1.36, 0.03);
+    arm.rotation.z = m * 0.11;
+    G.add(arm);
+    var hand = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), skin);
+    hand.position.set(m * 0.24, 1.04, 0.06); G.add(hand);
+  });
+
+  /* head, beard, hair, kamilavka */
+  var head = new THREE.Mesh(new THREE.SphereGeometry(0.118, 14, 12), skin);
+  head.position.y = 1.9; head.scale.set(1, 1.1, 0.96); G.add(head);
+  var beard = new THREE.Mesh(new THREE.ConeGeometry(0.092, 0.24, 10), hair);
+  beard.position.set(0, 1.77, 0.03); beard.rotation.x = Math.PI; G.add(beard);
+  var mane = new THREE.Mesh(
+    new THREE.SphereGeometry(0.116, 12, 10, 0, Math.PI * 2, 0, 1.5), hair);
+  mane.position.y = 1.9; G.add(mane);
+  var hat = new THREE.Mesh(new THREE.CylinderGeometry(0.132, 0.116, 0.21, 12), blackLit);
+  hat.position.y = 2.07; G.add(hat);
+  var brim = new THREE.Mesh(new THREE.CylinderGeometry(0.144, 0.144, 0.024, 12), blackLit);
+  brim.position.y = 2.17; G.add(brim);
+
+  /* the pectoral cross on its chain */
+  var chain = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.006, 4, 14, Math.PI), gold);
+  chain.position.set(0, 1.63, 0.15); chain.rotation.x = Math.PI; G.add(chain);
+  var stem = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.13, 0.012), gold);
+  stem.position.set(0, 1.47, 0.17); G.add(stem);
+  var barA = new THREE.Mesh(new THREE.BoxGeometry(0.072, 0.014, 0.012), gold);
+  barA.position.set(0, 1.505, 0.17); G.add(barA);
+  var barB = new THREE.Mesh(new THREE.BoxGeometry(0.044, 0.012, 0.012), gold);
+  barB.position.set(0, 1.535, 0.17); G.add(barB);
+
+  /* on the second step, clear of the doorway, turned toward the path */
+  G.position.set(-1.9, 0.24, 13.35);
+  G.rotation.y = 0.46;
+  G.scale.setScalar(0.92);
+  K.add(G);
+  var pl = new THREE.PointLight(0xffd0a0, 0.5, 3.4, 2.1);
+  pl.position.set(-1.35, 1.95, 14.1);
+  K.add(pl);
+  WORLD.priestFig = G;
+  /* where the pin should sit: just above the kamilavka */
+  WORLD.priestHead = new THREE.Vector3(-1.9, 1.32, 13.35);
+}
+buildPriestFigure();
 
   scene.add(K);
   WORLD.church = K;
@@ -4419,6 +4535,8 @@ function buildRig() {
 }
 
 var _p = new THREE.Vector3(), _t = new THREE.Vector3(), _d = new THREE.Vector3();
+var _pin = new THREE.Vector3();
+var PIN = { el: null, shown: false };
 
 /* Every waypoint is composed for a wide frame. On a tall one the same
    numbers crop the dome in half, so the rig steps back along its own view
@@ -4605,6 +4723,29 @@ function frame(now) {
   if (WORLD.inFlames) WORLD.inFlames.material.uniforms.uT.value = T;
   if (WORLD.vFlames) WORLD.vFlames.material.uniforms.uT.value = T;
   if (WORLD.gFlames) WORLD.gFlames.material.uniforms.uT.value = T;
+
+  /* the marker over the priest at the door */
+  if (PIN.el && WORLD.priestHead) {
+    /* he only exists while the shell does, and only reads while the camera
+       is still outside it: past the door he is behind the lens */
+    var pinWant = !RIG.indoors && RIG.smooth < 2.25;
+    if (pinWant) {
+      _pin.copy(WORLD.priestHead).project(camera);
+      var onScreen = _pin.z < 1 && Math.abs(_pin.x) < 0.98 && Math.abs(_pin.y) < 0.96;
+      if (onScreen) {
+        PIN.el.style.transform = 'translate(-50%,-100%) translate3d(' +
+          ((_pin.x * 0.5 + 0.5) * vpW()).toFixed(1) + 'px,' +
+          ((-_pin.y * 0.5 + 0.5) * vpH()).toFixed(1) + 'px,0)';
+      }
+      pinWant = onScreen;
+    }
+    if (pinWant !== PIN.shown) {
+      PIN.shown = pinWant;
+      PIN.el.hidden = !pinWant;
+      if (pinWant) requestAnimationFrame(function () { PIN.el.classList.add('on'); });
+      else PIN.el.classList.remove('on');
+    }
+  }
   if (WORLD.flag)  WORLD.flag.material.uniforms.uT.value = T;
   if (WORLD.birds) WORLD.birds.material.uniforms.uT.value = T;
 
