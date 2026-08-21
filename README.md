@@ -82,12 +82,14 @@ There is no arcade or portico. The west front is the bell tower, and the entranc
 single arched portal in its base. An earlier pass invented a five-bay porch across the
 front, which is not on the building and read as wrong from every angle.
 
-The opening is real, not painted. The tower shaft is hollow for its lower storey and its
+Both openings are real, not painted. The tower shaft is hollow for its lower storey and its
 west wall is an extruded shape with an arch-shaped hole cut in it, so what shows through
 parallaxes as the camera moves: a vestibule with a stone floor, a red runner, plastered
 reveals, an icon, a candle stand burning inside, and the nave lit through a second arch at
-the back. Painting the doorway as a gradient plane on a solid wall, which is what it was,
-reads as a poster hung on the tower.
+the back. The porch's back wall is pierced the same way, and behind it sits a
+metre of actual room: gilt boards, an icon in a gold frame, a stand of candles burning in
+front of it, and the runner carrying on in. Painting either opening as a gradient plane on
+a solid wall, which is what both were, reads as a poster hung on the tower.
 
 Two things fought this. `arch()` adds a mullion and two transoms to anything wider than
 half a metre, so the doorway was being glazed like a window. And `ExtrudeGeometry` writes

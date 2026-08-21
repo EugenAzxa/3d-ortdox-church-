@@ -2269,12 +2269,12 @@ function buildChurch() {
   /* nave, transept, narthex */
   box(9.4, 7.2, 15.0, stone, 0, 3.6, 0);
   box(15.4, 6.4, 7.6, stone, 0, 3.2, -0.6);        /* the cross arms */
-  box(7.6, 5.6, 3.0, stoneLit, 0, 2.8, 7.9);       /* narthex, west */
+  box(7.6, 5.6, 2.2, stoneLit, 0, 2.8, 7.0);       /* narthex, west */
 
   /* a plinth course, so the walls meet the snow on a line rather than a seam */
   box(10.2, 0.7, 15.8, stoneLit, 0, 0.35, 0);
   box(16.2, 0.7, 8.4, stoneLit, 0, 0.35, -0.6);
-  box(8.4, 0.7, 3.8, stoneLit, 0, 0.35, 7.9);
+  box(8.4, 0.7, 3.0, stoneLit, 0, 0.35, 7.0);
 
   /* apse, east: a half cylinder with its own conch roof */
   var apse = new THREE.Mesh(
@@ -2292,7 +2292,7 @@ function buildChurch() {
   gable( 4.7, 4.8, 2.6, roofM,  0.00, 7.2,  5.25, 0);            /* nave, west of the crossing */
   gable( 4.1, 3.9, 2.3, roofM, -5.65, 6.4, -0.60, Math.PI / 2);  /* north cross arm */
   gable( 4.1, 3.9, 2.3, roofM,  5.65, 6.4, -0.60, Math.PI / 2);  /* south cross arm */
-  gable( 3.1, 3.9, 1.9, roofM,  0.00, 5.6,  7.90, 0);            /* narthex */
+  gable( 2.3, 3.9, 1.9, roofM,  0.00, 5.6,  7.00, 0);            /* narthex */
 
   /* the drum: twelve faces, eight of them windowed */
   var drum = new THREE.Mesh(new THREE.CylinderGeometry(3.35, 3.35, 4.3, 12), stoneLit);
@@ -2417,7 +2417,11 @@ function buildChurch() {
   /* Real geometry, not a painted panel: floor, runner, plastered reveals,
      a candle stand burning inside, and the nave showing through an arch at
      the back. It is what makes the door read as a way in. */
-  var plasterM = new THREE.MeshStandardMaterial({ color: 0x8a7458, roughness: 0.95 });
+  var gWallM0 = new THREE.MeshStandardMaterial({ color: 0x5b4c39, roughness: 0.95 });
+  var vStandMDeclared = new THREE.MeshStandardMaterial({
+    color: 0x3a352c, roughness: 0.42, metalness: 0.6 });
+  var vStandM = vStandMDeclared;
+  var plasterM = new THREE.MeshStandardMaterial({ color: 0x6f5c44, roughness: 0.95 });
   var vFloorM = new THREE.MeshStandardMaterial({ color: 0x4a443a, roughness: 0.82 });
   var runnerM = new THREE.MeshStandardMaterial({ color: 0x5e1218, roughness: 0.94 });
   var VZ1 = TZ1 - 0.46, VD = VZ1 - TZ0, VZC = (TZ0 + VZ1) / 2;
@@ -2427,8 +2431,22 @@ function buildChurch() {
   box(0.06, VCEIL - 0.7, VD, plasterM, -TW + 0.38, 0.64 + (VCEIL - 0.7) / 2, VZC);
   box(0.06, VCEIL - 0.7, VD, plasterM,  TW - 0.38, 0.64 + (VCEIL - 0.7) / 2, VZC);
 
-  /* the back wall, with the nave lit through its arch */
-  box(TW * 2 - 0.7, VCEIL - 0.64, 0.12, plasterM, 0, 0.64 + (VCEIL - 0.64) / 2, TZ0 + 0.06);
+  /* the back of the porch, pierced so the room beyond actually shows */
+  (function () {
+    var BW = TW - 0.35, BH = VCEIL - 0.64, ow = 0.78, oh = 2.42;
+    var sh3 = new THREE.Shape();
+    sh3.moveTo(-BW, 0); sh3.lineTo(BW, 0); sh3.lineTo(BW, BH); sh3.lineTo(-BW, BH); sh3.closePath();
+    var h3 = new THREE.Path();
+    h3.moveTo(-ow, 0); h3.lineTo(-ow, oh - ow);
+    h3.absarc(0, oh - ow, ow, Math.PI, 0, true);
+    h3.lineTo(ow, 0); h3.closePath();
+    sh3.holes.push(h3);
+    var bg = new THREE.ExtrudeGeometry(sh3, { depth: 0.14, bevelEnabled: false, curveSegments: 12 });
+    var bm = new THREE.Mesh(bg, new THREE.MeshStandardMaterial({
+      color: 0x6f5c44, roughness: 0.95 }));
+    bm.position.set(0, 0.64, TZ0);
+    K.add(bm);
+  })();
   var glowTex2 = canvasTex(128, 256, function (x, w, h) {
     var g2 = x.createLinearGradient(0, h, 0, 0);
     g2.addColorStop(0.00, '#ffdda8'); g2.addColorStop(0.34, '#e8a55c');
@@ -2441,14 +2459,59 @@ function buildChurch() {
       x.fill();
     }
   }, 1, 1);
-  var naveGlow = new THREE.Mesh(archShape(1.5, 2.5),
-    new THREE.MeshBasicMaterial({ map: glowTex2 }));
-  naveGlow.position.set(0, 0.72, TZ0 + 0.13);
-  K.add(naveGlow);
-  var naveJamb = new THREE.Mesh(archShape(1.72, 2.62), new THREE.MeshStandardMaterial({
-    color: 0x4a3d2e, roughness: 0.95 }));
-  naveJamb.position.set(0, 0.68, TZ0 + 0.12);
-  K.add(naveJamb);
+  /* Behind the inner arch, a metre of actual room: floor, reveals, and a
+     fragment of the screen at the end of it with candles burning in front.
+     A gradient plane in the opening is a picture of an interior; this is a
+     shallow one, and it parallaxes. */
+  var GZ1 = TZ0 + 0.02, GZ0 = 8.15;
+  var gWallM = new THREE.MeshStandardMaterial({ color: 0x6b5a44, roughness: 0.95 });
+  box(2.4, 0.05, GZ1 - GZ0, vFloorM, 0, 0.68, (GZ0 + GZ1) / 2);
+  box(1.3, 0.02, GZ1 - GZ0, runnerM, 0, 0.71, (GZ0 + GZ1) / 2);
+  box(0.08, 2.9, GZ1 - GZ0, gWallM, -1.16, 2.1, (GZ0 + GZ1) / 2);
+  box(0.08, 2.9, GZ1 - GZ0, gWallM,  1.16, 2.1, (GZ0 + GZ1) / 2);
+  box(2.4, 0.08, GZ1 - GZ0, gWallM, 0, 3.5, (GZ0 + GZ1) / 2);
+  /* the screen at the end: gilt boards, one icon, a lamp above it */
+  var gGold = new THREE.MeshStandardMaterial({
+    color: 0x7a5a1e, roughness: 0.4, metalness: 0.7,
+    emissive: new THREE.Color(0x1a1204), emissiveIntensity: 1 });
+  box(2.4, 2.9, 0.12, gGold, 0, 2.1, GZ0 + 0.06);
+  var gIcoT = new THREE.TextureLoader().load('assets/saints/john-chrysostom.webp');
+  if ('colorSpace' in gIcoT) gIcoT.colorSpace = THREE.SRGBColorSpace;
+  else gIcoT.encoding = THREE.sRGBEncoding;
+  var gIco = new THREE.Mesh(archShape(0.78, 1.16),
+    new THREE.MeshBasicMaterial({ map: gIcoT, color: 0xa2957a }));
+  gIco.position.set(0, 1.15, GZ0 + 0.14);
+  K.add(gIco);
+  var gFrame = new THREE.Mesh(archShape(0.92, 1.3), gGold);
+  gFrame.position.set(0, 1.09, GZ0 + 0.13);
+  K.add(gFrame);
+
+  /* candles on a stand in front of the screen */
+  var gN = 7;
+  var gp = new Float32Array(gN * 3), gph = new Float32Array(gN), gsz = new Float32Array(gN);
+  for (var gi = 0; gi < gN; gi++) {
+    gp[gi * 3] = (gi - (gN - 1) / 2) * 0.16;
+    gp[gi * 3 + 1] = 1.32 + Math.random() * 0.04;
+    gp[gi * 3 + 2] = GZ0 + 0.52;
+    gph[gi] = Math.random() * 100; gsz[gi] = 14 + Math.random() * 8;
+  }
+  var gg = new THREE.BufferGeometry();
+  gg.setAttribute('position', new THREE.BufferAttribute(gp, 3));
+  gg.setAttribute('aP', new THREE.BufferAttribute(gph, 1));
+  gg.setAttribute('aS', new THREE.BufferAttribute(gsz, 1));
+  var gFlames = new THREE.Points(gg, flameMat());
+  K.add(gFlames);
+  WORLD.gFlames = gFlames;
+  box(0.66, 0.5, 0.2, vStandMDeclared, 0, 1.05, GZ0 + 0.52);
+
+  var gLight = new THREE.PointLight(0xffbb72, 2.2, 5.0, 2.0);
+  gLight.position.set(0, 1.75, GZ0 + 0.75);
+  K.add(gLight);
+  /* a plain reveal round the inner opening */
+  var innerRing = new THREE.Mesh(
+    new THREE.TorusGeometry(0.86, 0.075, 5, 14, Math.PI), gWallM0);
+  innerRing.position.set(0, 0.64 + 2.42 - 0.78, TZ0 + 0.16);
+  K.add(innerRing);
 
   /* an icon on the left reveal, lit by the stand */
   var vIcon = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.54),
@@ -2465,8 +2528,6 @@ function buildChurch() {
   K.add(vIcon);
 
   /* the candle stand just inside the door */
-  var vStandM = new THREE.MeshStandardMaterial({
-    color: 0x3a352c, roughness: 0.42, metalness: 0.6 });
   box(0.44, 0.5, 0.6, vStandM, 0.86, 0.95, 10.95);
   box(0.5, 0.06, 0.66, vStandM, 0.86, 1.23, 10.95);
   var vN = 9;
@@ -3927,6 +3988,7 @@ function onResize() {
   });
   if (WORLD.inFlames) WORLD.inFlames.material.uniforms.uPR.value = pr;
   if (WORLD.vFlames) WORLD.vFlames.material.uniforms.uPR.value = pr;
+  if (WORLD.gFlames) WORLD.gFlames.material.uniforms.uPR.value = pr;
   if (WORLD.birds) WORLD.birds.material.uniforms.uPR.value = pr;
   if (WORLD.snow)   WORLD.snow.material.uniforms.uPR.value = pr;
   if (WORLD.embers) WORLD.embers.material.uniforms.uPR.value = pr;
@@ -4026,6 +4088,7 @@ function frame(now) {
   }
   if (WORLD.inFlames) WORLD.inFlames.material.uniforms.uT.value = T;
   if (WORLD.vFlames) WORLD.vFlames.material.uniforms.uT.value = T;
+  if (WORLD.gFlames) WORLD.gFlames.material.uniforms.uT.value = T;
   if (WORLD.flag)  WORLD.flag.material.uniforms.uT.value = T;
   if (WORLD.birds) WORLD.birds.material.uniforms.uT.value = T;
 
