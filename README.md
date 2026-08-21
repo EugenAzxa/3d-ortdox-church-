@@ -214,6 +214,11 @@ collar, hair to the collar and a beard, and a lit taper in the right hand. The f
 stylised head. A vested figure at his own church door is a priest standing there; a generated
 likeness of a real person's face is a different thing, and not one to make.
 
+The head is a skull under hair with a face on it: brow, eyes, nose, moustache and a beard
+that reads separately from the skin, under a cap of hair that stops at the brow with the
+length falling behind to the collar. Any hair mesh that wraps the front of the skull leaves
+no face at all, and a pale sphere inside a dark one reads as a bowl.
+
 Judge it at the distance the site actually uses. Several passes were spent fixing faults
 visible only from two metres, which the walk never gets to.
 

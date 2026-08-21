@@ -3271,22 +3271,65 @@ function buildPriestFigure() {
   var bcH = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.03, 0.02), gold);
   bcH.position.set(0, SHO - 0.35, -0.44); G.add(bcH);
 
-  /* ---- head, hair to the shoulders, beard ---- */
-  var head = new THREE.Mesh(new THREE.SphereGeometry(0.112, 14, 12), skin);
-  head.position.set(0, SHO + 0.268, 0.036); head.scale.set(0.9, 1.0, 0.94); G.add(head);
-  /* One dark mass, set back far enough that the face stands in front of it,
-     and long enough to reach the collar as it does in the reference. */
-  var mane = new THREE.Mesh(new THREE.SphereGeometry(0.132, 16, 12), hairM);
-  mane.position.set(0, SHO + 0.278, -0.016);
-  mane.scale.set(1.06, 1.1, 1.02); G.add(mane);
-  var fall = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.115, 0.132, 0.28, 14, 1, true,
-                               Math.PI * 0.26, Math.PI * 1.48), hairM);
-  fall.position.set(0, SHO + 0.13, -0.03); G.add(fall);
-  var beard = new THREE.Mesh(new THREE.ConeGeometry(0.082, 0.19, 10), hairM);
-  beard.position.set(0, SHO + 0.152, 0.062); beard.rotation.x = Math.PI; G.add(beard);
+  /* ---- the head ---- */
+  /* A skull under hair, with a face on it. Without a brow, a nose and a
+     beard that reads separately from the skin, a pale sphere inside a dark
+     one is a bowl, which is exactly what it looked like. */
+  var HY = SHO + 0.27;
+  var brow  = new THREE.MeshStandardMaterial({ color: 0x8f6d4e, roughness: 0.84 });
+  var dark  = new THREE.MeshStandardMaterial({ color: 0x2b231c, roughness: 0.95 });
+  var eyeM  = new THREE.MeshStandardMaterial({ color: 0x1d1712, roughness: 0.6 });
 
-  /* ---- arms, and the taper he is holding ---- */
+  var head = new THREE.Mesh(new THREE.SphereGeometry(0.108, 18, 14), skin);
+  head.position.set(0, HY, 0.012);
+  head.scale.set(0.94, 1.08, 0.98); G.add(head);
+
+  /* the jaw, a little narrower than the skull */
+  var jaw = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), skin);
+  jaw.position.set(0, HY - 0.062, 0.026);
+  jaw.scale.set(0.88, 0.78, 0.94); G.add(jaw);
+
+  /* brow ridge, and the shadow it casts on the sockets */
+  var browM = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.022, 0.03), brow);
+  browM.position.set(0, HY + 0.038, 0.088); browM.rotation.x = -0.16; G.add(browM);
+  [-1, 1].forEach(function (m) {
+    var eye = new THREE.Mesh(new THREE.SphereGeometry(0.0135, 8, 6), eyeM);
+    eye.position.set(m * 0.038, HY + 0.012, 0.088); G.add(eye);
+  });
+
+  /* nose */
+  var nose = new THREE.Mesh(new THREE.ConeGeometry(0.021, 0.062, 6), skin);
+  nose.position.set(0, HY - 0.012, 0.1);
+  nose.rotation.set(Math.PI * 0.42, 0, 0); G.add(nose);
+
+  /* moustache and beard, one dark mass round the jaw as in the reference */
+  var must = new THREE.Mesh(new THREE.SphereGeometry(0.036, 10, 8), hairM);
+  must.position.set(0, HY - 0.048, 0.086);
+  must.scale.set(1.5, 0.5, 0.7); G.add(must);
+  var beard = new THREE.Mesh(new THREE.SphereGeometry(0.086, 14, 12), hairM);
+  beard.position.set(0, HY - 0.088, 0.034);
+  beard.scale.set(0.95, 1.15, 0.92); G.add(beard);
+  var chin = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.1, 10), hairM);
+  chin.position.set(0, HY - 0.176, 0.03); chin.rotation.x = Math.PI; G.add(chin);
+
+  /* Hair in two parts: a cap that stops at the brow, and a mass behind the
+     skull for the length. Anything that wraps the front leaves no face. */
+  var cap2 = new THREE.Mesh(
+    new THREE.SphereGeometry(0.115, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.4), hairM);
+  cap2.position.set(0, HY + 0.006, 0.008);
+  cap2.scale.set(1.05, 1.16, 1.04); G.add(cap2);
+  var backMass = new THREE.Mesh(new THREE.SphereGeometry(0.114, 16, 12), hairM);
+  backMass.position.set(0, HY - 0.012, -0.052);
+  backMass.scale.set(1.06, 1.08, 1.0); G.add(backMass);
+  /* the length past the ears to the collar */
+  var fall = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.108, 0.126, 0.28, 16, 1, true,
+                               Math.PI * 0.22, Math.PI * 1.56), hairM);
+  fall.position.set(0, HY - 0.135, -0.028); G.add(fall);
+  var nape = new THREE.Mesh(new THREE.SphereGeometry(0.098, 12, 10), hairM);
+  nape.position.set(0, HY - 0.245, -0.055);
+  nape.scale.set(1.16, 0.46, 0.86); G.add(nape);
+
   var fore = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.28, 8), cassock);
   fore.position.set(0.235, SHO - 0.74, 0.3); fore.rotation.set(-0.55, 0, 0.22); G.add(fore);
   var hand = new THREE.Mesh(new THREE.SphereGeometry(0.046, 8, 6), skin);
