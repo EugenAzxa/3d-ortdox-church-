@@ -204,12 +204,18 @@ weighted to the bands the columns sit in and left thin through the middle.
 Chapter 03 carries a panel for Father Đurađ Kojić: nine questions a family actually arrives
 with, and the answers the office gives, appended to a transcript as they are chosen.
 
-He also stands at the door. A stylised figure in a riasa and kamilavka waits on the steps,
+He also stands at the door. A figure vested for a service waits on the steps,
 left of the portal, with a marker riding over him that opens his section. The marker is a
 real anchor, so it works from the keyboard and without the canvas; the frame loop only
 projects his chest to the screen, moves it, and hides it once the camera is past the door.
-The figure is deliberately low-poly: a silhouette in a black robe at his own church door is
-a man standing there, not a likeness of a real person's face.
+What is modelled is the vestments, because that is what carries at fifteen metres: black
+cassock with its gold-trimmed front, red phelonion with gold hems and crosses, the stiff gold
+collar, hair to the collar and a beard, and a lit taper in the right hand. The face stays a
+stylised head. A vested figure at his own church door is a priest standing there; a generated
+likeness of a real person's face is a different thing, and not one to make.
+
+Judge it at the distance the site actually uses. Several passes were spent fixing faults
+visible only from two metres, which the walk never gets to.
 
 It is deliberately a fixed set, not a generative chat, and it takes no free text. Father
 Đurađ is a real, named man, and nothing on this page should be able to put a sentence in his
