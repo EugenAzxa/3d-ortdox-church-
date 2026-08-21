@@ -222,6 +222,16 @@ straight off the disk the wall says so rather than sitting empty.
 | 05 | Remembrance | Вечан спомен | Centred on the iconostasis, the kontakion over it |
 | -- | Footer | | The ascent out, above the roofline |
 
+Chapter 01 is squared onto the doorway and chapter 02 sits just inside it, so the leg
+between them is a dolly straight through the opening. It is worth checking that literally
+rather than by eye: sample the leg, find where it crosses the door plane, and confirm the
+crossing falls inside the jambs. An earlier version stood three metres off the axis and
+aimed a metre and a half above the lintel, and slid past the door instead of entering it.
+
+Curve tension is 0.22 to 0.3 rather than the default. The tangent at each waypoint is set
+by its neighbours, so a hero shot fourteen metres to one side swings the next leg wide
+before it comes back.
+
 Each segment of the camera path is eased in and out, so velocity reaches zero at every
 waypoint. Traversed at a constant rate per chapter, waypoints tens of metres apart outside
 and two metres apart inside give 1.25 units a step out there and 0.05 in here, and the step
