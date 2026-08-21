@@ -69,6 +69,19 @@ itself, keeping bone-white headings readable against a lit ceiling.
 The whole interior is registered for one opacity fade driven by scroll position, and the snow
 and embers fade with it - weather belongs to the churchyard.
 
+### The church
+
+Modelled from renders of the parish's own idiom rather than from a generic dome-and-cross
+silhouette: coursed ashlar limestone, standing-seam copper on every roof, a melon dome whose
+eight ribs are half-torus arcs so each is a true meridian, an octagonal belfry stage pierced
+on all eight faces above a square shaft with a string course, narrow slit windows in stone
+surrounds, an arcaded west porch with archivolts over dark bays, and a recessed portal with
+two timber leaves standing open on strap hinges.
+
+Stone and copper are both canvas textures. If you retint them, tint light: the map is
+multiplied by the material colour, so a near-black tint erases the masonry drawn into it,
+which is exactly what happened the first time.
+
 ### The seasons
 
 `SEASONS` holds four palettes and weather profiles, picked from the current month for the
