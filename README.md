@@ -170,6 +170,19 @@ The scrim over the interior has to stay light enough for them to survive it. A f
 full-frame black protects the type perfectly and puts out every candle in the room, so it is
 weighted to the bands the columns sit in and left thin through the middle.
 
+### Asking for a candle
+
+Chapter 03 carries the parish's candle offering: three things it will light, an intention,
+a name, an address for the photograph, and a note to the priest. Submitting shows what would
+come back, with the coming Sunday worked out from today's date.
+
+It is a request, not a checkout. The parish office would take the payment. This page asks
+for no card details anywhere, accepts none, and says so under the form; a test asserts that
+no payment field exists. Nothing is posted to any server.
+
+From a Memory Page, "ask the parish for a real one" closes the page and carries that
+person's name down into the form.
+
 ### The memorial wall
 
 The six people are fictional and the notice above the grid says so; that notice is load

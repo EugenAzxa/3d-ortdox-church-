@@ -690,6 +690,143 @@ img{ max-width:100%; display:block; }
 }
 
 
+
+/* ══════════════════════════════════ 12b · a candle, asked for ══ */
+.offer{
+  margin-top:clamp(46px,8vh,96px);
+  padding-top:clamp(24px,4vh,42px);
+}
+.offer-top{
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+  gap:clamp(22px,3.6vw,60px); align-items:start;
+}
+.offer-lg{
+  display:block; font-family:var(--mono); font-size:9px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--gold); margin-bottom:9px;
+}
+.offer-form{ margin-top:clamp(26px,4.4vh,46px); }
+.offer-set{ border:0; padding:0; margin:0 0 clamp(20px,3vh,30px); min-width:0; }
+.offer-set legend{ padding:0; }
+.offer-opts{
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1px; background:var(--line-soft); border-top:1px solid var(--line);
+}
+.opt{
+  background:rgba(6,7,10,.9); border:0; cursor:pointer; text-align:left;
+  padding:16px 15px 18px; color:inherit; font:inherit; position:relative;
+  display:flex; flex-direction:column; gap:5px;
+  transition:background-color .4s var(--ease);
+}
+.opt::before{
+  content:""; position:absolute; left:0; right:0; top:-1px; height:1px;
+  background:var(--gold-lit); transform:scaleX(0); transform-origin:left;
+  transition:transform .5s var(--ease);
+}
+.opt:hover{ background:rgba(13,15,20,.95); }
+.opt.on{ background:rgba(34,26,10,.95); }
+.opt.on::before{ transform:scaleX(1); }
+.opt b{
+  font-family:var(--serif); font-weight:400; font-size:clamp(14px,1.34vw,18px);
+  color:var(--bone);
+}
+.opt span{ font-size:11.5px; line-height:1.5; color:var(--muted); }
+.opt i{
+  font-style:normal; font-family:var(--mono); font-size:12px; letter-spacing:.1em;
+  color:var(--bone-dim); margin-top:auto; padding-top:6px;
+}
+.opt.on i{ color:var(--gold-lit); }
+
+.offer-fields{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:clamp(14px,2vw,24px);
+}
+.fld{ display:block; }
+.fld--row{ grid-column:1 / -1; }
+.fld input, .fld textarea{
+  width:100%; background:rgba(6,7,10,.88); color:var(--bone);
+  border:1px solid var(--line); padding:11px 13px;
+  font-family:var(--sans); font-size:13px; font-weight:300; resize:vertical;
+  transition:border-color .4s var(--ease);
+}
+.fld input::placeholder, .fld textarea::placeholder{ color:var(--muted); }
+.fld input:focus, .fld textarea:focus{ outline:none; border-color:var(--gold-lit); }
+.fld input[aria-invalid="true"]{ border-color:var(--burgundy); }
+
+.seg{ display:flex; gap:7px; flex-wrap:wrap; }
+.seg-b{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--bone-dim); background:none; border:1px solid var(--line);
+  padding:9px 14px; cursor:pointer;
+  transition:border-color .4s var(--ease), color .4s var(--ease), background-color .4s var(--ease);
+}
+.seg-b:hover{ border-color:rgba(231,175,35,.5); color:var(--bone); }
+.seg-b.on{ border-color:var(--gold-lit); color:var(--gold-lit); background:rgba(201,150,43,.1); }
+
+.offer-foot{
+  margin-top:clamp(20px,3vh,30px); padding-top:18px; border-top:1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap;
+}
+.offer-total b{
+  display:block; font-family:var(--serif); font-weight:400;
+  font-size:clamp(22px,2.6vw,34px); color:var(--bone); line-height:1;
+}
+.offer-go{
+  display:inline-flex; align-items:center; gap:11px;
+  padding:14px 26px; border:1px solid var(--gold-lit); background:rgba(201,150,43,.12);
+  color:var(--gold-lit); cursor:pointer;
+  font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+  transition:background-color .4s var(--ease), color .4s var(--ease);
+}
+.offer-go:hover{ background:var(--gold-lit); color:var(--ink); }
+.offer-go svg{ width:15px; height:16px; stroke:currentColor; stroke-width:1.4; fill:none; }
+.offer-err{
+  margin:12px 0 0; font-size:12px; color:#e6a2a8;
+  font-family:var(--mono); letter-spacing:.06em;
+}
+.offer-err[hidden]{ display:none; }
+
+.offer-done{ margin-top:clamp(26px,4.4vh,46px); }
+.offer-done[hidden]{ display:none; }
+.offer-done-in{
+  border:1px solid rgba(231,175,35,.34); background:rgba(6,7,10,.88);
+  padding:clamp(18px,3vw,30px);
+}
+.offer-steps{ list-style:none; margin:0; padding:0; counter-reset:st; }
+.offer-steps li{
+  display:grid; grid-template-columns:34px minmax(0,1fr); gap:14px;
+  padding:11px 0; border-bottom:1px solid var(--line-soft); align-items:baseline;
+}
+.offer-steps li > div{ min-width:0; }
+.offer-steps li::before{
+  counter-increment:st; content:"0" counter(st);
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; color:var(--gold);
+}
+.offer-steps b{ font-family:var(--serif); font-weight:400; font-size:15px; color:var(--bone); }
+.offer-steps span{ display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+.offer-steps li > div{ display:block; }
+.offer-eg{
+  margin:16px 0 0; font-family:var(--serif); font-style:italic;
+  font-size:14px; color:var(--bone-dim);
+}
+.offer-again{
+  margin-top:16px; background:none; border:1px solid var(--line); cursor:pointer;
+  color:var(--bone-dim); padding:10px 18px;
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.18em; text-transform:uppercase;
+  transition:border-color .4s var(--ease), color .4s var(--ease);
+}
+.offer-again:hover{ border-color:var(--gold-lit); color:var(--gold-lit); }
+.offer-note{
+  margin:clamp(20px,3vh,30px) 0 0; max-width:78ch;
+  font-size:11.5px; line-height:1.62; color:var(--muted);
+  padding-top:15px; border-top:1px solid var(--line-soft);
+}
+.offer-note b{ color:var(--bone-dim); font-weight:500; }
+@media (max-width:880px){
+  .offer-top{ grid-template-columns:1fr; }
+  .offer-opts{ grid-template-columns:1fr; }
+  .offer-fields{ grid-template-columns:1fr; }
+}
+
 /* ══════════════════════════════════ 13a · the memorial wall ══ */
 /* The arch is the only strongly curved form in the design. Everything
    else is nearly square, so it carries the whole religious register. */
@@ -898,6 +1035,9 @@ img{ max-width:100%; display:block; }
 .mp-candle:hover{ border-color:var(--gold-lit); background:rgba(201,150,43,.12); color:var(--gold-lit); }
 .mp-candle svg{ width:14px; height:16px; stroke:currentColor; stroke-width:1.4; fill:none; }
 .mp-candle.lit{ border-color:var(--gold-lit); color:var(--gold-lit); }
+.mp-acts{ display:flex; gap:10px; flex-wrap:wrap; }
+.mp-candle--real{ border-color:rgba(231,175,35,.5); color:var(--gold-lit); }
+.mp-candle--real:hover{ background:var(--gold-lit); color:var(--ink); }
 @media (max-width:640px){
   .mp-top{ grid-template-columns:1fr; }
   .mp-por{ width:130px; }
@@ -1286,6 +1426,98 @@ img{ max-width:100%; display:block; }
       </div>
     </div>
   </div>
+
+  <!-- ── a candle you can ask the parish to light ── -->
+  <div class="offer" id="offer">
+    <div class="sec-head" data-rv="fade">
+      <span class="k"><b>03b</b> - From far away</span><span class="rule"></span><span class="k cyr">Свећа</span>
+    </div>
+    <div class="offer-top">
+      <h3 class="display h-sec" data-rv="up">A real candle, and a photograph that it burned.</h3>
+      <p class="lead" data-rv="up">A candle on a screen is an intention. This is a wax candle, on the
+        stand in Richmond Hill, lit by a parishioner at the next Liturgy, photographed where it
+        stands, and the picture sent to you. If you are in Belgrade, Vancouver or Melbourne, this is
+        the closest you can come.</p>
+    </div>
+
+    <form class="offer-form" id="offerForm" novalidate>
+      <fieldset class="offer-set" data-rv="up">
+        <legend class="offer-lg">What we light</legend>
+        <div class="offer-opts">
+        <button type="button" class="opt on" data-price="5" aria-pressed="true" data-cursor>
+          <b>A candle</b>
+          <span>A standard beeswax candle on the stand for the departed</span>
+          <i>$5</i>
+        </button>
+        <button type="button" class="opt" data-price="15" aria-pressed="false" data-cursor>
+          <b>A large candle</b>
+          <span>Burns through the whole service, before the Archangel's icon</span>
+          <i>$15</i>
+        </button>
+        <button type="button" class="opt" data-price="40" aria-pressed="false" data-cursor>
+          <b>A vigil lamp, forty days</b>
+          <span>Kept burning through the forty days, photographed every week</span>
+          <i>$40</i>
+        </button>
+        </div>
+      </fieldset>
+
+      <div class="offer-fields" data-rv="up">
+        <div class="fld fld--row">
+          <span class="offer-lg" id="intentLbl">Intention</span>
+          <div class="seg" role="radiogroup" aria-labelledby="intentLbl">
+            <button type="button" class="seg-b on" data-intent="repose" role="radio" aria-checked="true" data-cursor>For the repose of</button>
+            <button type="button" class="seg-b" data-intent="health" role="radio" aria-checked="false" data-cursor>For the health of</button>
+          </div>
+        </div>
+        <label class="fld">
+          <span class="offer-lg">For whom</span>
+          <input type="text" id="offName" autocomplete="off" placeholder="A name, as it should be read">
+        </label>
+        <label class="fld">
+          <span class="offer-lg">Where to send the photograph</span>
+          <input type="email" id="offMail" autocomplete="email" placeholder="you@example.com">
+        </label>
+        <label class="fld">
+          <span class="offer-lg">A note to the priest, if you wish</span>
+          <textarea id="offNote" rows="2" placeholder="Optional"></textarea>
+        </label>
+      </div>
+
+      <div class="offer-foot" data-rv="up">
+        <div class="offer-total">
+          <span class="offer-lg">Total</span>
+          <b id="offTotal" aria-live="polite">$5</b>
+        </div>
+        <button type="submit" class="offer-go" data-cursor>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2s5.5 4.8 5.5 9.5a5.5 5.5 0 0 1-11 0C6.5 6.8 12 2 12 2z"/></svg>
+          <span>Request this candle</span>
+        </button>
+      </div>
+      <p class="offer-err" id="offErr" hidden></p>
+    </form>
+
+    <div class="offer-done" id="offerDone" hidden>
+      <div class="offer-done-in">
+        <span class="offer-lg">What comes back</span>
+        <ol class="offer-steps">
+          <li><div><b>Request received</b><span>Immediately, with an email confirmation</span></div></li>
+          <li><div><b>Lit at the Divine Liturgy</b><span>The coming Sunday</span></div></li>
+          <li><div><b>Photographed on the stand</b><span>The same candle, with the name on the commemoration list</span></div></li>
+          <li><div><b>The photograph to you, and to the Memory Page</b><span>If that person has a page, the picture joins their archive</span></div></li>
+        </ol>
+        <p class="offer-eg" id="offEg">A candle for Milica Petrovi&#263; - 8 November, after the Liturgy</p>
+        <button type="button" class="offer-again" id="offAgain" data-cursor>Ask for another</button>
+      </div>
+    </div>
+
+    <p class="offer-note" data-rv="fade">
+      <b>Design demonstration.</b> Nothing is charged and nothing is sent, and no payment details
+      are asked for or accepted anywhere on this page. In a live installation this would be a
+      payment and a job in the parish office. The candle is always lit, even if the email fails:
+      the photograph is the proof, not the service.
+    </p>
+  </div>
 </section>
 
 <!-- ══════════════════════════════════════════════ 04 · the memorial ═══ -->
@@ -1580,6 +1812,95 @@ setTimeout(function () {
   $$('#hero [data-rv], #hero .mask-line').forEach(function (e) { e.classList.add('rv-in'); });
 }, 120);
 
+/* ═══════════════════════════════════════ 1c · a candle, asked for ═══ */
+/* A request, not a checkout. The parish office would take the payment; this
+   page never asks for card details and says so under the form. Everything
+   here is local: nothing is posted anywhere. */
+function wireOffer() {
+  var form = $('#offerForm');
+  if (!form) return;
+  var totalEl = $('#offTotal'), errEl = $('#offErr');
+  var done = $('#offerDone'), egEl = $('#offEg');
+  var price = 5, intent = 'repose';
+
+  function setTotal() { totalEl.textContent = '$' + price; }
+
+  $$('.offer-opts .opt').forEach(function (b) {
+    b.addEventListener('click', function () {
+      $$('.offer-opts .opt').forEach(function (o) {
+        o.classList.remove('on'); o.setAttribute('aria-pressed', 'false');
+      });
+      b.classList.add('on'); b.setAttribute('aria-pressed', 'true');
+      price = +b.getAttribute('data-price');
+      setTotal();
+    });
+  });
+  $$('.seg-b').forEach(function (b) {
+    b.addEventListener('click', function () {
+      $$('.seg-b').forEach(function (o) {
+        o.classList.remove('on'); o.setAttribute('aria-checked', 'false');
+      });
+      b.classList.add('on'); b.setAttribute('aria-checked', 'true');
+      intent = b.getAttribute('data-intent');
+    });
+  });
+
+  function fail(msg, el) {
+    errEl.textContent = msg; errEl.hidden = false;
+    if (el) { el.setAttribute('aria-invalid', 'true'); el.focus(); }
+    return false;
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    errEl.hidden = true;
+    var nameEl = $('#offName'), mailEl = $('#offMail');
+    [nameEl, mailEl].forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    var name = nameEl.value.trim(), mail = mailEl.value.trim();
+    if (!name) return fail('A name is needed, so the parish knows who to read.', nameEl);
+    /* deliberately loose: a a@b is a valid address and the parish is not a
+       registrar. This only catches the obviously-not-an-address case. */
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) {
+      return fail('An address is needed, or the photograph has nowhere to go.', mailEl);
+    }
+
+    var d = new Date();
+    /* the coming Sunday, which is when it would be lit */
+    d.setDate(d.getDate() + ((7 - d.getDay()) % 7 || 7));
+    var MON = ['January','February','March','April','May','June','July',
+               'August','September','October','November','December'];
+    egEl.textContent = 'A candle ' +
+      (intent === 'repose' ? 'for the repose of ' : 'for the health of ') +
+      name + ' - ' + d.getDate() + ' ' + MON[d.getMonth()] + ', after the Liturgy';
+    form.hidden = true;
+    done.hidden = false;
+    done.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  });
+
+  $('#offAgain').addEventListener('click', function () {
+    done.hidden = true; form.hidden = false;
+    $('#offName').value = ''; $('#offNote').value = '';
+    form.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  });
+
+  setTotal();
+}
+wireOffer();
+
+/* From a Memory Page, "light a candle" carries the name down to the form
+   rather than only bumping a counter on this device. */
+function offerFor(name) {
+  var f = $('#offerForm'), d = $('#offerDone');
+  if (!f) return;
+  if (d) d.hidden = true;
+  f.hidden = false;
+  var n = $('#offName');
+  if (n) n.value = name || '';
+  var sec = $('#offer');
+  if (sec) sec.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  setTimeout(function () { if (n) n.focus({ preventScroll: true }); }, 700);
+}
+
 /* ═══════════════════════════════════════════ 1b · the memorial ═══ */
 /* Six Memory Pages, read from data/memorials.json so the parish can edit
    the wall without touching the document. Every person here is fictional;
@@ -1682,7 +2003,12 @@ function openPage(id) {
         '<span>Photographs<b>' + esc(e.photos || 0) + '</b></span>' +
         '<span>Candles<b id="mpCandles">' + candlesFor(e) + '</b></span>' +
       '</div>' +
-      '<button class="mp-candle" id="mpLight" data-cursor>' + IC_FLAME + '<span>Light a candle</span></button>' +
+      '<div class="mp-acts">' +
+        '<button class="mp-candle" id="mpLight" data-cursor>' + IC_FLAME +
+          '<span>Light one here</span></button>' +
+        '<button class="mp-candle mp-candle--real" id="mpReal" data-cursor>' + IC_FLAME +
+          '<span>Ask the parish for a real one</span></button>' +
+      '</div>' +
     '</div>';
 
   mp.hidden = false; mp.setAttribute('aria-hidden', 'false');
@@ -1690,6 +2016,11 @@ function openPage(id) {
   $('#mpSheet').focus();
   WALL.open = id;
   document.body.style.overflow = 'hidden';
+
+  $('#mpReal').addEventListener('click', function () {
+    closePage();
+    setTimeout(function () { offerFor(e.name); }, 420);
+  });
 
   $('#mpLight').addEventListener('click', function () {
     var n = lightLocal(e.id);
