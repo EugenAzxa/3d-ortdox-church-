@@ -204,27 +204,18 @@ weighted to the bands the columns sit in and left thin through the middle.
 Chapter 03 carries a panel for Father Đurađ Kojić: nine questions a family actually arrives
 with, and the answers the office gives, appended to a transcript as they are chosen.
 
-He also stands at the door. A figure vested for a service waits on the steps,
-left of the portal, with a marker riding over him that opens his section. The marker is a
-real anchor, so it works from the keyboard and without the canvas; the frame loop only
-projects his chest to the screen, moves it, and hides it once the camera is past the door.
-What is modelled is the vestments, because that is what carries at fifteen metres: black
-cassock with its gold-trimmed front, red phelonion with gold hems and crosses, the stiff gold
-collar, hair to the collar and a beard, and a lit taper in the right hand. The face stays a
-stylised head. A vested figure at his own church door is a priest standing there; a generated
-likeness of a real person's face is a different thing, and not one to make.
+There is no figure of him in the churchyard. One stood at the door through several passes and
+never got past reading as a lathe-and-sphere lump: everyone reads human form too well for
+primitives to pass, which is not true of the stonework or the trees. It was cut rather than
+shipped at that standard, and the scene is better for being consistently architectural. What
+is left is what was working - light on the threshold, and a marker on the door jamb that
+leads to his section.
 
-The head is a skull under hair with a face on it: brow, eyes, nose, moustache and a beard
-that reads separately from the skin, under a cap of hair that stops at the brow with the
-length falling behind to the collar. Any hair mesh that wraps the front of the skull leaves
-no face at all, and a pale sphere inside a dark one reads as a bowl.
-
-Judge it at the distance the site actually uses. At the threshold he is 168 pixels tall and
-his head is 18, so an eye is one pixel. Below that size, detail is not detail: it is noise,
-and a bright face ringed by dark hair reads as a mask rather than a man. What survives at
-eighteen pixels is silhouette and value, so the geometry stays and the contrast came out.
-That is where this stopped, deliberately. Several passes were spent fixing faults
-visible only from two metres, which the walk never gets to.
+To bring a figure back, use a photographic cut-out rather than geometry. That is how
+architectural work has always handled people, and at the 168 pixels this scene gives a
+person, a photograph is indistinguishable from real while a model is not. It would want a
+shot against a plain background, and a decision about placing an identifiable real person
+inside a synthetic scene, which is a step beyond showing their photograph.
 
 It is deliberately a fixed set, not a generative chat, and it takes no free text. Father
 Đurađ is a real, named man, and nothing on this page should be able to put a sentence in his

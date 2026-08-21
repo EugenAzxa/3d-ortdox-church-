@@ -1311,7 +1311,7 @@ img{ max-width:100%; display:block; }
      canvas; the script only moves it and hides it when he is out of shot. -->
 <a class="figpin" id="priestPin" href="#priest" hidden data-cursor>
   <span class="figpin-dot" aria-hidden="true"></span>
-  <span class="figpin-tx"><b>Father &#272;ura&#273;</b><i>Ask him</i></span>
+  <span class="figpin-tx"><b>Father &#272;ura&#273;</b><i>Inside &#183; ask him</i></span>
 </a>
 
 <!-- ═════════════════════════════════════════════════════ preloader ═══ -->
@@ -3203,188 +3203,26 @@ function buildChurch() {
   arch(0.44, 3.0, glassM, -7.76, 2.4, -0.6, -Math.PI / 2);
 
 
-/* ──────────────────────────────────────── the priest at the door ── */
-/* Vested for a service: black cassock, red phelonion with its gold hems and
-   crosses, and a lit taper in the right hand. The vestments are what carry
-   the figure at fifteen metres, so they are what is modelled; the face
-   stays a stylised head, because this is a real man and a generated
-   likeness of one is a different thing entirely. */
-function buildPriestFigure() {
-  var G = new THREE.Group();
-  var cassock = new THREE.MeshStandardMaterial({ color: 0x17161c, roughness: 0.92 });
-  var silk    = new THREE.MeshStandardMaterial({
-    color: 0x5e1116, roughness: 0.56, metalness: 0.14 });
-  var silkLit = new THREE.MeshStandardMaterial({
-    color: 0x74171b, roughness: 0.5, metalness: 0.16 });
-  var gold    = new THREE.MeshStandardMaterial({
-    color: 0xb8912f, roughness: 0.36, metalness: 0.8 });
-  var skin    = new THREE.MeshStandardMaterial({
-    color: 0x8a6a4c, roughness: 0.86,
-    emissive: new THREE.Color(0x0d0603), emissiveIntensity: 1 });
-  var hairM   = new THREE.MeshStandardMaterial({ color: 0x3b2f26, roughness: 1 });
-  var waxM    = new THREE.MeshStandardMaterial({ color: 0xe6d7b4, roughness: 0.6 });
+/* ─────────────────────────────────────────────── the west door lamp ── */
+/* A figure of the priest stood here through several passes and never got
+   past reading as a lathe-and-sphere lump. Everyone reads human form too
+   well for primitives to pass, which is not true of the stonework or the
+   trees, so it was cut rather than shipped at that standard. What is left
+   is the thing that was working: light on the threshold, and the marker
+   that leads to his section, on the door he would be standing in.
 
-  /* ---- the cassock, and its gold-trimmed front ---- */
-  var rob = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.4, 1.62, 16), cassock);
-  rob.position.set(0, 0.81, 0); rob.scale.set(1.06, 1, 0.8); G.add(rob);
-  /* the hem breaks over the shoes rather than meeting the step as a disc */
-  var hemBreak = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.36, 0.1, 16), cassock);
-  hemBreak.position.set(0.012, 0.05, 0.02); hemBreak.scale.set(1.06, 1, 0.86);
-  hemBreak.rotation.z = 0.03; G.add(hemBreak);
-  [-1, 1].forEach(function (m) {
-    var shoe = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 6), cassock);
-    shoe.position.set(m * 0.1, 0.035, 0.11);
-    shoe.scale.set(0.8, 0.42, 1.25); G.add(shoe);
-  });
-  var placket = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.5, 0.03), cassock);
-  placket.position.set(0, 0.79, 0.29); G.add(placket);
-  [-1, 1].forEach(function (m) {
-    var edge = new THREE.Mesh(new THREE.BoxGeometry(0.022, 1.5, 0.028), gold);
-    edge.position.set(m * 0.075, 0.79, 0.3); G.add(edge);
-  });
-  [0.44, 0.86, 1.28].forEach(function (cy) {           /* crosses down the front */
-    var cv = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.075, 0.022), gold);
-    cv.position.set(0, cy, 0.305); G.add(cv);
-    var ch = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.016, 0.022), gold);
-    ch.position.set(0, cy + 0.012, 0.305); G.add(ch);
-  });
-
-  /* ---- the phelonion: full over the back and sides, cut away at the front,
-         which is the shape that says Orthodox priest from any distance ---- */
-  var SHO = 1.52;
-  var cape = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.25, 0.5, 0.8, 24, 1, true), silk);
-  cape.position.set(0, SHO - 0.4, 0);
-  cape.scale.set(1.14, 1, 0.82); G.add(cape);
-  /* a lighter panel down the front, where the light falls on the silk */
-  var lit = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.256, 0.508, 0.8, 12, 1, true,
-                               -Math.PI * 0.3, Math.PI * 0.6), silkLit);
-  lit.position.set(0, SHO - 0.4, 0);
-  lit.scale.set(1.14, 1, 0.82); G.add(lit);
-  /* the shoulder cap, so the two do not read as separate garments */
-  /* the shoulder yoke: the phelonion stands off the shoulders, and without
-     it the cone starts at the neck and reads as a lampshade */
-  var cap = new THREE.Mesh(
-    new THREE.SphereGeometry(0.3, 20, 8, 0, Math.PI * 2, 0, Math.PI * 0.46), silk);
-  cap.position.set(0, SHO - 0.05, 0);
-  cap.scale.set(1.3, 0.62, 0.9); G.add(cap);
-  /* a neck, so the head is not sitting straight on the collar */
-  var neck = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.068, 0.13, 10), skin);
-  neck.position.set(0, SHO + 0.15, 0.012); G.add(neck);
-
-  /* gold hems */
-  var hem = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.507, 0.507, 0.05, 24, 1, true), gold);
-  hem.position.set(0, SHO - 0.79, 0);
-  hem.scale.set(1.14, 1, 0.82); G.add(hem);
-  /* the stiff gold collar */
-  var collar = new THREE.Mesh(new THREE.CylinderGeometry(0.135, 0.15, 0.13, 14), gold);
-  collar.position.y = SHO + 0.11; G.add(collar);
-  /* the cross on the back of the phelonion */
-  var bcV = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.2, 0.02), gold);
-  bcV.position.set(0, SHO - 0.4, -0.44); G.add(bcV);
-  var bcH = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.03, 0.02), gold);
-  bcH.position.set(0, SHO - 0.35, -0.44); G.add(bcH);
-
-  /* ---- the head ---- */
-  /* A skull under hair, with a face on it. Without a brow, a nose and a
-     beard that reads separately from the skin, a pale sphere inside a dark
-     one is a bowl, which is exactly what it looked like. */
-  var HY = SHO + 0.27;
-  var brow  = new THREE.MeshStandardMaterial({ color: 0x7d6047, roughness: 0.88 });
-  var dark  = new THREE.MeshStandardMaterial({ color: 0x2b231c, roughness: 0.95 });
-  var eyeM  = new THREE.MeshStandardMaterial({ color: 0x5c463a, roughness: 0.9 });
-
-  var head = new THREE.Mesh(new THREE.SphereGeometry(0.108, 18, 14), skin);
-  head.position.set(0.008, HY, 0.012); head.rotation.y = -0.16;
-  head.scale.set(0.9, 1.06, 0.94); G.add(head);
-
-  /* the jaw, a little narrower than the skull */
-  var jaw = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), skin);
-  jaw.position.set(0, HY - 0.062, 0.026);
-  jaw.scale.set(0.88, 0.78, 0.94); G.add(jaw);
-
-  /* brow ridge, and the shadow it casts on the sockets */
-  var browM = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.022, 0.03), brow);
-  browM.position.set(0, HY + 0.038, 0.088); browM.rotation.x = -0.16; G.add(browM);
-  [-1, 1].forEach(function (m) {
-    /* sockets, not eyeballs: a shading cue rather than two dark dots */
-    var soc = new THREE.Mesh(new THREE.SphereGeometry(0.019, 8, 6), eyeM);
-    soc.position.set(m * 0.04, HY + 0.014, 0.078);
-    soc.scale.set(1.25, 0.62, 0.5); G.add(soc);
-  });
-
-  /* nose */
-  var nose = new THREE.Mesh(new THREE.ConeGeometry(0.021, 0.062, 6), skin);
-  nose.position.set(0, HY - 0.012, 0.1);
-  nose.rotation.set(Math.PI * 0.42, 0, 0); G.add(nose);
-
-  /* moustache and beard, one dark mass round the jaw as in the reference */
-  var must = new THREE.Mesh(new THREE.SphereGeometry(0.036, 10, 8), hairM);
-  must.position.set(0, HY - 0.048, 0.086);
-  must.scale.set(1.5, 0.5, 0.7); G.add(must);
-  var beard = new THREE.Mesh(new THREE.SphereGeometry(0.086, 14, 12), hairM);
-  beard.position.set(0, HY - 0.088, 0.034);
-  beard.scale.set(0.95, 1.15, 0.92); G.add(beard);
-  var chin = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.1, 10), hairM);
-  chin.position.set(0, HY - 0.176, 0.03); chin.rotation.x = Math.PI; G.add(chin);
-
-  /* Hair in two parts: a cap that stops at the brow, and a mass behind the
-     skull for the length. Anything that wraps the front leaves no face. */
-  var cap2 = new THREE.Mesh(
-    new THREE.SphereGeometry(0.115, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.4), hairM);
-  cap2.position.set(0, HY + 0.006, 0.008);
-  cap2.scale.set(1.05, 1.16, 1.04); G.add(cap2);
-  var backMass = new THREE.Mesh(new THREE.SphereGeometry(0.114, 16, 12), hairM);
-  backMass.position.set(0, HY - 0.012, -0.052);
-  backMass.scale.set(1.06, 1.08, 1.0); G.add(backMass);
-  /* the length past the ears to the collar */
-  var fall = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.108, 0.126, 0.28, 16, 1, true,
-                               Math.PI * 0.22, Math.PI * 1.56), hairM);
-  fall.position.set(0, HY - 0.135, -0.028); G.add(fall);
-  var nape = new THREE.Mesh(new THREE.SphereGeometry(0.098, 12, 10), hairM);
-  nape.position.set(0, HY - 0.245, -0.055);
-  nape.scale.set(1.16, 0.46, 0.86); G.add(nape);
-
-  var fore = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.28, 8), cassock);
-  fore.position.set(0.235, SHO - 0.74, 0.3); fore.rotation.set(-0.55, 0, 0.22); G.add(fore);
-  var hand = new THREE.Mesh(new THREE.SphereGeometry(0.046, 8, 6), skin);
-  hand.position.set(0.265, SHO - 0.83, 0.4); G.add(hand);
-  var taper = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.015, 0.34, 8), waxM);
-  taper.position.set(0.265, SHO - 0.66, 0.41); G.add(taper);
-  WORLD.priestTaper = new THREE.Vector3(0.265, SHO - 0.48, 0.41);
-
-  /* on the second step, clear of the doorway, turned toward the path */
-  G.position.set(-1.9, 0.24, 13.35);
-  G.rotation.set(0.012, 0.46, 0.022);
-  G.scale.setScalar(0.94);
-  K.add(G);
-
-  /* his own taper, and a lamp so the vestments catch the door light */
-  var tp = WORLD.priestTaper.clone();
-  G.localToWorld(tp);
-  var tg = new THREE.BufferGeometry();
-  tg.setAttribute('position', new THREE.BufferAttribute(new Float32Array([tp.x, tp.y, tp.z]), 3));
-  tg.setAttribute('aP', new THREE.BufferAttribute(new Float32Array([Math.random() * 100]), 1));
-  tg.setAttribute('aS', new THREE.BufferAttribute(new Float32Array([15]), 1));
-  var tf = new THREE.Points(tg, flameMat());
-  K.add(tf);
-  WORLD.priestFlame = tf;
-
-  var pl = new THREE.PointLight(0xffd0a0, 0.4, 3.4, 2.2);
-  pl.position.set(-1.35, 1.95, 14.1);
+   To bring a figure back, use a photographic cut-out rather than geometry.
+   That is how architectural work has always handled people, and at the
+   hundred and seventy pixels this scene gives a person, a photograph is
+   indistinguishable from real. */
+function buildDoorLamp() {
+  var pl = new THREE.PointLight(0xffd0a0, 0.44, 3.6, 2.2);
+  pl.position.set(-1.2, 1.95, 14.0);
   K.add(pl);
-  var pl2 = new THREE.PointLight(0xffb066, 0.5, 1.9, 2.0);
-  pl2.position.copy(tp);
-  K.add(pl2);
-
-  WORLD.priestFig = G;
-  /* where the pin should sit: on his chest, clear of the headline */
-  WORLD.priestHead = new THREE.Vector3(-1.9, 1.32, 13.35);
+  /* the marker rides the left jamb, beside the opening rather than over it */
+  WORLD.priestHead = new THREE.Vector3(-1.55, 1.9, 12.3);
 }
-buildPriestFigure();
+buildDoorLamp();
 
   scene.add(K);
   WORLD.church = K;
@@ -5114,7 +4952,6 @@ function frame(now) {
   if (WORLD.inFlames) WORLD.inFlames.material.uniforms.uT.value = T;
   if (WORLD.vFlames) WORLD.vFlames.material.uniforms.uT.value = T;
   if (WORLD.gFlames) WORLD.gFlames.material.uniforms.uT.value = T;
-  if (WORLD.priestFlame) WORLD.priestFlame.material.uniforms.uT.value = T;
 
   /* the marker over the priest at the door */
   if (PIN.el && WORLD.priestHead) {
