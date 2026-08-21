@@ -170,6 +170,21 @@ The scrim over the interior has to stay light enough for them to survive it. A f
 full-frame black protects the type perfectly and puts out every candle in the room, so it is
 weighted to the bands the columns sit in and left thin through the middle.
 
+### The parish priest
+
+Chapter 03 carries a panel for Father Đurađ Kojić: nine questions a family actually arrives
+with, and the answers the office gives, appended to a transcript as they are chosen.
+
+It is deliberately a fixed set, not a generative chat, and it takes no free text. Father
+Đurađ is a real, named man, and nothing on this page should be able to put a sentence in his
+mouth that the parish has not agreed to. Every answer is procedural - what the office does,
+in what order - rather than theology or opinion, he is given a typographic card rather than
+an invented portrait, and the notice under the panel says plainly that the wording was
+written for the demonstration and is not his. A test asserts the panel has no input or
+textarea.
+
+If this ever goes live, the answers are the thing to replace first, with his own words.
+
 ### Asking for a candle
 
 Chapter 03 carries the parish's candle offering: three things it will light, an intention,
