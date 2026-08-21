@@ -82,8 +82,9 @@ There is no arcade or portico. The west front is the bell tower, and the entranc
 single arched portal in its base. An earlier pass invented a five-bay porch across the
 front, which is not on the building and read as wrong from every angle.
 
-The leaves are hinged on the edges of the opening and swung back at 115 degrees, not
-propped ajar. A door held at a shallow angle presents its edge to anyone walking up the
+The leaves are hinged forward of the jambs and swung back at about 108 degrees, not propped
+ajar. Forward of the jambs matters: the jamb stones stand proud to z=6.24, so a leaf hinged
+on the wall face at 6.16 swings straight through them. A door held at a shallow angle presents its edge to anyone walking up the
 path and reads as a plank; only well past ninety does it read as a door standing open.
 
 Both openings are real, not painted. The tower shaft is hollow for its lower storey and its

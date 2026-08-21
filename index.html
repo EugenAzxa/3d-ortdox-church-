@@ -3041,7 +3041,7 @@ function buildChurch() {
 
   /* The west portal: a recessed order of stone, two timber leaves standing
      open, and the light of the nave on the step. */
-  var timberM = new THREE.MeshStandardMaterial({ color: 0x8d5c2c, roughness: 0.74 });
+  var timberM = new THREE.MeshStandardMaterial({ color: 0x4f3117, roughness: 0.8 });
   var ironM = new THREE.MeshStandardMaterial({
     color: 0x1a1a1e, roughness: 0.5, metalness: 0.65 });
   /* A proud archivolt round the opening, and jambs down each side. */
@@ -3176,15 +3176,15 @@ function buildChurch() {
      doors standing open, which is the whole point of the shot. */
   [-1, 1].forEach(function (m2) {
     var leaf = new THREE.Group();
-    var LW = 0.98, LH = 3.18;
+    var LW = 0.93, LH = 3.12;
     /* closed, the slab would run from the hinge in toward the centre */
     var slab = new THREE.Mesh(new THREE.BoxGeometry(LW, LH, 0.085), timberM);
     slab.position.set(-m2 * LW / 2, LH / 2, 0);
     leaf.add(slab);
     /* two raised panels a side, which is what catches the light */
     [0.72, 2.16].forEach(function (py) {
-      var pnl = new THREE.Mesh(new THREE.BoxGeometry(LW - 0.22, 1.16, 0.03),
-        new THREE.MeshStandardMaterial({ color: 0x7d5029, roughness: 0.7 }));
+      var pnl = new THREE.Mesh(new THREE.BoxGeometry(LW - 0.2, 1.12, 0.035),
+        new THREE.MeshStandardMaterial({ color: 0x3d2410, roughness: 0.74 }));
       pnl.position.set(-m2 * LW / 2, py, 0.055);
       leaf.add(pnl);
       var pnl2 = pnl.clone(); pnl2.position.z = -0.055; leaf.add(pnl2);
@@ -3199,10 +3199,10 @@ function buildChurch() {
     ringH.position.set(-m2 * (LW - 0.16), 1.5, 0.065);
     leaf.add(ringH);
 
-    leaf.position.set(m2 * 1.12, 0.66, 12.16);
+    leaf.position.set(m2 * 1.15, 0.66, 12.36);
     /* positive swing carries the free edge out toward the path and round
        against the wall; 115 degrees clears the reveal and still shows face */
-    leaf.rotation.y = m2 * 2.0;
+    leaf.rotation.y = m2 * 1.88;
     K.add(leaf);
   });
 
