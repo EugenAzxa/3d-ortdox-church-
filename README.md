@@ -191,6 +191,11 @@ straight off the disk the wall says so rather than sitting empty.
 | 05 | Remembrance | Вечан спомен | Centred on the iconostasis, the kontakion over it |
 | -- | Footer | | The ascent out, above the roofline |
 
+Each segment of the camera path is eased in and out, so velocity reaches zero at every
+waypoint. Traversed at a constant rate per chapter, waypoints tens of metres apart outside
+and two metres apart inside give 1.25 units a step out there and 0.05 in here, and the step
+change at each handover is what reads as lurching.
+
 The camera never cuts. It crosses the threshold at chapter 02 and the room dissolves on the
 way out at chapter 05, so the rise back over the roofline is one move. Section anchors sit at
 each section's centre, so the memorial - which is much taller than the others - holds its
