@@ -497,6 +497,17 @@ img{ max-width:100%; display:block; }
   transition:border-color .4s var(--ease), color .4s var(--ease), background-color .4s var(--ease);
 }
 .season-pick button:hover{ border-color:rgba(231,175,35,.55); color:var(--bone); }
+.auto-b{ display:inline-flex; align-items:center; gap:7px; }
+.auto-b i{
+  width:6px; height:6px; border-radius:50%; background:var(--muted); display:block;
+  transition:background-color .4s var(--ease);
+}
+.auto-b.on i{
+  background:var(--gold-lit);
+  animation:autopulse 2.4s var(--ease-io) infinite;
+}
+@keyframes autopulse{ 0%,100%{ opacity:1 } 50%{ opacity:.25 } }
+@media (prefers-reduced-motion:reduce){ .auto-b.on i{ animation:none } }
 .season-pick button.on{ border-color:var(--gold-lit); color:var(--gold-lit); background:rgba(201,150,43,.1); }
 @media (max-width:900px){ .hero-lead{ width:100%; } }
 
@@ -1425,6 +1436,14 @@ img{ max-width:100%; display:block; }
           <button data-time="day" data-cursor>Day</button>
           <button data-time="dusk" data-cursor>Dusk</button>
           <button data-time="night" data-cursor>Night</button>
+        </span>
+      </div>
+      <div class="season-pick" data-rv="fade">
+        <span class="season-k">Year and day</span>
+        <span class="season-btns">
+          <button class="auto-b on" id="autoBtn" aria-pressed="true" data-cursor>
+            <i aria-hidden="true"></i><span>Cycling</span>
+          </button>
         </span>
       </div>
       <div class="hero-cue" data-rv="fade"><span>Scroll to enter</span><span class="track"><i></i></span></div>
@@ -2427,7 +2446,7 @@ var SEASONS = {
     key: 'spring', birds: 18, ground2: 'new grass', name: 'Spring', sr: 'Пролеће',
     ground: 0x16200f, fog: 0x0a1410, fogD: 0.0188,
     skyTop: 0x04060c, skyHorizon: 0x0d1620, skyGround: 0x141d1c,
-    canopy: 0x14240f, canopyO: 0.92, moon: 0x9fb6d8, moonI: 0.74,
+    canopy: 0x14240f, canopyO: 1, moon: 0x9fb6d8, moonI: 0.74,
     /* petals, drifting down slowly and sideways */
     partN: 1.0, partColor: [0.92, 0.78, 0.82], partSize: 2.4,
     partFall: 0.62, partSway: 2.6, partAlpha: 0.42
@@ -2445,16 +2464,18 @@ var SEASONS = {
     key: 'autumn', birds: 12, ground2: 'wet leaves', name: 'Autumn', sr: 'Јесен',
     ground: 0x1b1409, fog: 0x0d0e10, fogD: 0.0205,
     skyTop: 0x05060b, skyHorizon: 0x11121c, skyGround: 0x1a1712,
-    canopy: 0x351e07, canopyO: 0.82, moon: 0xd8b98a, moonI: 0.8,
+    canopy: 0x351e07, canopyO: 1, moon: 0xd8b98a, moonI: 0.8,
     /* leaves, heavier and tumbling */
     partN: 0.7, partColor: [0.86, 0.5, 0.18], partSize: 3.0,
     partFall: 0.9, partSway: 3.0, partAlpha: 0.5
   },
   winter: {
     key: 'winter', birds: 0, ground2: 'snow', name: 'Winter', sr: 'Зима',
-    ground: 0x0d1017, fog: 0x05070d, fogD: 0.0208,
-    skyTop: 0x03040a, skyHorizon: 0x0a1019, skyGround: 0x111722,
-    canopy: 0x000000, canopyO: 0, moon: 0x8ea6cd, moonI: 0.72,
+    /* snow on the ground and snow in the crowns: the foliage stays and is
+       dusted, rather than the trees being stripped */
+    ground: 0x8d9aa6, fog: 0x0e151f, fogD: 0.0196,
+    skyTop: 0x03040a, skyHorizon: 0x0a1019, skyGround: 0x1a2230,
+    canopy: 0x93a09c, canopyO: 1, moon: 0x8ea6cd, moonI: 0.72,
     partN: 1.0, partColor: [0.86, 0.9, 0.98], partSize: 2.2,
     partFall: 1.35, partSway: 1.5, partAlpha: 0.5
   }
@@ -2542,22 +2563,41 @@ function tCol(field, fallback) {
   var c = document.getElementById('chipThreshold');
   if (c) c.textContent = line;
   document.documentElement.setAttribute('data-season', SEASON.key);
-  /* Both pickers rewrite the query and reload: the world is built once, at
-     boot, from these two values, and rebuilding it live would mean tearing
-     down every material and light for a control almost nobody touches. */
+  /* The pickers change the churchyard where it stands: every value either
+     side of a season or an hour is a colour or a scalar, so it is a lerp.
+     Touching one also stops the cycle, on the assumption that somebody who
+     picks winter would like to stay in it. */
   function pick(sel, attr, current) {
     $$(sel + ' button').forEach(function (b) {
       var k = b.getAttribute(attr);
       b.classList.toggle('on', k === current);
       b.addEventListener('click', function () {
-        var q = new URLSearchParams(location.search);
-        q.set(attr.replace('data-', ''), k);
-        location.search = q.toString();
+        if (typeof goLook !== 'function') return;
+        setAuto(false);
+        goLook(attr === 'data-season' ? k : (LOOK.season || SEASON.key),
+               attr === 'data-time' ? k : (LOOK.time || TIME.key), false);
       });
     });
   }
   pick('#seasonPick', 'data-season', SEASON.key);
   pick('#timePick', 'data-time', TIME.key);
+
+  var autoBtn = document.getElementById('autoBtn');
+  window.setAuto = function (on) {
+    if (typeof AUTO === 'undefined') return;
+    AUTO.on = on;
+    if (on) AUTO.wait = 1.2;
+    if (autoBtn) {
+      autoBtn.classList.toggle('on', on);
+      autoBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      autoBtn.querySelector('span').textContent = on ? 'Cycling' : 'Held';
+    }
+  };
+  if (autoBtn) {
+    autoBtn.addEventListener('click', function () {
+      setAuto(!(typeof AUTO !== 'undefined' && AUTO.on));
+    });
+  }
 })();
 
 /* ═════════════════════════════════════════════════ 2 · preloader ═══ */
@@ -2624,6 +2664,11 @@ function startWorld() {
   dressWall();
 
   PIN.el = $('#priestPin');
+  for (var ci = 0; ci < CYCLE.length; ci++) {
+    if (CYCLE[ci][0] === SEASON.key && CYCLE[ci][1] === TIME.key) { AUTO.i = ci; break; }
+  }
+  goLook(SEASON.key, TIME.key, true);
+  AUTO.wait = AUTO.hold + LOOK.dur;
   window.addEventListener('resize', onResize, { passive: true });
   onResize();
   preTo(0.9);
@@ -2651,6 +2696,7 @@ function buildSky() {
       '  c = mix(uG, c, smoothstep(-0.22, 0.06, h));\n' +
       '  gl_FragColor = vec4(c, 1.0); }'
   });
+  WORLD.skyMat = m;
   scene.add(new THREE.Mesh(g, m));
 
   /* Stars, faint enough that the bloom does not turn them into headlights */
@@ -2725,6 +2771,9 @@ function buildSky() {
   moon.lookAt(0, 6, 20);
   scene.add(moon);
   WORLD.moon = moon;
+  WORLD.discMat = disc.material;
+  WORLD.haloMat = halo.material;
+  WORLD.disc = disc;
 }
 
 /* ───────────────────────────────────────────────────────────── ground ── */
@@ -2744,8 +2793,10 @@ function buildGround() {
   g.rotateX(-Math.PI / 2);
   var m = new THREE.MeshStandardMaterial({
     color: new THREE.Color(SEASON.ground).multiplyScalar(TIME.ground),
-    roughness: 0.97, metalness: 0.0, flatShading: false
+    roughness: 0.97, metalness: 0.0, flatShading: false,
+    emissive: new THREE.Color(0x000000), emissiveIntensity: 1
   });
+  WORLD.groundMat = m;
   var ground = new THREE.Mesh(g, m);
   ground.position.y = -0.02;
   ground.receiveShadow = false;
@@ -2783,6 +2834,7 @@ function buildChurch() {
     color: new THREE.Color(0xffbe73).multiplyScalar(TIME.windows), fog: true });
   var glassDim = new THREE.MeshBasicMaterial({
     color: new THREE.Color(0xd8853f).multiplyScalar(TIME.windows), fog: true });
+  WORLD.glassM = glassM; WORLD.glassDim = glassDim;
 
   function box(w, h, d, mat, x, y, z) {
     var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -3999,8 +4051,7 @@ function buildFlag() {
    wing strokes whose angle is the flap. Cheaper than geometry and it reads
    correctly at the only distance it is ever seen from. */
 function buildBirds() {
-  var N = SEASON.birds;
-  if (!N) return;
+  var N = 22;
   var pos = new Float32Array(N * 3), ph = new Float32Array(N), sp = new Float32Array(N);
   for (var i = 0; i < N; i++) {
     pos[i * 3]     = 15 + Math.random() * 20;      /* orbit radius */
@@ -4043,6 +4094,7 @@ function buildBirds() {
       '  if (a < 0.01) discard;\n' +
       '  gl_FragColor = vec4(uCol, a * 0.85); }'
   }));
+  birds.visible = SEASON.birds > 0;
   scene.add(birds);
   WORLD.birds = birds;
 }
@@ -4245,21 +4297,14 @@ function buildTrees() {
   /* Opaque, always. A season with less foliage gets fewer clusters, not
      see-through ones: alpha here would cost early-z on thousands of
      instances, and a thinning crown is the truer picture anyway. */
+  /* The per-instance colour carries only the light-and-dark of the crown.
+     The hue lives on the material, so a season change is one assignment
+     rather than three thousand buffer writes. */
   var leafM = new THREE.MeshStandardMaterial({
-    color: 0xffffff, roughness: 1.0, flatShading: true
+    color: new THREE.Color(SEASON.canopy), roughness: 1.0, flatShading: true
   });
   var leafG = new THREE.IcosahedronGeometry(1, 0);
-  /* thin the crown to the season rather than fading it */
-  if (SEASON.canopyO < 1) {
-    var keep = Math.round(leaves.length * SEASON.canopyO);
-    for (var sw = leaves.length - 1; sw > 0; sw--) {
-      var j = (Math.random() * (sw + 1)) | 0;
-      var tmp = leaves[sw]; leaves[sw] = leaves[j]; leaves[j] = tmp;
-    }
-    leaves.length = keep;
-  }
   var lm = new THREE.InstancedMesh(leafG, leafM, leaves.length);
-  var base = new THREE.Color(SEASON.canopy);
   var col = new THREE.Color();
   var d3 = new THREE.Object3D();
   for (var li = 0; li < leaves.length; li++) {
@@ -4270,26 +4315,27 @@ function buildTrees() {
     d3.updateMatrix(); lm.setMatrixAt(li, d3.matrix);
     /* darker toward the inside of the crown, lighter at the tips */
     var v = 0.55 + Math.random() * 0.95;
-    col.setRGB(base.r * v, base.g * v, base.b * v);
+    col.setRGB(v, v, v);
     lm.setColorAt(li, col);
   }
   lm.instanceMatrix.needsUpdate = true;
   if (lm.instanceColor) lm.instanceColor.needsUpdate = true;
   scene.add(lm);
   WORLD.leaves = lm;
+  WORLD.leafMat = leafM;
 }
 
 /* ────────────────────────────────────────────── snow, embers, haze ── */
 function buildWeather() {
   /* snow */
-  var N = Math.max(60, Math.round((LOW ? 900 : 2400) * SEASON.partN));
+  var N = LOW ? 900 : 2400;
   var pos = new Float32Array(N * 3), ph = new Float32Array(N), sz = new Float32Array(N);
   for (var i = 0; i < N; i++) {
     pos[i * 3] = (Math.random() - 0.5) * 110;
     pos[i * 3 + 1] = Math.random() * 46;
     pos[i * 3 + 2] = (Math.random() - 0.5) * 110 - 6;
     ph[i] = Math.random() * 100;
-    sz[i] = (1.2 + Math.random() * 2.6) * (SEASON.partSize / 2.2);
+    sz[i] = 1.2 + Math.random() * 2.6;
   }
   var g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -4297,12 +4343,15 @@ function buildWeather() {
   g.setAttribute('aS', new THREE.BufferAttribute(sz, 1));
   var snow = new THREE.Points(g, new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, fog: false,
-    blending: SEASON.key === 'summer' ? THREE.AdditiveBlending : THREE.NormalBlending,
     uniforms: { uT: { value: 0 }, uPR: { value: 1 }, uVis: { value: 1 },
-                uFall: { value: SEASON.partFall }, uSway: { value: SEASON.partSway } },
+                uFall: { value: SEASON.partFall }, uSway: { value: SEASON.partSway },
+                uDens: { value: SEASON.partN }, uSize: { value: SEASON.partSize / 2.2 } },
     vertexShader:
-      'attribute float aP, aS; uniform float uT, uPR, uFall, uSway; varying float vA;\n' +
+      'attribute float aP, aS; uniform float uT, uPR, uFall, uSway, uDens, uSize;\n' +
+      'varying float vA;\n' +
       'void main(){ vec3 p = position;\n' +
+      /* a stable per-particle draw, so thinning the weather is not a flicker */
+      '  float keep = step(fract(aP * 0.137), uDens);\n' +
       /* a negative fall speed is what turns snow into fireflies drifting up */
       '  p.y = mod(p.y - uT * uFall - aP, 46.0);\n' +
       '  p.x += sin(uT * 0.5 + aP) * uSway;\n' +
@@ -4310,7 +4359,8 @@ function buildWeather() {
       '  vec4 mv = modelViewMatrix * vec4(p, 1.0);\n' +
       '  float dist = -mv.z;\n' +
       '  vA = smoothstep(120.0, 22.0, dist) * smoothstep(0.6, 4.0, dist);\n' +
-      '  gl_PointSize = aS * uPR * (26.0 / max(1.0, dist));\n' +
+      '  vA *= keep;\n' +
+      '  gl_PointSize = aS * uSize * uPR * (26.0 / max(1.0, dist));\n' +
       '  gl_Position = projectionMatrix * mv; }',
     fragmentShader:
       'uniform float uVis, uAlpha; uniform vec3 uCol; varying float vA;\n' +
@@ -4321,6 +4371,7 @@ function buildWeather() {
   snow.material.uniforms.uCol = { value: new THREE.Vector3(
     SEASON.partColor[0], SEASON.partColor[1], SEASON.partColor[2]) };
   snow.material.uniforms.uAlpha = { value: SEASON.partAlpha };
+  snow.material.blending = THREE.NormalBlending;
   scene.add(snow);
   WORLD.snow = snow;
 
@@ -4415,23 +4466,25 @@ function buildWordmark() {
 
 /* ────────────────────────────────────────────────────────── lights ── */
 function buildLights() {
-  scene.add(new THREE.AmbientLight(tCol('amb', 0x141c2c), 0.42 * TIME.ambI));
+  var ambL = new THREE.AmbientLight(tCol('amb', 0x141c2c), 0.42 * TIME.ambI);
+  scene.add(ambL); WORLD.ambL = ambL;
 
   /* moonlight: cold, from behind and to the left */
   var moon = new THREE.DirectionalLight(tCol('key1', SEASON.moon), SEASON.moonI * TIME.keyI * 0.78);
   moon.position.set(-30, 24, -34);
-  scene.add(moon);
+  scene.add(moon); WORLD.keyL = moon;
 
   /* a weak fill from the front so the west face is not a silhouette */
   var fill = new THREE.DirectionalLight(TIME.fill, TIME.fillI);
   fill.position.set(10, 12, 26);
-  scene.add(fill);
+  scene.add(fill); WORLD.fillL = fill;
 
   /* the candle stand, the door lamp, and the light spilling from the drum */
   var c1 = new THREE.PointLight(0xffa64a, 2.8 * TIME.candle, 11, 2.2); c1.position.set(5.6, 2.1, 9.4);
   var c2 = new THREE.PointLight(0xffc98a, 2.1 * TIME.candle, 13, 2.0); c2.position.set(0, 4.4, 6.6);
   var c3 = new THREE.PointLight(0xffb066, 2.6 * TIME.candle, 24, 2.0); c3.position.set(0, 10.0, -0.6);
   scene.add(c1, c2, c3);
+  WORLD.outLights = [c1, c2, c3];
   WORLD.candleLight = c1;
   WORLD.doorLight = c2;
 }
@@ -4702,6 +4755,162 @@ if (!REDUCED && FINE) {
   }, { passive: true });
 }
 
+/* ═══════════════════════════════════════════ 11b · the living look ═══ */
+/* The season and the hour are no longer fixed at boot. Every value either
+   side of them is a colour or a scalar, so a change is a lerp rather than a
+   rebuild: the only thing that used to differ structurally was winter
+   having no leaves, and winter keeps its leaves now, under snow. */
+var LOOK = { from: null, to: null, t: 1, dur: 2.6, season: null, time: null };
+var _cA = new THREE.Color(), _cB = new THREE.Color(), _cM = new THREE.Color();
+
+function lookOf(se, ti) {
+  var S = SEASONS[se], T = TIMES[ti];
+  var pick = function (f, d) { return T[f] == null ? d : T[f]; };
+  return {
+    se: se, ti: ti,
+    fog: pick('fogTint', S.fog), fogD: S.fogD * T.fogMul,
+    skyTop: pick('skyTop', S.skyTop), skyHor: pick('skyHorizon', S.skyHorizon),
+    skyGnd: pick('skyGround', S.skyGround),
+    amb: pick('amb', 0x141c2c), ambI: 0.42 * T.ambI,
+    key: pick('key1', S.moon), keyI: S.moonI * T.keyI * 0.78,
+    fill: T.fill, fillI: T.fillI,
+    disc: T.disc, discR: T.discR, halo: T.halo, discPos: T.discPos,
+    stars: T.stars, ground: S.ground, groundMul: T.ground,
+    gndGlow: se === 'winter' ? (ti === 'day' ? 0x0b0e11 : 0x1b222b) : 0x000000,
+    canopy: S.canopy,
+    partCol: S.partColor, partA: S.partAlpha, partFall: S.partFall,
+    partSway: S.partSway, partDens: S.partN, partSize: S.partSize / 2.2,
+    additive: se === 'summer',
+    windows: T.windows, candle: T.candle,
+    bloom: 0.66 * T.bloom, exp: 0.92 * T.exposure, thresh: 0.7 * T.thresh,
+    wordO: T.wordO, scrim: T.scrim, birds: S.birds
+  };
+}
+
+function mixC(a, b, k, out) {
+  _cA.setHex(a); _cB.setHex(b);
+  return out.setRGB(lerp(_cA.r, _cB.r, k), lerp(_cA.g, _cB.g, k), lerp(_cA.b, _cB.b, k));
+}
+
+function applyLook(A, B, k) {
+  if (!WORLD.skyMat) return;
+  var W = WORLD, U = W.skyMat.uniforms;
+  mixC(A.skyTop, B.skyTop, k, U.uT.value);
+  mixC(A.skyHor, B.skyHor, k, U.uH.value);
+  mixC(A.skyGnd, B.skyGnd, k, U.uG.value);
+
+  mixC(A.fog, B.fog, k, scene.fog.color);
+  scene.fog.density = lerp(A.fogD, B.fogD, k);
+
+  mixC(A.amb, B.amb, k, W.ambL.color); W.ambL.intensity = lerp(A.ambI, B.ambI, k);
+  mixC(A.key, B.key, k, W.keyL.color);  W.keyL.intensity = lerp(A.keyI, B.keyI, k);
+  mixC(A.fill, B.fill, k, W.fillL.color); W.fillL.intensity = lerp(A.fillI, B.fillI, k);
+
+  mixC(A.disc, B.disc, k, W.discMat.color);
+  W.haloMat.uniforms.uA.value = lerp(A.halo, B.halo, k);
+  var r = lerp(A.discR, B.discR, k);
+  W.disc.scale.setScalar(r / TIMES.night.discR);
+  W.moon.position.set(lerp(A.discPos[0], B.discPos[0], k),
+                      lerp(A.discPos[1], B.discPos[1], k),
+                      lerp(A.discPos[2], B.discPos[2], k));
+  W.moon.lookAt(0, 6, 20);
+
+  var st = lerp(A.stars, B.stars, k);
+  W.stars.visible = st > 0.01; W.stars.material.opacity = st;
+
+  mixC(A.ground, B.ground, k, _cM);
+  W.groundMat.color.copy(_cM).multiplyScalar(lerp(A.groundMul, B.groundMul, k));
+  mixC(A.gndGlow, B.gndGlow, k, W.groundMat.emissive);
+  if (W.leafMat) mixC(A.canopy, B.canopy, k, W.leafMat.color);
+
+  if (W.snow) {
+    var su = W.snow.material.uniforms;
+    su.uCol.value.set(lerp(A.partCol[0], B.partCol[0], k),
+                      lerp(A.partCol[1], B.partCol[1], k),
+                      lerp(A.partCol[2], B.partCol[2], k));
+    su.uAlpha.value = lerp(A.partA, B.partA, k);
+    su.uFall.value  = lerp(A.partFall, B.partFall, k);
+    su.uSway.value  = lerp(A.partSway, B.partSway, k);
+    su.uDens.value  = lerp(A.partDens, B.partDens, k);
+    su.uSize.value  = lerp(A.partSize, B.partSize, k);
+    var wantAdd = (k < 0.5 ? A.additive : B.additive);
+    if (W.snow.material.blending !== (wantAdd ? THREE.AdditiveBlending : THREE.NormalBlending)) {
+      W.snow.material.blending = wantAdd ? THREE.AdditiveBlending : THREE.NormalBlending;
+      W.snow.material.needsUpdate = true;
+    }
+  }
+  if (W.birds) W.birds.visible = lerp(A.birds, B.birds, k) > 0.5;
+
+  var win = lerp(A.windows, B.windows, k);
+  if (W.glassM) W.glassM.color.setHex(0xffbe73).multiplyScalar(win);
+  if (W.glassDim) W.glassDim.color.setHex(0xd8853f).multiplyScalar(win);
+  LOOK.candle = lerp(A.candle, B.candle, k);
+  if (W.outLights) {
+    for (var i = 0; i < W.outLights.length; i++) {
+      var L = W.outLights[i];
+      if (L.userData.base == null) L.userData.base = L.intensity;
+      L.intensity = L.userData.base * LOOK.candle;
+    }
+  }
+
+  POST.comp.uniforms.uBloom.value = lerp(A.bloom, B.bloom, k);
+  POST.comp.uniforms.uExp.value   = lerp(A.exp, B.exp, k);
+  POST.bright.uniforms.uTh.value  = lerp(A.thresh, B.thresh, k);
+  if (WORLD.word) WORLD.word.material.opacity = lerp(A.wordO, B.wordO, k);
+
+  var css = document.documentElement.style;
+  css.setProperty('--scrim', lerp(A.scrim, B.scrim, k).toFixed(3));
+  var now = k < 0.5 ? A : B;
+  if (LOOK.season !== now.se || LOOK.time !== now.ti) {
+    LOOK.season = now.se; LOOK.time = now.ti;
+    var el = document.getElementById('seasonNow');
+    if (el) el.textContent = SEASONS[now.se].name + ' · ' + TIMES[now.ti].name;
+    document.documentElement.setAttribute('data-season', now.se);
+    document.documentElement.setAttribute('data-time', now.ti);
+    $$('#seasonPick button').forEach(function (b2) {
+      b2.classList.toggle('on', b2.getAttribute('data-season') === now.se);
+    });
+    $$('#timePick button').forEach(function (b2) {
+      b2.classList.toggle('on', b2.getAttribute('data-time') === now.ti);
+    });
+  }
+}
+
+function goLook(se, ti, instant) {
+  var next = lookOf(se, ti);
+  LOOK.from = LOOK.to || next;
+  LOOK.to = next;
+  LOOK.t = instant ? 1 : 0;
+  if (instant) applyLook(next, next, 1);
+}
+
+/* ── the cycle ──────────────────────────────────────────────────────── */
+/* A year and a day, in order, so the churchyard is never the same twice
+   over and the reader is not asked to operate anything to see it. */
+var CYCLE = [];
+['spring', 'summer', 'autumn', 'winter'].forEach(function (se) {
+  ['day', 'dusk', 'night'].forEach(function (ti) { CYCLE.push([se, ti]); });
+});
+var AUTO = { on: true, i: 0, hold: 7.5, wait: 0 };
+
+function autoStep() {
+  AUTO.i = (AUTO.i + 1) % CYCLE.length;
+  goLook(CYCLE[AUTO.i][0], CYCLE[AUTO.i][1], false);
+  AUTO.wait = AUTO.hold + LOOK.dur;
+}
+
+function tickLook(dt) {
+  if (!WORLD.skyMat) return;
+  if (LOOK.t < 1) {
+    LOOK.t = Math.min(1, LOOK.t + dt / LOOK.dur);
+    applyLook(LOOK.from, LOOK.to, smooth(0, 1, LOOK.t));
+  }
+  if (AUTO.on) {
+    AUTO.wait -= dt;
+    if (AUTO.wait <= 0) autoStep();
+  }
+}
+
 /* ══════════════════════════════════════════════════ 6 · the frame ═══ */
 var last = 0, T = 0, visible = true;
 document.addEventListener('visibilitychange', function () {
@@ -4717,6 +4926,7 @@ function frame(now) {
   var dt = Math.min(0.05, (now - last) / 1000 || 0.016);
   last = now; T += dt;
 
+  tickLook(dt);
   RIG.intro = Math.min(1, RIG.intro + dt * 0.42);
   RIG.prog = progressFor(window.scrollY);
   /* The camera lags the scrollbar deliberately. Scroll is a step function;
@@ -4822,10 +5032,12 @@ function frame(now) {
 
   /* the candle light breathes with the flames it belongs to */
   if (WORLD.candleLight) {
-    WORLD.candleLight.intensity = TIME.candle * (2.8 + Math.sin(T * 5.6) * 0.36 + Math.sin(T * 11.3) * 0.17);
+    WORLD.candleLight.intensity = (LOOK.candle == null ? TIME.candle : LOOK.candle) *
+      (2.8 + Math.sin(T * 5.6) * 0.36 + Math.sin(T * 11.3) * 0.17);
   }
   if (WORLD.doorLight) {
-    WORLD.doorLight.intensity = TIME.candle * (2.1 + Math.sin(T * 3.1 + 1.4) * 0.22);
+    WORLD.doorLight.intensity = (LOOK.candle == null ? TIME.candle : LOOK.candle) *
+      (2.1 + Math.sin(T * 3.1 + 1.4) * 0.22);
   }
 
   renderPost();
@@ -4857,7 +5069,7 @@ window.addEventListener('resize', measure, { passive: true });
 setTimeout(measure, 400);
 setTimeout(measure, 1600);
 
-window.__spomen = { RIG: RIG, WORLD: WORLD, CAM: CAM, POST: POST,
+window.__spomen = { RIG: RIG, WORLD: WORLD, CAM: CAM, POST: POST, LOOK: LOOK, AUTO: AUTO,
   cam: function () { return camera; }, scene: function () { return scene; },
   r: function () { return renderer; } };
 

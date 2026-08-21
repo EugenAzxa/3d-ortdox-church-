@@ -116,6 +116,23 @@ Foliage is opaque in every season. A season with less of it gets fewer clusters,
 see-through ones: alpha on several thousand instances costs early-z, which is the thing the
 performance pass was about, and a thinning crown is the truer picture anyway.
 
+### The living look
+
+The season and the hour are not fixed at boot. Every value either side of them is a colour
+or a scalar, so a change is a lerp over two and a half seconds rather than a reload: sky,
+fog, three lights, the sun or moon and its halo, stars, ground, canopy, weather, window
+glow, candle strength, bloom, exposure and the page scrim all move together.
+
+The one thing that used to differ structurally was winter having no leaves, and winter keeps
+its leaves now, under snow. That is what makes the rest possible. Two follow-ons fell out of
+it: leaf tint moved from the instance colours to the material, so a season is one assignment
+rather than several thousand buffer writes; and the weather is built once at full count with
+density, size, fall, sway, colour and alpha as uniforms.
+
+By default the churchyard walks a year and a day on its own, twelve stations of about ten
+seconds. Touching either picker holds it where you put it, on the assumption that somebody
+who picks winter would like to stay in it.
+
 ### The seasons
 
 `SEASONS` holds four palettes and weather profiles, picked from the current month for the
