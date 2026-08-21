@@ -5,7 +5,7 @@ Richmond Hill: across the churchyard, in through the west door, down the nave to
 of lit arches where every page is kept by Saylavy, and up out through the cupola.
 Rendered live in Three.js and layered with editorial typography.
 
-[**View the source**](https://github.com/EugenAzxa/3d-ortdox-church-) · [**Read the build prompt**](PROMPT.md)
+[**View the source**](https://github.com/EugenAzxa/3d-ortdox-church-) · [**Read the build prompt**](PROMPT.md) · [**How to build a scene like this**](docs/BUILD.md)
 
 ## What it does
 
