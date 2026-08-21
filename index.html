@@ -3026,11 +3026,11 @@ function buildChurch() {
   var belfCorn = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.12, 0.24, 8), stone);
   belfCorn.position.set(0, 15.05, 10.4);
   K.add(belfCorn);
-  /* one tall opening to each of the eight faces, unglazed and dark */
+  /* one tall opening to each of the eight faces, all of them lit */
   var voidM = new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 1 });
   for (var b = 0; b < 8; b++) {
     var ba = (b / 8) * Math.PI * 2 + Math.PI / 8;
-    arch(0.62, 1.5, b % 2 ? glassDim : voidM,
+    arch(0.62, 1.5, b % 2 ? glassDim : glassM,
          Math.sin(ba) * 1.94, 12.5, 10.4 + Math.cos(ba) * 1.94, ba);
   }
   var spire = new THREE.Mesh(new THREE.ConeGeometry(2.34, 3.1, 8), roofM);
@@ -3711,8 +3711,11 @@ function buildInterior() {
   IN.add(l1, l2, l3, l4, l5, l6, l7);
   IN.add(new THREE.HemisphereLight(0xa8a294, 0x322d26, 0.16));
   WORLD.inLights = [l1, l2, l3, l4, l5, l6, l7];
-  WORLD.inLights.forEach(function (L) { L.userData.base = L.intensity; L.intensity = 0; });
+  WORLD.inLights.forEach(function (L) {
+    L.userData.base = L.intensity; L.visible = false;
+  });
 
+  IN.visible = false;                 /* the flip owns this from here */
   scene.add(IN);
   WORLD.interior = IN;
   WORLD.interiorFade = fade;
@@ -4731,7 +4734,7 @@ function renderPost() {
 var CAM = [
   { p: [ 12.5,  4.10,  30.5 ], t: [ -0.6,  7.60,  -2.0 ], fov: 40 },  /* 0 hero        */
   { p: [ -0.9,  2.28,  19.5 ], t: [  0.0,  2.42,   6.2 ], fov: 44 },  /* 1 threshold   */
-  { p: [  0.1,  1.68,   1.2 ], t: [  0.0,  1.86,  -9.6 ], fov: 58 },  /* 2 iconostasis */
+  { p: [  0.1,  1.66,  -0.9 ], t: [  0.0,  1.86,  -9.6 ], fov: 56 },  /* 2 iconostasis */
   { p: [  0.5,  1.52,  -3.4 ], t: [  4.2,  1.30,  -6.9 ], fov: 46 },  /* 3 voices      */
   { p: [  1.3,  1.76,  -3.7 ], t: [ -4.4,  2.02,  -6.0 ], fov: 46 },  /* 4 memorial    */
   { p: [  0.0,  1.56,  -6.1 ], t: [  0.0,  1.84,  -9.6 ], fov: 40 },  /* 5 remembrance */
@@ -5065,9 +5068,23 @@ function frame(now) {
      page has scrolled. Keyed to scroll alone, the rise out through the roof
      left the room on screen for half a second after the camera had cleared
      it, and it read as a pale slab lying over the churchyard. */
+  /* Where the lens is, and how near it is to the surface it will cross.
+     The veil used to be a function of scroll and the swap a function of
+     position, so the blink happened at one moment and the cut at another:
+     a flash, then an unmasked change of world half a second later. Both now
+     come off the same number. */
+  /* Signed distance from the lens to the room, as a box: negative inside,
+     positive outside, and its size is the distance to the nearest face
+     either way. Measuring against the wall planes alone is not the same
+     thing - the opening shot sits at y=4.07, which is the ceiling's height
+     thirty metres away, and that lit the veil at the top of the page. */
   var cp = camera.position;
-  var inRoom = want > 0.5 && cp.y < 4.15 && cp.y > 0.4 &&
-               Math.abs(cp.x) < 5.1 && cp.z > -13.4 && cp.z < 2.1;
+  var dBox = Math.max(Math.abs(cp.x) - 5.1,
+                      cp.y - 4.02, 0.4 - cp.y,
+                      cp.z - 1.4, -13.4 - cp.z);
+  var inRoom = dBox < 0;
+  var veilGeo = 1 - clamp(Math.abs(dBox) / 1.5, 0, 1);
+  veilGeo *= veilGeo;
   if (inRoom !== RIG.indoors) {
     RIG.indoors = inRoom;
     RIG.veil = 1;                       /* a blink over the cut */
@@ -5082,7 +5099,7 @@ function frame(now) {
     }
   }
   if (RIG.veil > 0) RIG.veil = Math.max(0, RIG.veil - dt * 2.4);
-  var veil = Math.max(RIG.veil, 1 - Math.min(1, Math.abs(want - 0.5) * 5));
+  var veil = Math.max(RIG.veil, veilGeo);
   var css = document.documentElement.style;
   if (veil !== RIG.lastVeil) {
     RIG.lastVeil = veil;
