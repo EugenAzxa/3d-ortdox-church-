@@ -3225,8 +3225,17 @@ function buildPriestFigure() {
   var waxM    = new THREE.MeshStandardMaterial({ color: 0xe6d7b4, roughness: 0.6 });
 
   /* ---- the cassock, and its gold-trimmed front ---- */
-  var rob = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.4, 1.62, 14), cassock);
-  rob.position.y = 0.81; G.add(rob);
+  var rob = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.4, 1.62, 16), cassock);
+  rob.position.set(0, 0.81, 0); rob.scale.set(1.06, 1, 0.8); G.add(rob);
+  /* the hem breaks over the shoes rather than meeting the step as a disc */
+  var hemBreak = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.36, 0.1, 16), cassock);
+  hemBreak.position.set(0.012, 0.05, 0.02); hemBreak.scale.set(1.06, 1, 0.86);
+  hemBreak.rotation.z = 0.03; G.add(hemBreak);
+  [-1, 1].forEach(function (m) {
+    var shoe = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 6), cassock);
+    shoe.position.set(m * 0.1, 0.035, 0.11);
+    shoe.scale.set(0.8, 0.42, 1.25); G.add(shoe);
+  });
   var placket = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.5, 0.03), cassock);
   placket.position.set(0, 0.79, 0.29); G.add(placket);
   [-1, 1].forEach(function (m) {
@@ -3244,24 +3253,31 @@ function buildPriestFigure() {
          which is the shape that says Orthodox priest from any distance ---- */
   var SHO = 1.52;
   var cape = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.25, 0.5, 0.8, 22, 1, true), silk);
-  cape.position.y = SHO - 0.4; G.add(cape);
+    new THREE.CylinderGeometry(0.25, 0.5, 0.8, 24, 1, true), silk);
+  cape.position.set(0, SHO - 0.4, 0);
+  cape.scale.set(1.14, 1, 0.82); G.add(cape);
   /* a lighter panel down the front, where the light falls on the silk */
   var lit = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.253, 0.505, 0.8, 10, 1, true,
+    new THREE.CylinderGeometry(0.256, 0.508, 0.8, 12, 1, true,
                                -Math.PI * 0.3, Math.PI * 0.6), silkLit);
-  lit.position.y = SHO - 0.4; G.add(lit);
+  lit.position.set(0, SHO - 0.4, 0);
+  lit.scale.set(1.14, 1, 0.82); G.add(lit);
   /* the shoulder cap, so the two do not read as separate garments */
   /* the shoulder yoke: the phelonion stands off the shoulders, and without
      it the cone starts at the neck and reads as a lampshade */
   var cap = new THREE.Mesh(
-    new THREE.SphereGeometry(0.3, 18, 8, 0, Math.PI * 2, 0, Math.PI * 0.46), silk);
-  cap.position.y = SHO - 0.05; cap.scale.set(1.12, 0.66, 1.02); G.add(cap);
+    new THREE.SphereGeometry(0.3, 20, 8, 0, Math.PI * 2, 0, Math.PI * 0.46), silk);
+  cap.position.set(0, SHO - 0.05, 0);
+  cap.scale.set(1.3, 0.62, 0.9); G.add(cap);
+  /* a neck, so the head is not sitting straight on the collar */
+  var neck = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.068, 0.13, 10), skin);
+  neck.position.set(0, SHO + 0.15, 0.012); G.add(neck);
 
   /* gold hems */
   var hem = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.507, 0.507, 0.05, 22, 1, true), gold);
-  hem.position.y = SHO - 0.79; G.add(hem);
+    new THREE.CylinderGeometry(0.507, 0.507, 0.05, 24, 1, true), gold);
+  hem.position.set(0, SHO - 0.79, 0);
+  hem.scale.set(1.14, 1, 0.82); G.add(hem);
   /* the stiff gold collar */
   var collar = new THREE.Mesh(new THREE.CylinderGeometry(0.135, 0.15, 0.13, 14), gold);
   collar.position.y = SHO + 0.11; G.add(collar);
@@ -3281,8 +3297,8 @@ function buildPriestFigure() {
   var eyeM  = new THREE.MeshStandardMaterial({ color: 0x5c463a, roughness: 0.9 });
 
   var head = new THREE.Mesh(new THREE.SphereGeometry(0.108, 18, 14), skin);
-  head.position.set(0, HY, 0.012);
-  head.scale.set(0.94, 1.08, 0.98); G.add(head);
+  head.position.set(0.008, HY, 0.012); head.rotation.y = -0.16;
+  head.scale.set(0.9, 1.06, 0.94); G.add(head);
 
   /* the jaw, a little narrower than the skull */
   var jaw = new THREE.Mesh(new THREE.SphereGeometry(0.09, 14, 10), skin);
@@ -3342,7 +3358,7 @@ function buildPriestFigure() {
 
   /* on the second step, clear of the doorway, turned toward the path */
   G.position.set(-1.9, 0.24, 13.35);
-  G.rotation.y = 0.46;
+  G.rotation.set(0.012, 0.46, 0.022);
   G.scale.setScalar(0.94);
   K.add(G);
 
