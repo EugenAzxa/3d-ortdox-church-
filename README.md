@@ -50,6 +50,16 @@ hall about 3.3m to a suspended white tile ceiling on recessed troffers, a flagst
 walls, and a white and gold screen across the east end with striped pilasters between arched
 icons. Building it as a tall stone nave was the wrong room.
 
+It is dressed the way the parish dresses it: a brass polyeleos over the nave, the long run of
+small framed icons down the south wall with a memorial board and speakers, banners on staves
+either side of the screen, royal doors carrying four round icons under a gilt arch, chairs with
+backs down both walls, a skirting board, and the candle stand built as a chest on a plinth with
+a tray of sand and a pale reredos behind it.
+
+One thing worth knowing if you edit the floor texture: its cells randomise a single value
+against a fixed hue. Randomising R, G and B independently randomises hue, not brightness, and
+gives a floor of pink, green and yellow flagstones.
+
 Two things make it work. The exterior shell is opaque, and its cross-arm wall stands between
 the lens and the room from chapter 02 onward, so the shell is hidden while the camera is
 inside it - the room is closed on all four sides, so nothing is lost. And the troffers make

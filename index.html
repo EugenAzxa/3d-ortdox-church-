@@ -2410,8 +2410,8 @@ function buildInterior() {
       for (var cx = 0; cx < N; cx++) {
         var a1 = grid[cy][cx], b1 = grid[cy][cx + 1],
             c1 = grid[cy + 1][cx + 1], d1 = grid[cy + 1][cx];
-        x.fillStyle = 'rgba(' + (158 + Math.random() * 22 | 0) + ',' +
-          (150 + Math.random() * 20 | 0) + ',' + (131 + Math.random() * 18 | 0) + ',1)';
+        var v = 0.9 + Math.random() * 0.2;
+        x.fillStyle = 'rgb(' + (170 * v | 0) + ',' + (159 * v | 0) + ',' + (139 * v | 0) + ')';
         x.beginPath();
         x.moveTo(a1[0], a1[1]); x.lineTo(b1[0], b1[1]);
         x.lineTo(c1[0], c1[1]); x.lineTo(d1[0], d1[1]);
@@ -2419,9 +2419,10 @@ function buildInterior() {
       }
     }
     /* mottling, so it does not read as flat paint */
-    for (var k = 0; k < 260; k++) {
-      x.fillStyle = 'rgba(' + (146 + Math.random() * 34 | 0) + ',' +
-        (140 + Math.random() * 30 | 0) + ',' + (122 + Math.random() * 26 | 0) + ',0.2)';
+    for (var k = 0; k < 200; k++) {
+      var mv = 0.86 + Math.random() * 0.2;
+      x.fillStyle = 'rgba(' + (162 * mv | 0) + ',' + (152 * mv | 0) + ',' +
+        (133 * mv | 0) + ',0.16)';
       x.beginPath();
       x.arc(Math.random() * w, Math.random() * h, 2 + Math.random() * 12, 0, 6.284);
       x.fill();
@@ -2440,6 +2441,13 @@ function buildInterior() {
   plane(X * 2, Y1 - Y0, wallM, 0, (Y0 + Y1) / 2, ZE, 0, 0);
   plane(X * 2, Y1 - Y0, wallM, 0, (Y0 + Y1) / 2, ZW, 0, Math.PI);
 
+  /* a skirting board: without one the wall dissolves into the floor */
+  var skirtM = reg(new THREE.MeshStandardMaterial({ color: 0x6d6355, roughness: 0.7 }));
+  box(X * 2, 0.13, 0.05, skirtM, 0, Y0 + 0.065, ZE + 0.03);
+  box(0.05, 0.13, ZW - ZE, skirtM, -X + 0.03, Y0 + 0.065, (ZE + ZW) / 2);
+  box(0.05, 0.13, ZW - ZE, skirtM,  X - 0.03, Y0 + 0.065, (ZE + ZW) / 2);
+  box(X * 2, 0.13, 0.05, skirtM, 0, Y0 + 0.065, ZW - 0.03);
+
   /* ---- ceiling: square acoustic tile, with recessed troffers ---- */
   var ceilTex = canvasTex(256, 256, function (x, w, h) {
     x.fillStyle = '#e8e6df'; x.fillRect(0, 0, w, h);
@@ -2450,7 +2458,8 @@ function buildInterior() {
     x.moveTo(0, h / 2); x.lineTo(w, h / 2); x.stroke();
   }, 9, 15);
   plane(X * 2, ZW - ZE, reg(new THREE.MeshStandardMaterial({
-    map: ceilTex, roughness: 1.0, side: THREE.DoubleSide
+    map: ceilTex, roughness: 1.0, side: THREE.DoubleSide,
+    emissive: new THREE.Color(0x2a2822), emissiveIntensity: 1
   })), 0, Y1, (ZE + ZW) / 2, Math.PI / 2, 0);
 
   /* Two runs of troffers down the room. These are the light in here: a
@@ -2473,8 +2482,8 @@ function buildInterior() {
   }));
   var stripeTex = canvasTex(64, 64, function (x, w, h) {
     x.fillStyle = '#f0ece2'; x.fillRect(0, 0, w, h);
-    x.fillStyle = '#1c1c1e';
-    for (var i = 0; i < 8; i++) x.fillRect(i * 8, 0, 4, h);
+    x.fillStyle = '#26262a';
+    for (var i = 0; i < 4; i++) x.fillRect(i * 16 + 3, 0, 7, h);
   }, 1, 1);
   var stripeM = reg(new THREE.MeshStandardMaterial({ map: stripeTex, roughness: 0.8 }));
 
@@ -2488,7 +2497,7 @@ function buildInterior() {
   var bays = [-3.62, -2.62, -1.62, 1.62, 2.62, 3.62];
   bays.forEach(function (bx, i) {
     /* striped pilaster to the left of each bay */
-    box(0.2, 2.5, 0.06, stripeM, bx - 0.5, Y0 + 1.55, ICZ + 0.16);
+    box(0.22, 1.28, 0.05, stripeM, bx - 0.5, Y0 + 1.18, ICZ + 0.155);
     var t = loader.load(ICONS[i % 4]);
     if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
     else t.encoding = THREE.sRGBEncoding;
@@ -2508,8 +2517,30 @@ function buildInterior() {
   }));
   [-0.42, 0.42].forEach(function (dx) {
     box(0.78, 2.0, 0.08, doorsM, dx, Y0 + 1.0, ICZ + 0.17);
-    box(0.06, 2.0, 0.1, goldM, dx + (dx < 0 ? -0.4 : 0.4), Y0 + 1.0, ICZ + 0.18);
+    box(0.05, 2.0, 0.1, goldM, dx + (dx < 0 ? -0.4 : 0.4), Y0 + 1.0, ICZ + 0.185);
+    box(0.05, 2.0, 0.1, goldM, dx + (dx < 0 ? 0.38 : -0.38), Y0 + 1.0, ICZ + 0.185);
+    /* two small round icons to each leaf, the way the doors carry the
+       Annunciation and the evangelists */
+    [0.42, -0.28].forEach(function (dy, k) {
+      var t3 = loader.load(ICONS[(k + (dx < 0 ? 0 : 2)) % 4]);
+      if ('colorSpace' in t3) t3.colorSpace = THREE.SRGBColorSpace;
+      else t3.encoding = THREE.sRGBEncoding;
+      var di = new THREE.Mesh(new THREE.CircleGeometry(0.2, 22),
+        reg(new THREE.MeshBasicMaterial({ map: t3, color: 0x9a9078 })));
+      di.position.set(dx, Y0 + 1.0 + dy, ICZ + 0.23);
+      IN.add(di);
+      var dr = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.235, 22), goldM);
+      dr.position.set(dx, Y0 + 1.0 + dy, ICZ + 0.225);
+      IN.add(dr);
+    });
   });
+  /* the arch over the doors */
+  var dArch = new THREE.Mesh(archShape(1.9, 2.5), goldM);
+  dArch.position.set(0, Y0 + 0.02, ICZ + 0.12);
+  IN.add(dArch);
+  var dArchIn = new THREE.Mesh(archShape(1.72, 2.4), whiteM);
+  dArchIn.position.set(0, Y0 + 0.06, ICZ + 0.13);
+  IN.add(dArchIn);
   var sanct = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.1),
     reg(new THREE.MeshBasicMaterial({ color: 0xffc98a, side: THREE.DoubleSide })));
   sanct.position.set(0, Y0 + 1.05, ICZ - 0.3);
@@ -2539,17 +2570,23 @@ function buildInterior() {
     color: 0x2e2c28, roughness: 0.45, metalness: 0.6
   }));
   var sandM = reg(new THREE.MeshStandardMaterial({ color: 0x9a927f, roughness: 1 }));
-  box(0.7, 0.86, 2.6, metalM, X - 0.5, Y0 + 0.43, -6.4);
-  box(0.56, 0.06, 2.4, sandM, X - 0.5, Y0 + 0.89, -6.4);
-  box(0.72, 0.9, 0.08, reg(new THREE.MeshStandardMaterial({
-    color: 0xdad3c2, roughness: 0.9 })), X - 0.5, Y0 + 1.42, -6.4);
+  /* a low chest on a plinth, a tray of sand, and a pale reredos behind it */
+  box(0.62, 0.62, 2.5, metalM, X - 0.52, Y0 + 0.31, -6.4);
+  box(0.7, 0.09, 2.62, reg(new THREE.MeshStandardMaterial({
+    color: 0x4a4640, roughness: 0.4, metalness: 0.7 })), X - 0.52, Y0 + 0.66, -6.4);
+  box(0.5, 0.05, 2.34, sandM, X - 0.52, Y0 + 0.72, -6.4);
+  box(0.07, 1.05, 2.6, reg(new THREE.MeshStandardMaterial({
+    color: 0xc9c2b0, roughness: 0.92 })), X - 0.16, Y0 + 1.22, -6.4);
+  /* a taper box at one end */
+  box(0.4, 0.26, 0.3, reg(new THREE.MeshStandardMaterial({
+    color: 0x6b5a3c, roughness: 0.75 })), X - 0.52, Y0 + 0.84, -7.6);
 
   var NF = LOW ? 10 : 16;
   var fp = new Float32Array(NF * 3), fph = new Float32Array(NF), fsz = new Float32Array(NF);
   for (var k = 0; k < NF; k++) {
-    fp[k * 3] = X - 0.5 + (Math.random() - 0.5) * 0.34;
-    fp[k * 3 + 1] = Y0 + 1.06 + Math.random() * 0.05;
-    fp[k * 3 + 2] = -7.5 + (k / NF) * 2.2 + Math.random() * 0.08;
+    fp[k * 3] = X - 0.52 + (Math.random() - 0.5) * 0.3;
+    fp[k * 3 + 1] = Y0 + 0.92 + Math.random() * 0.05;
+    fp[k * 3 + 2] = -7.4 + (k / NF) * 2.0 + Math.random() * 0.07;
     fph[k] = Math.random() * 100; fsz[k] = 16 + Math.random() * 10;
   }
   var fg2 = new THREE.BufferGeometry();
@@ -2571,16 +2608,33 @@ function buildInterior() {
     color: 0x3a2b1c, roughness: 0.55 })), -1.3, Y0 + 0.75, 0.4);
 
   /* ---- banners on the north wall, and chairs down both sides ---- */
-  [-9.0, -8.3].forEach(function (bz, i) {
-    box(0.06, 0.85, 0.42, reg(new THREE.MeshStandardMaterial({
-      color: i % 2 ? 0x7c1f28 : 0x9c7326, roughness: 0.85 })), -X + 0.1, Y0 + 2.6, bz);
-    box(0.06, 0.85, 0.42, reg(new THREE.MeshStandardMaterial({
-      color: i % 2 ? 0x9c7326 : 0x7c1f28, roughness: 0.85 })),  X - 0.1, Y0 + 2.6, bz);
+  /* Church banners stand on staves either side of the screen. */
+  var poleM = reg(new THREE.MeshStandardMaterial({
+    color: 0x4a3a22, roughness: 0.5, metalness: 0.4 }));
+  [[-X + 0.62, -9.0, 0x7c1f28], [X - 0.62, -9.0, 0x9c7326]].forEach(function (bn) {
+    var g2 = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 2.4, 6), poleM);
+    g2.position.set(bn[0], Y0 + 1.2, bn[1]); IN.add(g2);
+    var cl = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.86),
+      reg(new THREE.MeshStandardMaterial({ color: bn[2], roughness: 0.9,
+        side: THREE.DoubleSide })));
+    cl.position.set(bn[0] + (bn[0] < 0 ? 0.22 : -0.22), Y0 + 1.72, bn[1]);
+    IN.add(cl);
+    var tip = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.16, 8), poleM);
+    tip.position.set(bn[0], Y0 + 2.48, bn[1]); IN.add(tip);
   });
-  var chairM = reg(new THREE.MeshStandardMaterial({ color: 0x24211d, roughness: 0.8 }));
-  for (var ci = 0; ci < 7; ci++) {
-    box(0.48, 0.46, 0.48, chairM,  X - 0.34, Y0 + 0.23, -2.6 + ci * 0.62);
-    box(0.48, 0.46, 0.48, chairM, -X + 0.34, Y0 + 0.23, -2.6 + ci * 0.62);
+  var chairM = reg(new THREE.MeshStandardMaterial({ color: 0x1e1b17, roughness: 0.72 }));
+  var chairLeg = reg(new THREE.MeshStandardMaterial({
+    color: 0x2c2925, roughness: 0.5, metalness: 0.5 }));
+  function chair(x0, z0, faceIn) {
+    box(0.46, 0.07, 0.46, chairM, x0, Y0 + 0.44, z0);                 /* seat  */
+    box(0.07, 0.5, 0.44, chairM, x0 + (faceIn ? 0.19 : -0.19), Y0 + 0.72, z0); /* back */
+    [[-0.19, -0.19], [0.19, -0.19], [-0.19, 0.19], [0.19, 0.19]].forEach(function (o) {
+      box(0.035, 0.42, 0.035, chairLeg, x0 + o[0], Y0 + 0.21, z0 + o[1]);
+    });
+  }
+  for (var ci = 0; ci < 6; ci++) {
+    chair( X - 0.42, -2.0 + ci * 0.66, true);
+    chair(-X + 0.42, -2.0 + ci * 0.66, false);
   }
 
   /* ---- the memorial wall ---- */
@@ -2618,6 +2672,67 @@ function buildInterior() {
     n.base *= 0.45;
   }
 
+  /* The south wall carries the parish's long line of small framed icons,
+     a memorial board, and a pair of speakers up in the corners. */
+  var frameSm = reg(new THREE.MeshStandardMaterial({ color: 0x3a2c18, roughness: 0.6 }));
+  var iconSm = [];
+  for (var si = 0; si < 4; si++) {
+    var st = loader.load(ICONS[si % 4]);
+    if ('colorSpace' in st) st.colorSpace = THREE.SRGBColorSpace;
+    else st.encoding = THREE.sRGBEncoding;
+    iconSm.push(reg(new THREE.MeshBasicMaterial({ map: st, color: 0x8b8270 })));
+  }
+  for (var q2 = 0; q2 < 14; q2++) {
+    var qz = -9.2 + q2 * 0.58;
+    var f2 = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.4), frameSm);
+    f2.position.set(X - 0.045, Y0 + 1.62, qz); f2.rotation.y = -Math.PI / 2;
+    IN.add(f2);
+    var i2 = new THREE.Mesh(new THREE.PlaneGeometry(0.23, 0.32), iconSm[q2 % 4]);
+    i2.position.set(X - 0.055, Y0 + 1.62, qz); i2.rotation.y = -Math.PI / 2;
+    IN.add(i2);
+  }
+  /* memorial board */
+  box(0.05, 0.66, 1.0, reg(new THREE.MeshStandardMaterial({
+    color: 0x241d14, roughness: 0.55, metalness: 0.25 })), X - 0.05, Y0 + 2.5, -3.4);
+  /* speakers */
+  [-8.6, -1.4].forEach(function (sz) {
+    box(0.22, 0.34, 0.24, reg(new THREE.MeshStandardMaterial({
+      color: 0x17161a, roughness: 0.7 })), X - 0.18, Y1 - 0.55, sz);
+  });
+
+  /* ---- the polyeleos: the brass chandelier over the nave ---- */
+  var brass = reg(new THREE.MeshStandardMaterial({
+    color: 0x6d5220, roughness: 0.34, metalness: 0.85 }));
+  var lampGlass = reg(new THREE.MeshBasicMaterial({ color: 0xffc078 }));
+  var CH = new THREE.Group();
+  CH.position.set(0, 0, -6.2);
+  var ringR = 0.72, ringY = Y1 - 1.18;
+  var rod = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.62, 6), brass);
+  rod.position.y = Y1 - 0.31; CH.add(rod);
+  var hub = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 0.15, 10), brass);
+  hub.position.y = Y1 - 0.68; CH.add(hub);
+  var stem = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.42, 6), brass);
+  stem.position.y = Y1 - 0.96; CH.add(stem);
+  var ring = new THREE.Mesh(new THREE.TorusGeometry(ringR, 0.02, 6, 32), brass);
+  ring.position.y = ringY; ring.rotation.x = Math.PI / 2; CH.add(ring);
+  for (var ai = 0; ai < 12; ai++) {
+    var aa = (ai / 12) * Math.PI * 2;
+    var ax2 = Math.cos(aa) * ringR, az2 = Math.sin(aa) * ringR;
+    if (ai % 3 === 0) {                       /* a spoke every third station */
+      var spoke = new THREE.Mesh(new THREE.BoxGeometry(ringR, 0.014, 0.014), brass);
+      spoke.position.set(ax2 * 0.5, ringY, az2 * 0.5);
+      spoke.rotation.y = -aa;
+      CH.add(spoke);
+      var hang = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.34, 4), brass);
+      hang.position.set(ax2, ringY + 0.17, az2); CH.add(hang);
+    }
+    var cup = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.026, 0.07, 8), brass);
+    cup.position.set(ax2, ringY + 0.05, az2); CH.add(cup);
+    var bulb = new THREE.Mesh(new THREE.SphereGeometry(0.042, 8, 6), lampGlass);
+    bulb.position.set(ax2, ringY + 0.12, az2); CH.add(bulb);
+  }
+  IN.add(CH);
+
   /* ---- kandila on their chains ---- */
   var chainM = reg(new THREE.MeshBasicMaterial({ color: 0x2a2418 }));
   var glassM = reg(new THREE.MeshBasicMaterial({ color: 0xffb066 }));
@@ -2638,9 +2753,10 @@ function buildInterior() {
   var l4 = new THREE.PointLight(0xffeccd, 0.28, 6.0, 2.0); l4.position.set(2.2, Y1 - 0.4, -0.8);
   var l5 = new THREE.PointLight(0xffc98a, 0.9, 4.5, 2.2); l5.position.set(X - 0.6, Y0 + 1.3, -6.4);
   var l6 = new THREE.PointLight(0xffc07a, 0.75, 5.0, 2.1); l6.position.set(0, Y0 + 1.2, ICZ + 0.7);
-  IN.add(l1, l2, l3, l4, l5, l6);
+  var l7 = new THREE.PointLight(0xffd8a0, 0.62, 6.5, 2.0); l7.position.set(0, Y1 - 1.1, -6.2);
+  IN.add(l1, l2, l3, l4, l5, l6, l7);
   IN.add(new THREE.HemisphereLight(0xa8a294, 0x322d26, 0.16));
-  WORLD.inLights = [l1, l2, l3, l4, l5, l6];
+  WORLD.inLights = [l1, l2, l3, l4, l5, l6, l7];
   WORLD.inLights.forEach(function (L) { L.userData.base = L.intensity; L.intensity = 0; });
 
   scene.add(IN);
@@ -3569,7 +3685,7 @@ function frame(now) {
   RIG.mx += (RIG.tmx - RIG.mx) * Math.min(1, dt * 2.4);
   RIG.my += (RIG.tmy - RIG.my) * Math.min(1, dt * 2.4);
   RIG.insideT = smooth(1.62, 2.02, RIG.smooth) * (1 - smooth(5.22, 5.58, RIG.smooth));
-  applyCamera();
+  if (!window.__freeze) applyCamera();   /* __freeze parks the lens for inspection */
 
   if (WORLD.snow)   WORLD.snow.material.uniforms.uT.value = T;
   if (WORLD.embers) WORLD.embers.material.uniforms.uT.value = T;
