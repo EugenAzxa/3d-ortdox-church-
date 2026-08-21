@@ -2401,7 +2401,7 @@ function buildChurch() {
 
   /* The west portal: a recessed order of stone, two timber leaves standing
      open, and the light of the nave on the step. */
-  var timberM = new THREE.MeshStandardMaterial({ color: 0x6e4520, roughness: 0.76 });
+  var timberM = new THREE.MeshStandardMaterial({ color: 0x8d5c2c, roughness: 0.74 });
   var ironM = new THREE.MeshStandardMaterial({
     color: 0x1a1a1e, roughness: 0.5, metalness: 0.65 });
   /* A proud archivolt round the opening, and jambs down each side. */
@@ -2464,7 +2464,7 @@ function buildChurch() {
      A gradient plane in the opening is a picture of an interior; this is a
      shallow one, and it parallaxes. */
   var GZ1 = TZ0 + 0.02, GZ0 = 8.15;
-  var gWallM = new THREE.MeshStandardMaterial({ color: 0x6b5a44, roughness: 0.95 });
+  var gWallM = new THREE.MeshStandardMaterial({ color: 0x51442f, roughness: 0.95 });
   box(2.4, 0.05, GZ1 - GZ0, vFloorM, 0, 0.68, (GZ0 + GZ1) / 2);
   box(1.3, 0.02, GZ1 - GZ0, runnerM, 0, 0.71, (GZ0 + GZ1) / 2);
   box(0.08, 2.9, GZ1 - GZ0, gWallM, -1.16, 2.1, (GZ0 + GZ1) / 2);
@@ -2472,8 +2472,8 @@ function buildChurch() {
   box(2.4, 0.08, GZ1 - GZ0, gWallM, 0, 3.5, (GZ0 + GZ1) / 2);
   /* the screen at the end: gilt boards, one icon, a lamp above it */
   var gGold = new THREE.MeshStandardMaterial({
-    color: 0x7a5a1e, roughness: 0.4, metalness: 0.7,
-    emissive: new THREE.Color(0x1a1204), emissiveIntensity: 1 });
+    color: 0x5c4416, roughness: 0.44, metalness: 0.72,
+    emissive: new THREE.Color(0x120c03), emissiveIntensity: 1 });
   box(2.4, 2.9, 0.12, gGold, 0, 2.1, GZ0 + 0.06);
   var gIcoT = new THREE.TextureLoader().load('assets/saints/john-chrysostom.webp');
   if ('colorSpace' in gIcoT) gIcoT.colorSpace = THREE.SRGBColorSpace;
@@ -2504,7 +2504,7 @@ function buildChurch() {
   WORLD.gFlames = gFlames;
   box(0.66, 0.5, 0.2, vStandMDeclared, 0, 1.05, GZ0 + 0.52);
 
-  var gLight = new THREE.PointLight(0xffbb72, 2.2, 5.0, 2.0);
+  var gLight = new THREE.PointLight(0xffbb72, 1.35, 4.4, 2.1);
   gLight.position.set(0, 1.75, GZ0 + 0.75);
   K.add(gLight);
   /* a plain reveal round the inner opening */
@@ -2526,6 +2526,11 @@ function buildChurch() {
   vIcon.position.set(-TW + 0.43, 1.8, 10.5);
   vIcon.rotation.y = Math.PI / 2;
   K.add(vIcon);
+  var vIconFr = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.64),
+    new THREE.MeshStandardMaterial({ color: 0x4a3618, roughness: 0.5, metalness: 0.6 }));
+  vIconFr.position.set(-TW + 0.425, 1.8, 10.5);
+  vIconFr.rotation.y = Math.PI / 2;
+  K.add(vIconFr);
 
   /* the candle stand just inside the door */
   box(0.44, 0.5, 0.6, vStandM, 0.86, 0.95, 10.95);
@@ -2553,33 +2558,42 @@ function buildChurch() {
   var vLight2 = new THREE.PointLight(0xffc98a, 0.55, 3.8, 2.3);
   vLight2.position.set(0, 1.5, TZ0 + 0.7);
   K.add(vLight2);
-  /* the two leaves, swung back against the reveal */
+  /* The two leaves, hinged on the edges of the opening and swung back
+     against the facade. At a shallow angle they present an edge to anyone
+     walking up the path and read as planks; at 115 degrees they read as
+     doors standing open, which is the whole point of the shot. */
   [-1, 1].forEach(function (m2) {
     var leaf = new THREE.Group();
-    var slab = new THREE.Mesh(new THREE.BoxGeometry(1.02, 3.15, 0.1), timberM);
-    slab.position.set(m2 * 0.51, 1.58, 0);
+    var LW = 0.98, LH = 3.18;
+    /* closed, the slab would run from the hinge in toward the centre */
+    var slab = new THREE.Mesh(new THREE.BoxGeometry(LW, LH, 0.085), timberM);
+    slab.position.set(-m2 * LW / 2, LH / 2, 0);
     leaf.add(slab);
-    for (var pl = -1; pl <= 1; pl++) {                  /* plank lines */
-      var pk = new THREE.Mesh(new THREE.BoxGeometry(0.022, 2.95, 0.02), ironM);
-      pk.position.set(m2 * 0.51 + pl * 0.28, 1.58, 0.06);
-      leaf.add(pk);
-    }
-    var ringH = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.016, 5, 12), ironM);
-    ringH.position.set(m2 * 0.9, 1.5, 0.07);
-    leaf.add(ringH);
-    [0.75, 2.5].forEach(function (hy) {                 /* strap hinges */
-      var hg = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.085, 0.03), ironM);
-      hg.position.set(m2 * 0.44, hy, 0.065);
+    /* two raised panels a side, which is what catches the light */
+    [0.72, 2.16].forEach(function (py) {
+      var pnl = new THREE.Mesh(new THREE.BoxGeometry(LW - 0.22, 1.16, 0.03),
+        new THREE.MeshStandardMaterial({ color: 0x7d5029, roughness: 0.7 }));
+      pnl.position.set(-m2 * LW / 2, py, 0.055);
+      leaf.add(pnl);
+      var pnl2 = pnl.clone(); pnl2.position.z = -0.055; leaf.add(pnl2);
+    });
+    /* strap hinges reaching in from the hinge stile */
+    [0.62, 2.56].forEach(function (hy) {
+      var hg = new THREE.Mesh(new THREE.BoxGeometry(LW * 0.62, 0.075, 0.03), ironM);
+      hg.position.set(-m2 * LW * 0.31, hy, 0.06);
       leaf.add(hg);
     });
-    leaf.position.set(m2 * 1.14, 0.66, 12.18);
-    leaf.rotation.y = m2 * 0.52;                        /* standing open */
+    var ringH = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.014, 5, 12), ironM);
+    ringH.position.set(-m2 * (LW - 0.16), 1.5, 0.065);
+    leaf.add(ringH);
+
+    leaf.position.set(m2 * 1.12, 0.66, 12.16);
+    /* positive swing carries the free edge out toward the path and round
+       against the wall; 115 degrees clears the reveal and still shows face */
+    leaf.rotation.y = m2 * 2.0;
     K.add(leaf);
   });
-  /* three steps up to the threshold */
-  for (var ps = 0; ps < 3; ps++) {
-    box(4.4 - ps * 0.35, 0.16, 0.46, stoneLit, 0, 0.08 + ps * 0.16, 13.4 - ps * 0.42);
-  }
+
   for (var st2 = 0; st2 < 3; st2++) {
     box(4.6 - st2 * 0.45, 0.16, 0.52, stoneLit, 0, 0.08 + st2 * 0.16, 13.5 - st2 * 0.46);
   }

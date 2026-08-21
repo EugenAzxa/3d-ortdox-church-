@@ -82,6 +82,10 @@ There is no arcade or portico. The west front is the bell tower, and the entranc
 single arched portal in its base. An earlier pass invented a five-bay porch across the
 front, which is not on the building and read as wrong from every angle.
 
+The leaves are hinged on the edges of the opening and swung back at 115 degrees, not
+propped ajar. A door held at a shallow angle presents its edge to anyone walking up the
+path and reads as a plank; only well past ninety does it read as a door standing open.
+
 Both openings are real, not painted. The tower shaft is hollow for its lower storey and its
 west wall is an extruded shape with an arch-shaped hole cut in it, so what shows through
 parallaxes as the camera moves: a vestibule with a stone floor, a red runner, plastered
