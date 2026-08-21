@@ -159,6 +159,17 @@ Both pickers rewrite the query string and reload. The world is built once at boo
 two values, and rebuilding it live would mean tearing down every material and light for a
 control almost nobody touches.
 
+### Candles
+
+Every stand is built with `taperStand`: an instanced mesh of wax bodies and one Points for
+the flames, so thirty candles cost two draw calls. Flames on their own read as blobs of
+light hanging in the air, which is what all three interior stands were doing before the wax
+was added.
+
+The scrim over the interior has to stay light enough for them to survive it. A flat
+full-frame black protects the type perfectly and puts out every candle in the room, so it is
+weighted to the bands the columns sit in and left thin through the middle.
+
 ### The memorial wall
 
 The six people are fictional and the notice above the grid says so; that notice is load

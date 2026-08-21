@@ -97,7 +97,11 @@ body{
   position:fixed; inset:0; z-index:1; pointer-events:none;
   opacity:var(--room, 0);
   background:
-    radial-gradient(125% 85% at 50% 44%, rgba(4,5,8,.74) 0%, rgba(4,5,8,.42) 48%, rgba(4,5,8,.7) 100%);
+    linear-gradient(to right,
+      rgba(4,5,8,.8) 0%, rgba(4,5,8,.52) 26%, rgba(4,5,8,.2) 46%,
+      rgba(4,5,8,.34) 66%, rgba(4,5,8,.56) 100%),
+    linear-gradient(to bottom,
+      rgba(4,5,8,.42) 0%, rgba(4,5,8,0) 22%, rgba(4,5,8,0) 74%, rgba(4,5,8,.44) 100%);
 }
 /* The veil over the moment the room and the shell trade places. */
 #swapmask{
@@ -134,7 +138,7 @@ body{
 .cyr{ font-family:var(--serif); hyphens:none; }
 
 .body,.body-lg,.lead,.sec-head .k,.atlas-tx p,.chip .tx p,.foot-col p,.foot-col a,.powered-k,.mem-note{
-  text-shadow:0 1px 18px rgba(4,5,8,.92), 0 0 40px rgba(4,5,8,.7);
+  text-shadow:0 1px 14px rgba(4,5,8,.98), 0 0 30px rgba(4,5,8,.92), 0 0 60px rgba(4,5,8,.7);
 }
 .body{ font-size:clamp(14.5px,1.06vw,16.5px); color:var(--bone-dim); }
 .body-lg{ font-size:clamp(16px,1.32vw,20px); color:var(--bone-dim); line-height:1.58; }
@@ -611,6 +615,7 @@ img{ max-width:100%; display:block; }
 .atlas-tx b{
   display:block; font-family:var(--serif); font-weight:400;
   font-size:clamp(15px,1.5vw,21px); letter-spacing:.01em; margin-bottom:3px;
+  text-shadow:0 1px 16px rgba(4,5,8,.95), 0 0 40px rgba(4,5,8,.75);
 }
 .atlas-tx p{ margin:0; font-size:12px; line-height:1.5; color:var(--muted); max-width:46ch; }
 .atlas-n{
@@ -1101,82 +1106,6 @@ img{ max-width:100%; display:block; }
         <path d="M164 128c-16-12-24-26-28-44" stroke-width="3.4"/>
         <path d="M264 122c16-12 22-26 26-42" stroke-width="3.4"/>
       </g>
-    </svg>
-  </span>
-</div>
-
-<div class="fg" data-fg="iconostasis" aria-hidden="true">
-  <span class="fg-el" data-fg-in="up"
-        style="left:3%;bottom:-3%;width:min(20%,220px)">
-    <svg viewBox="0 0 220 420" fill="none">
-      <path d="M96 420V150h28v270z" fill="#04050a"/>
-      <path d="M40 150h140l-14-24H54z" fill="#04050a"/>
-      <path d="M62 420h96l-10-26H72z" fill="#04050a"/>
-      <g fill="#0d1017">
-        <rect x="56" y="112" width="7" height="18" rx="3.5"/>
-        <rect x="82" y="104" width="7" height="26" rx="3.5"/>
-        <rect x="108" y="100" width="7" height="30" rx="3.5"/>
-        <rect x="134" y="106" width="7" height="24" rx="3.5"/>
-        <rect x="158" y="114" width="7" height="16" rx="3.5"/>
-      </g>
-    </svg>
-  </span>
-  <span class="fg-el" data-fg-in="right"
-        style="right:-2%;bottom:-5%;width:min(30%,340px)">
-    <svg viewBox="0 0 340 260" fill="none">
-      <path d="M340 260V60l-46 14-52-9-44 17-50-8-48 20-52-6-48 18v154z" fill="#04050a"/>
-      <path d="M340 106H0M340 152H0M340 198H0" stroke="#0b0d14" stroke-width="1.5"/>
-    </svg>
-  </span>
-</div>
-
-<div class="fg" data-fg="voices" aria-hidden="true">
-  <span class="fg-el" data-fg-in="left"
-        style="left:-2%;bottom:-4%;width:min(32%,360px)">
-    <svg viewBox="0 0 360 250" fill="none">
-      <path d="M0 250V78l52 12 48-16 54 14 50-12 56 16 52-10 48 14v154z" fill="#04050a"/>
-      <path d="M0 124h360M0 168h360M0 212h360" stroke="#0b0d14" stroke-width="1.5"/>
-      <path d="M70 90v160M180 84v166M290 92v158" stroke="#0b0d14" stroke-width="1.4"/>
-    </svg>
-  </span>
-  <span class="fg-el" data-fg-in="up"
-        style="right:6%;bottom:-2%;width:min(17%,190px)">
-    <svg viewBox="0 0 190 380" fill="none">
-      <path d="M82 380V140h26v240z" fill="#04050a"/>
-      <path d="M28 140h134l-12-20H40z" fill="#04050a"/>
-      <path d="M52 380h86l-9-24H61z" fill="#04050a"/>
-      <g fill="#0d1017">
-        <rect x="44" y="98" width="6" height="22" rx="3"/>
-        <rect x="70" y="90" width="6" height="30" rx="3"/>
-        <rect x="96" y="94" width="6" height="26" rx="3"/>
-        <rect x="122" y="86" width="6" height="34" rx="3"/>
-        <rect x="146" y="100" width="6" height="20" rx="3"/>
-      </g>
-    </svg>
-  </span>
-</div>
-
-<div class="fg" data-fg="memorial" aria-hidden="true">
-  <span class="fg-el" data-fg-in="left"
-        style="left:-1%;bottom:-3%;width:min(24%,270px)">
-    <svg viewBox="0 0 270 400" fill="none">
-      <path d="M120 400V150h30v250z" fill="#04050a"/>
-      <path d="M52 150h166l-16-26H68z" fill="#04050a"/>
-      <path d="M80 400h110l-12-28H92z" fill="#04050a"/>
-      <g fill="#0e1119">
-        <rect x="66" y="108" width="8" height="20" rx="4"/>
-        <rect x="96" y="98" width="8" height="30" rx="4"/>
-        <rect x="126" y="92" width="8" height="36" rx="4"/>
-        <rect x="156" y="100" width="8" height="28" rx="4"/>
-        <rect x="186" y="110" width="8" height="18" rx="4"/>
-      </g>
-    </svg>
-  </span>
-  <span class="fg-el" data-fg-in="right"
-        style="right:-2%;bottom:-4%;width:min(26%,300px)">
-    <svg viewBox="0 0 300 240" fill="none">
-      <path d="M300 240V52l-40 10-44-8-40 14-46-8-42 16-48-6v170z" fill="#04050a"/>
-      <path d="M300 104H0M300 150H0M300 196H0" stroke="#0b0d14" stroke-width="1.4"/>
     </svg>
   </span>
 </div>
@@ -2487,21 +2416,7 @@ function buildChurch() {
   K.add(gFrame);
 
   /* candles on a stand in front of the screen */
-  var gN = 7;
-  var gp = new Float32Array(gN * 3), gph = new Float32Array(gN), gsz = new Float32Array(gN);
-  for (var gi = 0; gi < gN; gi++) {
-    gp[gi * 3] = (gi - (gN - 1) / 2) * 0.16;
-    gp[gi * 3 + 1] = 1.32 + Math.random() * 0.04;
-    gp[gi * 3 + 2] = GZ0 + 0.52;
-    gph[gi] = Math.random() * 100; gsz[gi] = 14 + Math.random() * 8;
-  }
-  var gg = new THREE.BufferGeometry();
-  gg.setAttribute('position', new THREE.BufferAttribute(gp, 3));
-  gg.setAttribute('aP', new THREE.BufferAttribute(gph, 1));
-  gg.setAttribute('aS', new THREE.BufferAttribute(gsz, 1));
-  var gFlames = new THREE.Points(gg, flameMat());
-  K.add(gFlames);
-  WORLD.gFlames = gFlames;
+  WORLD.gFlames = taperStand(K, 0, 1.3, GZ0 + 0.52, 0.46, 0.14, 16, 0.16, 0.34);
   box(0.66, 0.5, 0.2, vStandMDeclared, 0, 1.05, GZ0 + 0.52);
 
   var gLight = new THREE.PointLight(0xffbb72, 1.35, 4.4, 2.1);
@@ -2535,21 +2450,7 @@ function buildChurch() {
   /* the candle stand just inside the door */
   box(0.44, 0.5, 0.6, vStandM, 0.86, 0.95, 10.95);
   box(0.5, 0.06, 0.66, vStandM, 0.86, 1.23, 10.95);
-  var vN = 9;
-  var vp = new Float32Array(vN * 3), vph = new Float32Array(vN), vsz = new Float32Array(vN);
-  for (var vi = 0; vi < vN; vi++) {
-    vp[vi * 3] = 0.86 + (Math.random() - 0.5) * 0.34;
-    vp[vi * 3 + 1] = 1.34 + Math.random() * 0.04;
-    vp[vi * 3 + 2] = 10.95 + (Math.random() - 0.5) * 0.46;
-    vph[vi] = Math.random() * 100; vsz[vi] = 15 + Math.random() * 9;
-  }
-  var vg = new THREE.BufferGeometry();
-  vg.setAttribute('position', new THREE.BufferAttribute(vp, 3));
-  vg.setAttribute('aP', new THREE.BufferAttribute(vph, 1));
-  vg.setAttribute('aS', new THREE.BufferAttribute(vsz, 1));
-  var vFlames = new THREE.Points(vg, flameMat());
-  K.add(vFlames);
-  WORLD.vFlames = vFlames;
+  WORLD.vFlames = taperStand(K, 0.86, 1.27, 10.95, 0.3, 0.44, 20, 0.18, 0.4);
 
   /* light inside the porch, so it spills onto the steps and the leaves */
   var vLight = new THREE.PointLight(0xffb469, 0.85, 4.6, 2.3);
@@ -2847,14 +2748,14 @@ function buildInterior() {
 
   /* ---- analogion: an icon stand under a red cloth ---- */
   var clothM = reg(new THREE.MeshStandardMaterial({ color: 0x3d0d14, roughness: 0.92 }));
-  [-3.5, 3.5].forEach(function (ax) {
-    box(0.34, 0.9, 0.3, clothM, ax, Y0 + 0.61, ICZ + 2.9);
+  [-2.7, 2.7].forEach(function (ax) {
+    box(0.34, 0.9, 0.3, clothM, ax, Y0 + 0.61, ICZ + 1.5);
     var t2 = loader.load(ICONS[ax < 0 ? 1 : 2]);
     if ('colorSpace' in t2) t2.colorSpace = THREE.SRGBColorSpace;
     else t2.encoding = THREE.sRGBEncoding;
     var ic2 = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.44),
       reg(new THREE.MeshBasicMaterial({ map: t2, color: 0xa89c84, side: THREE.DoubleSide })));
-    ic2.position.set(ax, Y0 + 1.1, ICZ + 2.79);
+    ic2.position.set(ax, Y0 + 1.1, ICZ + 1.39);
     ic2.rotation.x = -0.36;
     IN.add(ic2);
   });
@@ -2875,21 +2776,8 @@ function buildInterior() {
   box(0.4, 0.26, 0.3, reg(new THREE.MeshStandardMaterial({
     color: 0x6b5a3c, roughness: 0.75 })), X - 0.52, Y0 + 0.84, -7.6);
 
-  var NF = LOW ? 10 : 16;
-  var fp = new Float32Array(NF * 3), fph = new Float32Array(NF), fsz = new Float32Array(NF);
-  for (var k = 0; k < NF; k++) {
-    fp[k * 3] = X - 0.52 + (Math.random() - 0.5) * 0.3;
-    fp[k * 3 + 1] = Y0 + 0.92 + Math.random() * 0.05;
-    fp[k * 3 + 2] = -7.4 + (k / NF) * 2.0 + Math.random() * 0.07;
-    fph[k] = Math.random() * 100; fsz[k] = 16 + Math.random() * 10;
-  }
-  var fg2 = new THREE.BufferGeometry();
-  fg2.setAttribute('position', new THREE.BufferAttribute(fp, 3));
-  fg2.setAttribute('aP', new THREE.BufferAttribute(fph, 1));
-  fg2.setAttribute('aS', new THREE.BufferAttribute(fsz, 1));
-  var inFlames = new THREE.Points(fg2, flameMat());
-  IN.add(inFlames);
-  WORLD.inFlames = inFlames;
+  WORLD.inFlames = taperStand(IN, X - 0.52, Y0 + 0.745, -6.4, 0.3, 1.9,
+                              LOW ? 26 : 46, 0.18, 0.46);
 
   /* ---- the donation desk by the door, under its burgundy cloth ---- */
   box(1.5, 0.9, 0.66, reg(new THREE.MeshStandardMaterial({
@@ -3262,6 +3150,40 @@ function flameMat() {
       /* the centre is driven above 1.0 so the bright pass finds it */
       '  gl_FragColor = vec4(c * (1.0 + core * 1.8), a); }'
   });
+}
+
+/* A stand of tapers: wax bodies with a flame at each tip. Flames on their
+   own read as blobs of light hanging in the air, which is what all three
+   interior stands were doing. One instanced mesh for the wax, one Points
+   for the flames, so a stand of thirty candles is two draw calls. */
+function taperStand(parent, cx, cy, cz, spanX, spanZ, n, hMin, hMax) {
+  var wax = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(0.0105, 0.0125, 1, 6),
+    new THREE.MeshStandardMaterial({ color: 0xeadfc4, roughness: 0.6 }), n);
+  var d = new THREE.Object3D();
+  var fp = new Float32Array(n * 3), fph = new Float32Array(n), fsz = new Float32Array(n);
+  for (var i = 0; i < n; i++) {
+    /* rows rather than a scatter: a stand is filled from the front */
+    var col = i % Math.max(1, Math.round(Math.sqrt(n * (spanZ / Math.max(0.01, spanX)))));
+    var x = cx + (Math.random() - 0.5) * spanX;
+    var z = cz + (Math.random() - 0.5) * spanZ;
+    var h = hMin + Math.random() * (hMax - hMin);
+    d.position.set(x, cy + h / 2, z);
+    d.scale.set(1, h, 1);
+    d.rotation.set((Math.random() - 0.5) * 0.05, 0, (Math.random() - 0.5) * 0.05);
+    d.updateMatrix(); wax.setMatrixAt(i, d.matrix);
+    fp[i * 3] = x; fp[i * 3 + 1] = cy + h + 0.022; fp[i * 3 + 2] = z;
+    fph[i] = Math.random() * 100; fsz[i] = 11 + Math.random() * 6;
+  }
+  wax.instanceMatrix.needsUpdate = true;
+  parent.add(wax);
+  var fg = new THREE.BufferGeometry();
+  fg.setAttribute('position', new THREE.BufferAttribute(fp, 3));
+  fg.setAttribute('aP', new THREE.BufferAttribute(fph, 1));
+  fg.setAttribute('aS', new THREE.BufferAttribute(fsz, 1));
+  var pts = new THREE.Points(fg, flameMat());
+  parent.add(pts);
+  return pts;
 }
 
 /* ───────────────────────────────────────── stone and copper ── */
@@ -3898,7 +3820,7 @@ var CAM = [
   { p: [ 14.5,  4.00,  38.0 ], t: [ -1.0,  8.60,  -3.0 ], fov: 38 },  /* 0 hero        */
   { p: [ -0.9,  2.28,  19.5 ], t: [  0.0,  2.42,   6.2 ], fov: 44 },  /* 1 threshold   */
   { p: [  0.1,  1.68,   1.2 ], t: [  0.0,  1.86,  -9.6 ], fov: 58 },  /* 2 iconostasis */
-  { p: [ -1.7,  1.60,  -2.1 ], t: [  3.9,  1.32,  -7.1 ], fov: 52 },  /* 3 voices      */
+  { p: [  0.5,  1.52,  -3.4 ], t: [  4.2,  1.30,  -6.9 ], fov: 46 },  /* 3 voices      */
   { p: [  1.3,  1.76,  -3.7 ], t: [ -4.4,  2.02,  -6.0 ], fov: 46 },  /* 4 memorial    */
   { p: [  0.0,  1.56,  -6.1 ], t: [  0.0,  1.84,  -9.6 ], fov: 40 },  /* 5 remembrance */
   { p: [-10.5, 14.20,   8.5 ], t: [  0.0,  9.60, -10.5 ], fov: 50 }   /* 6 footer      */
