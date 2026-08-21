@@ -317,6 +317,17 @@ Curve tension is 0.22 to 0.3 rather than the default. The tangent at each waypoi
 by its neighbours, so a hero shot fourteen metres to one side swings the next leg wide
 before it comes back.
 
+A near-field drift layer crosses the frame close to the lens: large, slow, tumbling, one
+leaf or petal or flake to the season. The weather above it is far and fine, and the two read
+as different distances rather than as one field of dots. It is what gives the opening shot
+something moving in it.
+
+Measure the camera by bucketing speed against the camera parameter, not against scroll. The
+sections have very different heights - chapter 03 carries the priest and the candle offering
+and is several times the height of chapter 01 - so equal slices of scroll are nowhere near
+equal chapters, and a profile bucketed by scroll invents spikes that are not there. Bucketed
+correctly, the largest velocity step at any chapter handover is 0.036.
+
 Each segment of the camera path is eased in and out, so velocity reaches zero at every
 waypoint. Traversed at a constant rate per chapter, waypoints tens of metres apart outside
 and two metres apart inside give 1.25 units a step out there and 0.05 in here, and the step

@@ -2443,7 +2443,7 @@ wireWall();
    ?season=spring|summer|autumn|winter overrides it for a walkthrough. */
 var SEASONS = {
   spring: {
-    key: 'spring', birds: 18, ground2: 'new grass', name: 'Spring', sr: 'Пролеће',
+    key: 'spring', driftCol: [0.94, 0.76, 0.82], driftDens: 1.0, driftSize: 1.0, birds: 18, ground2: 'new grass', name: 'Spring', sr: 'Пролеће',
     ground: 0x16200f, fog: 0x0a1410, fogD: 0.0188,
     skyTop: 0x04060c, skyHorizon: 0x0d1620, skyGround: 0x141d1c,
     canopy: 0x14240f, canopyO: 1, moon: 0x9fb6d8, moonI: 0.74,
@@ -2452,7 +2452,7 @@ var SEASONS = {
     partFall: 0.62, partSway: 2.6, partAlpha: 0.42
   },
   summer: {
-    key: 'summer', birds: 22, ground2: 'warm dark', name: 'Summer', sr: 'Лето',
+    key: 'summer', driftCol: [0.52, 0.66, 0.34], driftDens: 0.55, driftSize: 1.05, birds: 22, ground2: 'warm dark', name: 'Summer', sr: 'Лето',
     ground: 0x141c0d, fog: 0x0a1112, fogD: 0.0152,
     skyTop: 0x04060e, skyHorizon: 0x0c1420, skyGround: 0x121a18,
     canopy: 0x101d0c, canopyO: 1.0, moon: 0xb2c2dc, moonI: 0.68,
@@ -2461,7 +2461,7 @@ var SEASONS = {
     partFall: -0.16, partSway: 3.4, partAlpha: 0.62
   },
   autumn: {
-    key: 'autumn', birds: 12, ground2: 'wet leaves', name: 'Autumn', sr: 'Јесен',
+    key: 'autumn', driftCol: [0.86, 0.42, 0.16], driftDens: 1.0, driftSize: 1.15, birds: 12, ground2: 'wet leaves', name: 'Autumn', sr: 'Јесен',
     ground: 0x1b1409, fog: 0x0d0e10, fogD: 0.0205,
     skyTop: 0x05060b, skyHorizon: 0x11121c, skyGround: 0x1a1712,
     canopy: 0x351e07, canopyO: 1, moon: 0xd8b98a, moonI: 0.8,
@@ -2470,7 +2470,7 @@ var SEASONS = {
     partFall: 0.9, partSway: 3.0, partAlpha: 0.5
   },
   winter: {
-    key: 'winter', birds: 0, ground2: 'snow', name: 'Winter', sr: 'Зима',
+    key: 'winter', driftCol: [0.90, 0.94, 1.00], driftDens: 0.9, driftSize: 0.72, birds: 0, ground2: 'snow', name: 'Winter', sr: 'Зима',
     /* snow on the ground and snow in the crowns: the foliage stays and is
        dusted, rather than the trees being stripped */
     ground: 0x8d9aa6, fog: 0x0e151f, fogD: 0.0196,
@@ -4363,6 +4363,68 @@ function buildWeather() {
   scene.add(emb);
   WORLD.embers = emb;
 
+
+  /* ── the near field ── */
+  /* Large, slow, tumbling: the layer that crosses the frame close to the
+     lens and gives the opening shot something moving in it. The weather
+     above is far and fine; this is near and coarse, and the two read as
+     different distances rather than one field of dots. */
+  var DN = LOW ? 60 : 150;
+  var dp = new Float32Array(DN * 3), dph = new Float32Array(DN), dsz = new Float32Array(DN);
+  for (var di = 0; di < DN; di++) {
+    dp[di * 3]     = (Math.random() - 0.5) * 70;
+    dp[di * 3 + 1] = Math.random() * 16;
+    dp[di * 3 + 2] = 2 + Math.random() * 46;      /* the ground the walk crosses */
+    dph[di] = Math.random() * 100;
+    dsz[di] = 17 + Math.random() * 16;
+  }
+  var dg = new THREE.BufferGeometry();
+  dg.setAttribute('position', new THREE.BufferAttribute(dp, 3));
+  dg.setAttribute('aP', new THREE.BufferAttribute(dph, 1));
+  dg.setAttribute('aS', new THREE.BufferAttribute(dsz, 1));
+  var drift = new THREE.Points(dg, new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, fog: true,
+    uniforms: {
+      uT: { value: 0 }, uPR: { value: 1 }, uVis: { value: 1 },
+      uCol: { value: new THREE.Vector3(SEASON.driftCol[0], SEASON.driftCol[1], SEASON.driftCol[2]) },
+      uDens: { value: SEASON.driftDens }, uSize: { value: SEASON.driftSize },
+      fogColor: { value: new THREE.Color() }, fogDensity: { value: 0 }
+    },
+    vertexShader:
+      'attribute float aP, aS; uniform float uT, uPR, uDens, uSize;\n' +
+      'varying float vA; varying float vRot; varying float vTone;\n' +
+      'void main(){ vec3 p = position;\n' +
+      '  float keep = step(fract(aP * 0.271), uDens);\n' +
+      /* a slow fall with a wide sideways swing, the way a leaf actually goes */
+      '  p.y = mod(p.y - uT * 0.62 - aP * 0.7, 16.0);\n' +
+      '  p.x += sin(uT * 0.42 + aP) * 2.6 + sin(uT * 0.9 + aP * 2.1) * 0.7;\n' +
+      '  p.z += cos(uT * 0.31 + aP * 1.3) * 1.8;\n' +
+      '  vRot = uT * (0.7 + fract(aP) * 1.5) + aP;\n' +
+      '  vTone = 0.7 + 0.3 * sin(uT * 1.7 + aP * 3.0);\n' +
+      '  vec4 mv = modelViewMatrix * vec4(p, 1.0);\n' +
+      '  float dist = -mv.z;\n' +
+      /* fade out very close, so nothing pops as the camera passes through */
+      '  vA = keep * smoothstep(1.8, 6.0, dist) * smoothstep(76.0, 30.0, dist);\n' +
+      '  gl_PointSize = aS * uSize * uPR * (30.0 / max(1.0, dist));\n' +
+      '  gl_Position = projectionMatrix * mv; }',
+    fragmentShader:
+      'uniform vec3 uCol; uniform float uVis;\n' +
+      'varying float vA; varying float vRot; varying float vTone;\n' +
+      'void main(){ vec2 q = gl_PointCoord - 0.5;\n' +
+      '  float c = cos(vRot), s2 = sin(vRot);\n' +
+      '  vec2 p = vec2(q.x * c - q.y * s2, q.x * s2 + q.y * c);\n' +
+      /* a leaf: an ellipse drawn out to a point at each end */
+      '  float d = length(vec2(p.x * 2.05, p.y * 0.92));\n' +
+      '  float a = smoothstep(0.48, 0.33, d);\n' +
+      '  if (a < 0.02) discard;\n' +
+      /* the midrib, and a darker underside as it turns */
+      '  float rib = smoothstep(0.03, 0.0, abs(p.x)) * smoothstep(0.46, 0.1, abs(p.y));\n' +
+      '  vec3 col = uCol * (0.62 + 0.5 * vTone) + vec3(0.06) * rib;\n' +
+      '  gl_FragColor = vec4(col, a * vA * uVis * 0.9); }'
+  }));
+  scene.add(drift);
+  WORLD.drift = drift;
+
   /* three haze veils, so depth reads as air rather than as fog colour */
   var haze = new THREE.Group();
   for (var h = 0; h < 3; h++) {
@@ -4585,7 +4647,7 @@ function renderPost() {
    churchyard on a single Catmull-Rom and each section is a composed stop
    along it. */
 var CAM = [
-  { p: [ 14.5,  4.00,  38.0 ], t: [ -1.0,  8.60,  -3.0 ], fov: 38 },  /* 0 hero        */
+  { p: [ 12.5,  4.10,  30.5 ], t: [ -0.6,  7.60,  -2.0 ], fov: 40 },  /* 0 hero        */
   { p: [ -0.9,  2.28,  19.5 ], t: [  0.0,  2.42,   6.2 ], fov: 44 },  /* 1 threshold   */
   { p: [  0.1,  1.68,   1.2 ], t: [  0.0,  1.86,  -9.6 ], fov: 58 },  /* 2 iconostasis */
   { p: [  0.5,  1.52,  -3.4 ], t: [  4.2,  1.30,  -6.9 ], fov: 46 },  /* 3 voices      */
@@ -4696,6 +4758,7 @@ function onResize() {
   if (WORLD.vFlames) WORLD.vFlames.material.uniforms.uPR.value = pr;
   if (WORLD.gFlames) WORLD.gFlames.material.uniforms.uPR.value = pr;
   if (WORLD.birds) WORLD.birds.material.uniforms.uPR.value = pr;
+  if (WORLD.drift)  WORLD.drift.material.uniforms.uPR.value = pr;
   if (WORLD.snow)   WORLD.snow.material.uniforms.uPR.value = pr;
   if (WORLD.embers) WORLD.embers.material.uniforms.uPR.value = pr;
   if (WORLD.flames) WORLD.flames.material.uniforms.uPR.value = pr;
@@ -4734,6 +4797,7 @@ function lookOf(se, ti) {
     canopy: S.canopy,
     partCol: S.partColor, partA: S.partAlpha, partFall: S.partFall,
     partSway: S.partSway, partDens: S.partN, partSize: S.partSize / 2.2,
+    driftCol: S.driftCol, driftDens: S.driftDens, driftSize: S.driftSize,
     additive: se === 'summer',
     windows: T.windows, candle: T.candle,
     bloom: 0.66 * T.bloom, exp: 0.92 * T.exposure, thresh: 0.7 * T.thresh,
@@ -4792,6 +4856,14 @@ function applyLook(A, B, k) {
       W.snow.material.blending = wantAdd ? THREE.AdditiveBlending : THREE.NormalBlending;
       W.snow.material.needsUpdate = true;
     }
+  }
+  if (W.drift) {
+    var du = W.drift.material.uniforms;
+    du.uCol.value.set(lerp(A.driftCol[0], B.driftCol[0], k),
+                      lerp(A.driftCol[1], B.driftCol[1], k),
+                      lerp(A.driftCol[2], B.driftCol[2], k));
+    du.uDens.value = lerp(A.driftDens, B.driftDens, k);
+    du.uSize.value = lerp(A.driftSize, B.driftSize, k);
   }
   if (W.birds) W.birds.visible = lerp(A.birds, B.birds, k) > 0.5;
 
@@ -4891,6 +4963,7 @@ function frame(now) {
   RIG.insideT = smooth(1.62, 2.02, RIG.smooth) * (1 - smooth(5.22, 5.58, RIG.smooth));
   if (!window.__freeze) applyCamera();   /* __freeze parks the lens for inspection */
 
+  if (WORLD.drift)  WORLD.drift.material.uniforms.uT.value = T;
   if (WORLD.snow)   WORLD.snow.material.uniforms.uT.value = T;
   if (WORLD.embers) WORLD.embers.material.uniforms.uT.value = T;
   if (WORLD.flames) WORLD.flames.material.uniforms.uT.value = T;
@@ -4980,6 +5053,7 @@ function frame(now) {
 
   /* the weather stops at the door */
   var out = 1 - RIG.inside;
+  if (WORLD.drift)  WORLD.drift.material.uniforms.uVis.value = out;
   if (WORLD.snow)   WORLD.snow.material.uniforms.uVis.value = out;
   if (WORLD.embers) WORLD.embers.material.uniforms.uVis.value = out;
   if (WORLD.candles) WORLD.candles.visible = out > 0.02;
