@@ -104,6 +104,18 @@ Stone and copper are both canvas textures. If you retint them, tint light: the m
 multiplied by the material colour, so a near-black tint erases the masonry drawn into it,
 which is exactly what happened the first time.
 
+### The trees
+
+Grown rather than assembled. A trunk forks, forks again, and carries leaf clusters on the
+outer two levels; every branch of every tree goes into one instanced mesh and every cluster
+into another, so a wood of twenty-four trees is two draw calls whatever the season. Winter
+keeps the frame and drops the leaves, which is the reason for building the branching
+properly rather than putting lumps on a stick.
+
+Foliage is opaque in every season. A season with less of it gets fewer clusters, not
+see-through ones: alpha on several thousand instances costs early-z, which is the thing the
+performance pass was about, and a thinning crown is the truer picture anyway.
+
 ### The seasons
 
 `SEASONS` holds four palettes and weather profiles, picked from the current month for the

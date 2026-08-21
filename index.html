@@ -4151,67 +4151,132 @@ function buildCandles() {
   WORLD.candles = G;
 }
 
-/* ─────────────────────────────────────────────────── winter trees ── */
+/* ──────────────────────────────────────────────────────── the trees ── */
+/* Grown rather than assembled: a trunk that forks, forks again, and carries
+   leaf clusters on the outer thirds. Everything for every tree goes into two
+   instanced meshes, so a wood of twenty-six trees with forty branches each
+   is still two draw calls. Winter keeps the frame and drops the leaves,
+   which is the whole reason for building the branching properly. */
+var _UP = new THREE.Vector3(0, 1, 0);
 function buildTrees() {
-  var barkM = new THREE.MeshStandardMaterial({ color: 0x15161d, roughness: 1.0 });
-  var trunk = new THREE.CylinderGeometry(0.13, 0.3, 7.5, 6);
-  var limb  = new THREE.CylinderGeometry(0.035, 0.1, 2.2, 5);
-  var N = LOW ? 14 : 26;
-  var tm = new THREE.InstancedMesh(trunk, barkM, N);
-  var lm = new THREE.InstancedMesh(limb, barkM, N * 4);
-  var d = new THREE.Object3D(), li = 0, trees = [];
+  var N = LOW ? 12 : 24;
+  var DEPTH = LOW ? 2 : 3;
 
-  for (var i = 0; i < N; i++) {
-    /* Kept to the churchyard edges: a tree in front of the west door would
-       block the one shot the whole hero is composed around. */
-    var side = i % 2 ? 1 : -1;
-    var x = side * (14 + Math.random() * 16);
-    var z = -22 + Math.random() * 46;
-    var s = 0.7 + Math.random() * 0.7;
-    d.position.set(x, 3.75 * s, z);
-    d.rotation.set(0, Math.random() * 3, (Math.random() - 0.5) * 0.07);
-    d.scale.setScalar(s);
-    d.updateMatrix(); tm.setMatrixAt(i, d.matrix);
-    trees.push({ x: x, z: z, s: s });
+  var segs = [], leaves = [];
+  var q = new THREE.Quaternion(), m4 = new THREE.Matrix4();
+  var _a = new THREE.Vector3(), _b = new THREE.Vector3(), _d = new THREE.Vector3();
 
-    for (var k = 0; k < 4; k++) {
-      var a = Math.random() * Math.PI * 2, tilt = 0.5 + Math.random() * 0.6;
-      d.position.set(x + Math.cos(a) * 0.9 * s, (5.4 + Math.random() * 1.9) * s, z + Math.sin(a) * 0.9 * s);
-      d.rotation.set(Math.sin(a) * tilt, 0, -Math.cos(a) * tilt);
-      d.scale.setScalar(s * (0.6 + Math.random() * 0.42));
-      d.updateMatrix(); lm.setMatrixAt(li++, d.matrix);
-    }
+  function seg(ax, ay, az, bx, by, bz, r) {
+    _a.set(ax, ay, az); _b.set(bx, by, bz);
+    _d.subVectors(_b, _a);
+    var len = _d.length();
+    if (len < 0.001) return;
+    _d.divideScalar(len);
+    q.setFromUnitVectors(_UP, _d);
+    m4.compose(_a.clone().addScaledVector(_d, len / 2), q,
+               new THREE.Vector3(r, len, r));
+    segs.push(m4.clone());
   }
-  tm.instanceMatrix.needsUpdate = true;
-  lm.count = li; lm.instanceMatrix.needsUpdate = true;
-  scene.add(tm, lm);
 
-  /* Foliage. Three overlapping lumps per tree rather than one sphere, so a
-     canopy has a silhouette instead of reading as a lollipop. Winter keeps
-     the bare frame the limbs already give it. */
-  if (SEASON.canopyO > 0) {
-    var leafM = new THREE.MeshStandardMaterial({
-      color: SEASON.canopy, roughness: 1.0, flatShading: true,
-      transparent: true, opacity: SEASON.canopyO
-    });
-    var cm = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), leafM, N * 3);
-    var ci = 0;
-    for (var t = 0; t < N; t++) {
-      var T2 = trees[t];
-      for (var k2 = 0; k2 < 3; k2++) {
-        var ang = Math.random() * Math.PI * 2, rad = (0.5 + Math.random() * 0.8) * T2.s;
-        d.position.set(T2.x + Math.cos(ang) * rad,
-                       (5.9 + Math.random() * 2.1) * T2.s,
-                       T2.z + Math.sin(ang) * rad);
-        d.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
-        var sc = (1.5 + Math.random() * 1.3) * T2.s;
-        d.scale.set(sc, sc * 0.78, sc);
-        d.updateMatrix(); cm.setMatrixAt(ci++, d.matrix);
+  /* one limb, and the two or three it becomes */
+  function grow(x, y, z, dx, dy, dz, len, rad, depth, leafy) {
+    var ex = x + dx * len, ey = y + dy * len, ez = z + dz * len;
+    seg(x, y, z, ex, ey, ez, rad);
+    if (depth <= 0) {
+      if (leafy) {
+        for (var t2 = 0; t2 < 5; t2++) {
+          leaves.push([ex + (Math.random() - 0.5) * 0.9,
+                       ey + (Math.random() - 0.5) * 0.8,
+                       ez + (Math.random() - 0.5) * 0.9,
+                       0.3 + Math.random() * 0.42]);
+        }
+      }
+      return;
+    }
+    var kids = depth === DEPTH ? 3 : (Math.random() < 0.35 ? 3 : 2);
+    for (var i = 0; i < kids; i++) {
+      var ang = (i / kids) * Math.PI * 2 + Math.random() * 1.2;
+      var spread = 0.34 + Math.random() * 0.38;
+      /* every fork leans outward and keeps some of the parent's rise */
+      var nx = dx + Math.cos(ang) * spread;
+      var ny = dy * (0.68 + Math.random() * 0.24) + 0.34;
+      var nz = dz + Math.sin(ang) * spread;
+      var n = Math.hypot(nx, ny, nz);
+      grow(ex, ey, ez, nx / n, ny / n, nz / n,
+           len * (0.7 + Math.random() * 0.14), rad * 0.6, depth - 1, leafy);
+      /* leaves ride the outer two levels, not the trunk */
+      if (leafy && depth <= 2) {
+        for (var t3 = 0; t3 < 3; t3++) {
+          leaves.push([ex + (Math.random() - 0.5) * 1.15,
+                       ey + Math.random() * 0.85,
+                       ez + (Math.random() - 0.5) * 1.15,
+                       0.34 + Math.random() * 0.5]);
+        }
       }
     }
-    cm.count = ci; cm.instanceMatrix.needsUpdate = true;
-    scene.add(cm);
   }
+
+  var leafy = SEASON.canopyO > 0;
+  for (var t = 0; t < N; t++) {
+    /* the churchyard edges: a tree in front of the west door would block the
+       one shot the whole hero is composed around */
+    var side = t % 2 ? 1 : -1;
+    var x = side * (15 + Math.random() * 17);
+    var z = -24 + Math.random() * 48;
+    var sc = 0.82 + Math.random() * 0.5;
+    var h = (3.7 + Math.random() * 1.3) * sc;
+    /* a trunk that leans a little, and forks where the crown starts */
+    var lean = (Math.random() - 0.5) * 0.1;
+    grow(x, 0, z, lean, 1, lean * 0.7, h, 0.26 * sc, DEPTH, leafy);
+  }
+
+  var barkM = new THREE.MeshStandardMaterial({ color: 0x2b2419, roughness: 1.0 });
+  var trunkG = new THREE.CylinderGeometry(0.62, 1, 1, 6, 1, true);
+  var bark = new THREE.InstancedMesh(trunkG, barkM, segs.length);
+  for (var si = 0; si < segs.length; si++) bark.setMatrixAt(si, segs[si]);
+  bark.instanceMatrix.needsUpdate = true;
+  scene.add(bark);
+  WORLD.bark = bark;
+
+  if (!leafy || !leaves.length) return;
+
+  /* Foliage: one cluster per instance, tinted off the season's own green so
+     a crown has depth instead of reading as one flat colour. */
+  /* Opaque, always. A season with less foliage gets fewer clusters, not
+     see-through ones: alpha here would cost early-z on thousands of
+     instances, and a thinning crown is the truer picture anyway. */
+  var leafM = new THREE.MeshStandardMaterial({
+    color: 0xffffff, roughness: 1.0, flatShading: true
+  });
+  var leafG = new THREE.IcosahedronGeometry(1, 0);
+  /* thin the crown to the season rather than fading it */
+  if (SEASON.canopyO < 1) {
+    var keep = Math.round(leaves.length * SEASON.canopyO);
+    for (var sw = leaves.length - 1; sw > 0; sw--) {
+      var j = (Math.random() * (sw + 1)) | 0;
+      var tmp = leaves[sw]; leaves[sw] = leaves[j]; leaves[j] = tmp;
+    }
+    leaves.length = keep;
+  }
+  var lm = new THREE.InstancedMesh(leafG, leafM, leaves.length);
+  var base = new THREE.Color(SEASON.canopy);
+  var col = new THREE.Color();
+  var d3 = new THREE.Object3D();
+  for (var li = 0; li < leaves.length; li++) {
+    var L = leaves[li];
+    d3.position.set(L[0], L[1], L[2]);
+    d3.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+    d3.scale.set(L[3], L[3] * 0.82, L[3]);
+    d3.updateMatrix(); lm.setMatrixAt(li, d3.matrix);
+    /* darker toward the inside of the crown, lighter at the tips */
+    var v = 0.55 + Math.random() * 0.95;
+    col.setRGB(base.r * v, base.g * v, base.b * v);
+    lm.setColorAt(li, col);
+  }
+  lm.instanceMatrix.needsUpdate = true;
+  if (lm.instanceColor) lm.instanceColor.needsUpdate = true;
+  scene.add(lm);
+  WORLD.leaves = lm;
 }
 
 /* ────────────────────────────────────────────── snow, embers, haze ── */
@@ -4728,7 +4793,7 @@ function frame(now) {
   if (PIN.el && WORLD.priestHead) {
     /* he only exists while the shell does, and only reads while the camera
        is still outside it: past the door he is behind the lens */
-    var pinWant = !RIG.indoors && RIG.smooth < 2.25;
+    var pinWant = !RIG.indoors && RIG.smooth > 0.52 && RIG.smooth < 2.25;
     if (pinWant) {
       _pin.copy(WORLD.priestHead).project(camera);
       var onScreen = _pin.z < 1 && Math.abs(_pin.x) < 0.98 && Math.abs(_pin.y) < 0.96;
