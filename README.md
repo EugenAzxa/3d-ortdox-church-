@@ -78,6 +78,12 @@ on all eight faces above a square shaft with a string course, narrow slit window
 surrounds, an arcaded west porch with archivolts over dark bays, and a recessed portal with
 two timber leaves standing open on strap hinges.
 
+There is no arcade or portico. The west front is the bell tower, and the entrance is a
+single arched portal in its base: an outer archivolt, a reveal, two timber leaves standing
+open on strap hinges, and behind them a lit depth with the candle stand in it. An earlier
+pass invented a five-bay porch across the front, which is not on the building and read as
+wrong from every angle.
+
 Stone and copper are both canvas textures. If you retint them, tint light: the map is
 multiplied by the material colour, so a near-black tint erases the masonry drawn into it,
 which is exactly what happened the first time.
