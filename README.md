@@ -272,6 +272,24 @@ textarea.
 
 If this ever goes live, the answers are the thing to replace first, with his own words.
 
+### The surface under the panels
+
+Every panel over the render used to be a flat near-black rectangle, `rgba(6,7,10,.86)` and
+variations of it, and over a live scene a flat rectangle reads as a box dropped on top of the
+picture rather than a thing standing in it.
+
+They are now a ground rather than a fill: the gessoed board an icon is painted on. Three layers
+in one token, `--surf`. A warm dark base, a fall of light down from the top edge the way it
+falls on a panel standing against a wall, and a grain fine enough to feel rather than see. One
+tiled SVG, declared once as `--grain-tile` and reused by all 33 elements that carry it, so the
+noise is rasterised once. `--surf-lift` is the same thing on hover and `--surf-warm` is the
+selected state.
+
+An icon is painted in a field cut below the border of its board, the kovčeg. A single hairline
+inset from the edge, `--kovceg`, says the panel is a made thing rather than a rectangle of
+fill, and it warms when the panel is chosen. Measured after: 118fps through a full scroll of
+the page, no change to draw counts.
+
 ### The wall, read aloud
 
 Each arch carries a speaker, and there is one over the wall and one on every Memory Page. They

@@ -42,6 +42,34 @@
   --ease-out:cubic-bezier(.16,1,.3,1);
   --ease-io:cubic-bezier(.65,0,.35,1);
 
+  /* ── the ground under every panel ──────────────────────────────────
+     These used to be flat near-black rectangles, and over a live render a
+     flat rectangle reads as a box dropped on top of the picture. This is
+     the gessoed board an icon is painted on instead: a warm dark, a fall
+     of light down from the top edge the way it falls on a panel standing
+     against a wall, and a grain fine enough to feel rather than see.
+     One tile, reused by every surface, so the browser rasterises the
+     noise once. */
+  --grain-tile:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23g)' opacity='.085'/></svg>");
+  --surf:
+    var(--grain-tile),
+    linear-gradient(180deg, rgba(96,80,50,.15) 0, rgba(96,80,50,0) 92px),
+    linear-gradient(178deg, rgba(11,11,15,.93), rgba(6,7,10,.95));
+  --surf-lift:
+    var(--grain-tile),
+    linear-gradient(180deg, rgba(126,104,62,.2) 0, rgba(126,104,62,0) 110px),
+    linear-gradient(178deg, rgba(18,18,23,.95), rgba(10,11,15,.96));
+  --surf-warm:
+    var(--grain-tile),
+    linear-gradient(180deg, rgba(190,146,60,.16) 0, rgba(190,146,60,0) 120px),
+    linear-gradient(178deg, rgba(36,28,11,.95), rgba(24,19,8,.96));
+  /* the lit edge along the top, where a board catches the lamp */
+  --surf-edge:inset 0 1px 0 rgba(231,175,35,.1);
+  /* An icon is painted in a field cut below the border of its board, the
+     kovčeg. One hairline inset from the edge is enough to say the panel is
+     a made thing rather than a rectangle of fill. */
+  --kovceg:1px solid rgba(231,175,35,.07);
+
   --serif:"Playfair Display",Georgia,"Times New Roman",serif;
   --sans:"Inter",system-ui,-apple-system,"Helvetica Neue",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
@@ -741,17 +769,22 @@ img{ max-width:100%; display:block; }
   gap:1px; background:var(--line-soft); border-top:1px solid var(--line);
 }
 .mem-feat{
-  background:rgba(6,7,10,.86);
+  background:var(--surf); box-shadow:var(--surf-edge);
   padding:17px 16px 20px; position:relative;
-  transition:background-color .5s var(--ease);
+  transition:background-color .5s var(--ease), box-shadow .5s var(--ease);
 }
-.mem-feat:hover{ background:rgba(11,13,18,.8); }
+.mem-feat:hover{ background:var(--surf-lift); box-shadow:inset 0 1px 0 rgba(231,175,35,.22); }
 .mem-feat::before{
   content:""; position:absolute; left:0; top:-1px; width:26px; height:1px;
   background:var(--gold-lit); transform:scaleX(0); transform-origin:left;
   transition:transform .55s var(--ease);
 }
 .mem-feat:hover::before{ transform:scaleX(1); }
+.mem-feat::after{
+  content:""; position:absolute; inset:7px; border:var(--kovceg); pointer-events:none;
+  transition:border-color .5s var(--ease);
+}
+.mem-feat:hover::after{ border-color:rgba(231,175,35,.16); }
 .mem-feat b{
   display:block; font-family:var(--serif); font-weight:400;
   font-size:clamp(14px,1.32vw,18px); margin-bottom:7px; color:var(--bone);
@@ -783,7 +816,8 @@ img{ max-width:100%; display:block; }
   gap:clamp(24px,4vw,64px); align-items:start;
 }
 .pr-card{
-  background:rgba(6,7,10,.86); border:1px solid var(--line);
+  position:relative;
+  background:var(--surf); box-shadow:var(--surf-edge); border:1px solid var(--line);
   padding:clamp(18px,2.4vw,28px); display:flex; flex-direction:column; gap:9px;
 }
 /* the portrait, in the same arch the memorial wall uses. He is the one
@@ -853,7 +887,7 @@ img.meet-who-face{
 
 .pr-chat{
   margin-top:clamp(20px,3vh,30px);
-  border:1px solid var(--line); background:rgba(6,7,10,.9);
+  border:1px solid var(--line); background:var(--surf); box-shadow:var(--surf-edge);
 }
 .pr-chat-head{
   display:flex; align-items:center; gap:12px;
@@ -935,12 +969,12 @@ img.meet-who-face{
 
 .pr-qs{ display:flex; flex-wrap:wrap; gap:8px; margin-top:clamp(18px,2.6vh,26px); }
 .pr-q{
-  background:rgba(6,7,10,.9); border:1px solid var(--line); cursor:pointer;
+  background:var(--surf); border:1px solid var(--line); cursor:pointer;
   color:var(--bone); padding:13px 18px; text-align:left;
   font-size:15.5px; font-weight:300; line-height:1.4; min-height:var(--ctl-h);
   transition:border-color .4s var(--ease), color .4s var(--ease), background-color .4s var(--ease);
 }
-.pr-q:hover{ border-color:rgba(231,175,35,.55); color:var(--bone); background:rgba(11,13,18,.9); }
+.pr-q:hover{ border-color:rgba(231,175,35,.55); color:var(--bone); background:var(--surf-lift); }
 .pr-q.done{ color:var(--muted); border-color:var(--line-soft); }
 .pr-q.done::before{ content:"\2022  "; color:var(--gold); }
 /* the one chip the office offers rather than the person choosing */
@@ -985,7 +1019,7 @@ img.meet-who-face{
 .meet-set legend{ padding:0; }
 .meet-slots{ display:grid; gap:1px; background:var(--line-soft); border-top:1px solid var(--line); }
 .slot{
-  background:rgba(6,7,10,.94); border:0; cursor:pointer; text-align:left;
+  background:var(--surf); box-shadow:var(--surf-edge); border:0; cursor:pointer; text-align:left;
   color:inherit; font:inherit; padding:14px 16px; position:relative;
   display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
   transition:background-color .4s var(--ease);
@@ -995,8 +1029,13 @@ img.meet-who-face{
   background:var(--gold-lit); transform:scaleX(0); transform-origin:left;
   transition:transform .5s var(--ease);
 }
-.slot:hover{ background:rgba(13,15,20,.95); }
-.slot.on{ background:rgba(34,26,10,.95); }
+.slot::after{
+  content:""; position:absolute; inset:6px; border:var(--kovceg); pointer-events:none;
+  transition:border-color .5s var(--ease);
+}
+.slot:hover{ background:var(--surf-lift); }
+.slot:hover::after, .slot.on::after{ border-color:rgba(231,175,35,.17); }
+.slot.on{ background:var(--surf-warm); }
 .slot.on::before{ transform:scaleX(1); }
 .slot b{
   font-family:var(--serif); font-weight:400; font-size:clamp(15px,1.4vw,19px);
@@ -1074,7 +1113,7 @@ img.meet-who-face{
   gap:1px; background:var(--line-soft); border-top:1px solid var(--line);
 }
 .opt{
-  background:rgba(6,7,10,.94); border:0; cursor:pointer; text-align:left;
+  background:var(--surf); box-shadow:var(--surf-edge); border:0; cursor:pointer; text-align:left;
   padding:16px 15px 18px; color:inherit; font:inherit; position:relative;
   display:flex; flex-direction:column; gap:5px;
   transition:background-color .4s var(--ease);
@@ -1084,8 +1123,13 @@ img.meet-who-face{
   background:var(--gold-lit); transform:scaleX(0); transform-origin:left;
   transition:transform .5s var(--ease);
 }
-.opt:hover{ background:rgba(13,15,20,.95); }
-.opt.on{ background:rgba(34,26,10,.95); }
+.opt::after{
+  content:""; position:absolute; inset:7px; border:var(--kovceg); pointer-events:none;
+  transition:border-color .5s var(--ease);
+}
+.opt:hover{ background:var(--surf-lift); }
+.opt:hover::after, .opt.on::after{ border-color:rgba(231,175,35,.17); }
+.opt.on{ background:var(--surf-warm); }
 .opt.on::before{ transform:scaleX(1); }
 .opt b{
   font-family:var(--serif); font-weight:400; font-size:clamp(14px,1.34vw,18px);
@@ -1106,7 +1150,7 @@ img.meet-who-face{
 .fld{ display:block; }
 .fld--row{ grid-column:1 / -1; }
 .fld input, .fld textarea{
-  width:100%; background:rgba(6,7,10,.88); color:var(--bone);
+  width:100%; background:var(--surf); color:var(--bone);
   border:1px solid var(--line); padding:13px 15px; min-height:var(--ctl-h);
   font-size:16px; font-weight:300; resize:vertical;
   transition:border-color .4s var(--ease);
@@ -1237,7 +1281,7 @@ img.meet-who-face{
 .seg{ display:flex; gap:7px; flex-wrap:wrap; }
 .seg-b{
   font-size:var(--ctl-fs); color:var(--bone);
-  background:rgba(6,7,10,.7); border:1px solid var(--line);
+  background:var(--surf); border:1px solid var(--line);
   padding:var(--ctl-pad); min-height:var(--ctl-h); cursor:pointer;
   transition:border-color .4s var(--ease), color .4s var(--ease), background-color .4s var(--ease);
 }
@@ -1365,7 +1409,7 @@ img.meet-who-face{
 .wall-filters{ display:flex; gap:8px; flex-wrap:wrap; }
 .fchip{
   font-size:var(--ctl-fs); color:var(--bone);
-  background:rgba(6,7,10,.7); border:1px solid var(--line);
+  background:var(--surf); border:1px solid var(--line);
   padding:var(--ctl-pad); min-height:var(--ctl-h); cursor:pointer;
   transition:border-color .4s var(--ease), color .4s var(--ease), background-color .4s var(--ease);
 }
@@ -1374,7 +1418,7 @@ img.meet-who-face{
 
 .wall-search{
   display:flex; align-items:center; gap:9px; flex:0 1 300px;
-  border:1px solid var(--line); padding:8px 13px;
+  border:1px solid var(--line); background:var(--surf); padding:8px 13px;
   transition:border-color .4s var(--ease);
 }
 .wall-search:focus-within{ border-color:var(--gold-lit); }
@@ -1602,7 +1646,8 @@ img.meet-who-face{
 .mp.open .mp-scrim{ opacity:1; }
 .mp-sheet{
   position:relative; z-index:2; width:min(920px,100%); max-height:92vh; overflow-y:auto;
-  background:var(--ink-2); border:1px solid var(--line);
+  background:var(--surf); background-attachment:local, local, local;
+  box-shadow:var(--surf-edge); border:1px solid var(--line);
   padding:clamp(24px,4vw,52px);
   opacity:0; transform:translate3d(0,26px,0);
   transition:opacity .55s var(--ease-out), transform .6s var(--ease-out);
