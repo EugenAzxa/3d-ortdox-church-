@@ -1390,11 +1390,37 @@ img.meet-who-face{
   display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
   gap:clamp(14px,2vw,30px);
 }
+.soul-cell{
+  position:relative; min-width:0;
+  opacity:0; transform:translate3d(0,18px,0);
+  animation:soulIn .85s var(--ease-out) forwards; animation-delay:var(--d,0ms);
+}
 .soul{
   display:block; width:100%; text-align:left; background:none; border:0; padding:0;
   cursor:pointer; color:inherit; font:inherit;
-  opacity:0; transform:translate3d(0,18px,0);
-  animation:soulIn .85s var(--ease-out) forwards; animation-delay:var(--d,0ms);
+}
+/* the voice sits on the arch itself, top right, where a hand would reach */
+.soul-say{
+  position:absolute; top:10px; right:10px; z-index:2;
+  width:38px; height:38px; display:grid; place-items:center; cursor:pointer;
+  border-radius:50%; border:1px solid rgba(231,175,35,.42);
+  background:rgba(6,7,10,.74); color:var(--gold-lit);
+  opacity:0; transform:scale(.9);
+  transition:opacity .4s var(--ease), transform .4s var(--ease),
+             background-color .4s var(--ease), color .4s var(--ease);
+}
+.soul-cell:hover .soul-say, .soul-say:focus-visible, .soul-say.on{ opacity:1; transform:none; }
+.soul-say:hover{ background:var(--gold-lit); color:var(--ink); }
+.soul-say.on{ background:var(--gold-lit); color:var(--ink); }
+.soul-say .say-i{ width:15px; height:15px; }
+.soul-say.on .say-i .say-w{ animation:sayW 1.1s var(--ease-io) infinite; }
+/* Revealing it on hover is fine on a desktop and hides it completely on a
+   phone. hover:none catches most touch devices and the width catches the
+   ones that lie about it. */
+@media (hover:none), (max-width:900px){ .soul-say{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce){
+  .soul-cell{ opacity:1 !important; transform:none !important; animation:none !important; }
+  .soul-say .say-i .say-w{ animation:none !important; }
 }
 @keyframes soulIn{ to{ opacity:1; transform:none } }
 .soul-fr{
@@ -1446,6 +1472,94 @@ img.meet-who-face{
 }
 .soul-meta span{ display:inline-flex; align-items:center; gap:5px; }
 .soul-meta svg{ width:11px; height:11px; stroke:var(--gold); stroke-width:1.6; fill:none; }
+/* ── the prayer, and the pages that Saylavy keeps ── */
+.pray{
+  margin:clamp(20px,3vh,30px) 0 clamp(18px,2.6vh,26px);
+  padding:clamp(16px,2.2vw,24px);
+  border:1px solid rgba(231,175,35,.28); background:rgba(34,26,10,.42);
+  display:grid; grid-template-columns:minmax(0,1fr) auto;
+  gap:clamp(16px,2.4vw,32px); align-items:center;
+}
+.pray[hidden]{ display:none; }
+.pray-sr{
+  margin:10px 0 0; max-width:56ch; font-family:var(--serif); font-size:clamp(16px,1.7vw,21px);
+  line-height:1.5; color:var(--bone);
+}
+.pray-en{ margin:8px 0 0; max-width:60ch; font-size:14.5px; line-height:1.6; color:var(--muted); }
+.pray-go{ display:flex; flex-direction:column; align-items:flex-start; gap:10px; max-width:300px; }
+.mp-pray{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:20px 0 4px; }
+.mp-pray-by{
+  font-family:var(--mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--muted); max-width:34ch; line-height:1.6;
+}
+.pray-by{ font-family:var(--mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); max-width:42ch; line-height:1.7; }
+
+.say-btn{
+  display:inline-flex; align-items:center; gap:11px; cursor:pointer;
+  min-height:var(--ctl-h); padding:0 22px; font-size:var(--ctl-fs); color:var(--bone);
+  background:rgba(6,7,10,.8); border:1px solid var(--gold-lit);
+  transition:background-color .4s var(--ease), color .4s var(--ease);
+}
+.say-btn:hover{ background:var(--gold-lit); color:var(--ink); }
+.say-i{ width:17px; height:17px; flex:none; fill:currentColor; }
+.say-i .say-w{ fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; }
+/* speaking: the waves pulse, so it is obvious which one has the voice */
+.say-btn.on{ background:var(--gold-lit); color:var(--ink); }
+.say-btn.on .say-i .say-w{ animation:sayW 1.1s var(--ease-io) infinite; }
+@keyframes sayW{ 0%,100%{ opacity:.28 } 50%{ opacity:1 } }
+
+.say{
+  margin:clamp(26px,4vh,44px) 0 0; padding-top:clamp(20px,3vh,30px);
+  border-top:1px solid var(--line);
+}
+.say-mark{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding-bottom:clamp(18px,2.6vh,26px);
+}
+.say-logo{ width:40px; height:40px; flex:none; display:grid; place-items:center; }
+.say-logo svg{ width:100%; height:100%; fill:rgba(231,175,35,.14); stroke:var(--gold-lit); stroke-width:1.3; }
+.say-logo .say-w{ fill:none; stroke-linecap:round; }
+.say-mark-tx{ display:flex; flex-direction:column; gap:4px; min-width:0; flex:1 1 340px; }
+.say-mark-tx b{ font-family:var(--serif); font-weight:400; font-size:clamp(17px,1.8vw,22px); color:var(--bone); }
+.say-mark-tx i{ font-style:normal; font-size:14.5px; line-height:1.6; color:var(--bone-dim); max-width:64ch; }
+.say-link{
+  display:inline-flex; align-items:center; gap:7px; flex:none;
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--gold-lit); border-bottom:1px solid rgba(231,175,35,.4); padding-bottom:3px;
+  transition:color .4s var(--ease), border-color .4s var(--ease);
+}
+.say-link:hover{ color:var(--bone); border-color:var(--bone); }
+.say-link svg{ width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+
+.say-add{
+  display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  gap:clamp(18px,3vw,44px); align-items:start;
+  border-top:1px solid var(--line-soft); padding-top:clamp(18px,2.6vh,26px);
+}
+.say-p{ margin:10px 0 0; font-size:15.5px; line-height:1.66; color:var(--bone-dim); }
+.say-steps{ list-style:none; margin:0; padding:0; counter-reset:say; }
+.say-steps li{
+  display:grid; grid-template-columns:34px minmax(0,1fr); gap:14px;
+  padding:13px 0; border-top:1px solid var(--line-soft); counter-increment:say;
+}
+.say-steps li:first-child{ border-top:0; padding-top:0; }
+.say-steps li::before{
+  content:counter(say,decimal-leading-zero);
+  font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--gold-lit); padding-top:3px;
+}
+.say-steps b{ display:block; font-size:15.5px; font-weight:400; color:var(--bone); }
+.say-steps span{ display:block; margin-top:4px; font-size:14.5px; line-height:1.6; color:var(--muted); }
+.say-add-tx{ min-width:0; }
+.say-go{ display:flex; flex-direction:column; align-items:flex-start; gap:11px; margin-top:22px; }
+.say-go .offer-go{ text-decoration:none; }
+.say-go .offer-go svg{ stroke:currentColor; stroke-width:1.8; fill:none; }
+.say-or{ font-size:13.5px; color:var(--muted); }
+
+@media (max-width:900px){
+  .pray{ grid-template-columns:1fr; }
+  .say-add{ grid-template-columns:1fr; }
+}
+
 .wall-empty{
   margin:26px 0 0; font-size:13px; color:var(--muted); font-family:var(--mono);
   letter-spacing:.12em; text-transform:uppercase;
@@ -2321,6 +2435,29 @@ img.meet-who-face{
       represented here.</p>
   </div>
 
+  <!-- The prayer the wall exists for. Spoken by the browser, not by a
+       recording: there is no audio file anywhere in this project and there
+       is not going to be one, so the page says whose voice it is. -->
+  <div class="pray" id="pray" data-rv="up" hidden>
+    <div class="pray-tx">
+      <span class="offer-lg">The prayer over this wall</span>
+      <p class="pray-sr cyr">&#1057;&#1072; &#1089;&#1074;&#1077;&#1090;&#1080;&#1084;&#1072; &#1091;&#1087;&#1086;&#1082;&#1086;&#1112;, &#1061;&#1088;&#1080;&#1089;&#1090;&#1077;, &#1076;&#1091;&#1096;&#1077; &#1089;&#1083;&#1091;&#1075;&#1091; &#1058;&#1074;&#1086;&#1112;&#1080;&#1093;, &#1075;&#1076;&#1077; &#1085;&#1077;&#1084;&#1072;
+        &#1073;&#1086;&#1083;&#1077;&#1089;&#1090;&#1080;, &#1085;&#1080; &#1078;&#1072;&#1083;&#1086;&#1089;&#1090;&#1080;, &#1085;&#1080; &#1091;&#1079;&#1076;&#1080;&#1089;&#1072;&#1114;&#1072;, &#1085;&#1077;&#1075;&#1086; &#1078;&#1080;&#1074;&#1086;&#1090; &#1073;&#1077;&#1089;&#1082;&#1088;&#1072;&#1112;&#1085;&#1080;.</p>
+      <p class="pray-en">With the saints give rest, O Christ, to the souls of Your servants, where
+        there is no sickness, nor sorrow, nor sighing, but life everlasting.</p>
+    </div>
+    <div class="pray-go">
+      <button type="button" class="say-btn" id="prayBtn" data-cursor>
+        <svg class="say-i" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 9.5h3.6L12 5.4v13.2L7.6 14.5H4z"/>
+          <path d="M16 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.6 7.6 0 0 1 0 10.8" class="say-w"/>
+        </svg>
+        <span id="prayLbl" data-saylbl="Listen to the prayer">Listen to the prayer</span>
+      </button>
+      <span class="pray-by" id="prayBy"></span>
+    </div>
+  </div>
+
   <div class="wall-bar" data-rv="up">
     <div class="wall-filters" id="wallFilters" role="group" aria-label="Filter the memorial">
       <button class="fchip on" data-filter="all" data-cursor>All</button>
@@ -2337,6 +2474,52 @@ img.meet-who-face{
 
   <div class="wall-grid" id="wallGrid" data-rv="fade"></div>
   <p class="wall-empty" id="wallEmpty" hidden>No one matches that search.</p>
+
+  <!-- ── how a family opens a page, and who keeps it ── -->
+  <div class="say" data-rv="up">
+    <div class="say-mark">
+      <span class="say-logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M16 3.5 27 9v10.4L16 28.5 5 19.4V9z"/><path d="M16 11.4v9.2M11.6 14v4M20.4 14v4" class="say-w"/></svg>
+      </span>
+      <span class="say-mark-tx">
+        <b>Powered by Saylavy</b>
+        <i>Every arch on this wall is a Memory Page kept by Saylavy. The parish keeps the
+          remembrance and the wall; each family keeps its own page and owns what is on it.</i>
+      </span>
+      <a class="say-link" href="https://saylavy.com" target="_blank" rel="noopener" data-cursor>
+        saylavy.com
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16 16 8M9.5 8H16v6.5"/></svg>
+      </a>
+    </div>
+
+    <div class="say-add">
+      <div class="say-add-tx">
+      <span class="offer-lg">Add a Memory Page</span>
+      <p class="say-p">A page is opened for one person, once. There is nothing technical asked of
+        a family, and nothing has to be ready before you begin: the parish and Saylavy gather it
+        with you, and an unfinished page is still a page.</p>
+      <div class="say-go">
+        <a class="offer-go" href="https://saylavy.com" target="_blank" rel="noopener" data-cursor>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Open a Memory Page on Saylavy</span>
+        </a>
+        <span class="say-or">or ask at the church office, 49 N Lake Road</span>
+      </div>
+      </div>
+      <ol class="say-steps">
+        <li><div><b>Tell the parish office</b><span>Or tick the box on a parastos request. A
+          telephone call is enough, and the office will not ask you for files.</span></div></li>
+        <li><div><b>Gather what there is</b><span>Photographs, letters, a recording, what people
+          remember. The parish helps older families with this, and the Serbian school children
+          record the oldest parishioners for the archive.</span></div></li>
+        <li><div><b>The page is opened on Saylavy</b><span>Bought once, not rented. The family
+          decides what is public, what stays within the family, and who is notified.</span></div></li>
+        <li><div><b>The arch goes up on this wall</b><span>And the name joins the list read at
+          Zadu&#353;nice and the Parastos, which the parish does whether or not there is a
+          page.</span></div></li>
+      </ol>
+    </div>
+  </div>
 
   <p class="mem-note" data-rv="up">The parish holds the remembrance, not the data. A family decides what
     is public and what stays within the family, and may export or close a page at any time. Parish
@@ -3101,12 +3284,140 @@ function lightLocal(id) {
 }
 var candlesFor = function (e) { return (e.candles || 0) + (litLocal()[e.id] || 0); };
 
+/* ── the wall, read aloud ─────────────────────────────────────────────
+   There is no audio file in this project and there is not going to be one:
+   a recording of a fictional parishioner would be a forgery, and a real
+   one is not mine to publish. So the page speaks, using the voice already
+   on the visitor's machine, and says so plainly under the button.
+
+   A Serbian voice reads the Serbian. If the machine has no Slavic voice at
+   all it reads the English instead, because an English voice given Cyrillic
+   produces noise, and noise over a memorial prayer is worse than English. */
+var SPEAK = (function () {
+  var synth = window.speechSynthesis;
+  if (!synth || typeof window.SpeechSynthesisUtterance !== 'function') return null;
+
+  var SLAVIC = ['sr', 'hr', 'bs', 'sh', 'me', 'mk', 'sl', 'ru', 'uk', 'bg'];
+  var voice = null, resolved = false, onEnd = null, seq = 0;
+
+  function resolve() {
+    var vs = synth.getVoices() || [];
+    if (!vs.length) return false;
+    for (var i = 0; i < SLAVIC.length; i++) {
+      for (var j = 0; j < vs.length; j++) {
+        var lg = (vs[j].lang || '').toLowerCase().replace('_', '-');
+        if (lg === SLAVIC[i] || lg.indexOf(SLAVIC[i] + '-') === 0) { voice = vs[j]; return true; }
+      }
+    }
+    voice = null; return true;
+  }
+  resolved = resolve();
+  if (!resolved && typeof synth.addEventListener === 'function') {
+    synth.addEventListener('voiceschanged', function () { resolved = resolve(); });
+  }
+
+  /* cancel() can deliver the cancelled utterance's onend after the next one
+     has already started, which cleared the button that had just lit. Every
+     utterance carries the sequence it was spoken at and a stale callback is
+     dropped. Stopping does not fire the callback: the caller owns the UI. */
+  function stop() {
+    seq++; onEnd = null;
+    try { synth.cancel(); } catch (e) {}
+  }
+
+  /* sr is the Serbian text, en the English. Whichever is spoken, the caller
+     is told which, so the label under the button never lies. */
+  function say(sr, en, done) {
+    stop();
+    var mine = seq;
+    if (!resolved) resolved = resolve();
+    var useSr = !!voice, text = useSr ? sr : en;
+    var u = new window.SpeechSynthesisUtterance(text);
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = 'en-CA'; }
+    u.rate = 0.86;                    /* a prayer is not read at speed */
+    u.pitch = 0.94;
+    onEnd = done || null;
+    u.onend = u.onerror = function () {
+      if (mine !== seq) return;       /* a later utterance already owns the page */
+      var f = onEnd; onEnd = null; if (f) f();
+    };
+    try { synth.speak(u); }
+    catch (e) { onEnd = null; if (done) done(); return false; }
+    return useSr;
+  }
+
+  function describe() {
+    if (!resolved) resolve();
+    return voice
+      ? 'Read by this device, in ' + (voice.name || voice.lang) + '. Not a recording of anyone.'
+      : 'Read by this device in English: it has no Serbian voice installed. Not a recording of anyone.';
+  }
+
+  return { say: say, stop: stop, describe: describe };
+})();
+
+/* The memorial itself. Named in the vocative where a name is given, and the
+   plural of the general form where one is not, so it is never guessing at
+   whether the person was a man or a woman. */
+function memorialPrayer(nameSr, nameEn) {
+  var sr = '\u0421\u0430 \u0441\u0432\u0435\u0442\u0438\u043c\u0430 \u0443\u043f\u043e\u043a\u043e\u0458, \u0425\u0440\u0438\u0441\u0442\u0435, \u0434\u0443\u0448\u0435 \u0441\u043b\u0443\u0433\u0443 \u0422\u0432\u043e\u0458\u0438\u0445, ' +
+           '\u0433\u0434\u0435 \u043d\u0435\u043c\u0430 \u0431\u043e\u043b\u0435\u0441\u0442\u0438, \u043d\u0438 \u0436\u0430\u043b\u043e\u0441\u0442\u0438, \u043d\u0438 \u0443\u0437\u0434\u0438\u0441\u0430\u045a\u0430, ' +
+           '\u043d\u0435\u0433\u043e \u0436\u0438\u0432\u043e\u0442 \u0431\u0435\u0441\u043a\u0440\u0430\u0458\u043d\u0438.';
+  var en = 'With the saints give rest, O Christ, to the souls of Your servants, where there is ' +
+           'no sickness, nor sorrow, nor sighing, but life everlasting.';
+  var ETERNAL_SR = '\u0412\u0435\u0447\u0430\u043d \u0441\u043f\u043e\u043c\u0435\u043d. \u0412\u0435\u0447\u0430\u043d \u0441\u043f\u043e\u043c\u0435\u043d. \u0412\u0435\u0447\u0430\u043d \u0441\u043f\u043e\u043c\u0435\u043d.';
+  var ETERNAL_EN = 'Memory eternal. Memory eternal. Memory eternal.';
+  if (nameSr) {
+    sr += ' ' + nameSr + '. ' + ETERNAL_SR;
+    en += ' ' + (nameEn || nameSr) + '. ' + ETERNAL_EN;
+  } else {
+    sr += ' ' + ETERNAL_SR;
+    en += ' ' + ETERNAL_EN;
+  }
+  return { sr: sr, en: en };
+}
+
+/* One voice at a time across the whole page, and the button that started it
+   is the one that clears. */
+var SAYING = null;
+function sayToggle(btn, label, sr, en) {
+  var was = SAYING;
+  SAYING = null;
+  SPEAK.stop();
+  if (was) clearSay(was);
+  if (was === btn) return;            /* pressing the one that is speaking stops it */
+  SAYING = btn;
+  btn.classList.add('on');
+  btn.setAttribute('aria-pressed', 'true');
+  if (!label) label = btn.querySelector('[data-saylbl]');
+  if (label) label.textContent = 'Stop';
+  SPEAK.say(sr, en, function () {
+    if (SAYING === btn) SAYING = null;
+    clearSay(btn);
+  });
+}
+function clearSay(btn) {
+  btn.classList.remove('on');
+  btn.setAttribute('aria-pressed', 'false');
+  var l = btn.querySelector('[data-saylbl]');
+  if (l) l.textContent = l.getAttribute('data-saylbl');
+}
+
 var IC_FLAME = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2s5.5 4.8 5.5 9.5a5.5 5.5 0 0 1-11 0C6.5 6.8 12 2 12 2z"/></svg>';
 var IC_MIC   = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="10.5" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5"/></svg>';
 
 function soulCard(e, i) {
   var b = pDate(e.born).getFullYear(), d = pDate(e.died).getFullYear();
-  return '<button class="soul" data-id="' + esc(e.id) + '" style="--d:' + (i * 70) + 'ms" data-cursor>' +
+  /* The card is a button, so the listen control cannot live inside it: a
+     button inside a button is not a thing. It sits in the cell beside it. */
+  return '<div class="soul-cell" style="--d:' + (i * 70) + 'ms">' +
+    (SPEAK ? '<button type="button" class="soul-say" data-say="' + esc(e.id) + '"' +
+      ' aria-pressed="false" aria-label="Listen to the prayer for ' + esc(e.name) + '" data-cursor>' +
+      '<svg class="say-i" viewBox="0 0 24 24" aria-hidden="true">' +
+        '<path d="M4 9.5h3.6L12 5.4v13.2L7.6 14.5H4z"/>' +
+        '<path d="M16 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.6 7.6 0 0 1 0 10.8" class="say-w"/>' +
+      '</svg></button>' : '') +
+    '<button class="soul" data-id="' + esc(e.id) + '" data-cursor>' +
     '<span class="soul-fr">' +
       (e.portrait ? '<img src="' + esc(e.portrait) + '" alt="" loading="lazy" decoding="async" width="300" height="400">' : '') +
       '<span class="soul-mono">' + esc(e.monogram || '') + '</span>' +
@@ -3122,7 +3433,7 @@ function soulCard(e, i) {
       '<span>' + IC_FLAME + candlesFor(e) + ' candles</span>' +
       (e.voice ? '<span>' + IC_MIC + 'Voice</span>' : '') +
     '</span>' +
-  '</button>';
+  '</button></div>';
 }
 
 function wallMatches(e) {
@@ -3164,6 +3475,16 @@ function openPage(id) {
         '<p class="mp-where">' + esc(e.bornPlace) + ' to ' + esc(e.diedPlace) + '</p>' +
       '</div>' +
     '</div>' +
+    (SPEAK ? '<div class="mp-pray">' +
+      '<button type="button" class="say-btn" id="mpSay" aria-pressed="false" data-cursor>' +
+        '<svg class="say-i" viewBox="0 0 24 24" aria-hidden="true">' +
+          '<path d="M4 9.5h3.6L12 5.4v13.2L7.6 14.5H4z"/>' +
+          '<path d="M16 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.6 7.6 0 0 1 0 10.8" class="say-w"/>' +
+        '</svg>' +
+        '<span data-saylbl="Listen to the prayer">Listen to the prayer</span>' +
+      '</button>' +
+      '<span class="mp-pray-by">' + esc(SPEAK.describe()) + '</span>' +
+    '</div>' : '') +
     (e.epitaph ? '<blockquote class="mp-epi">' + esc(e.epitaph) + '</blockquote>' : '') +
     (e.story ? '<p class="mp-story">' + esc(e.story) + '</p>' : '') +
     (tl ? '<div class="mp-h">The life</div><ul class="mp-tl">' + tl + '</ul>' : '') +
@@ -3189,6 +3510,14 @@ function openPage(id) {
   WALL.open = id;
   document.body.style.overflow = 'hidden';
 
+  var mpSay = $('#mpSay');
+  if (mpSay) {
+    mpSay.addEventListener('click', function () {
+      var p = memorialPrayer(e.nameSr, e.name);
+      sayToggle(mpSay, mpSay.querySelector('[data-saylbl]'), p.sr, p.en);
+    });
+  }
+
   $('#mpReal').addEventListener('click', function () {
     closePage();
     setTimeout(function () { offerFor(e.name); }, 420);
@@ -3206,6 +3535,9 @@ function openPage(id) {
 function closePage() {
   var mp = $('#mp');
   if (!mp || mp.hidden) return;
+  /* a voice that keeps reading after the page is shut is a haunting, not a
+     feature */
+  if (SPEAK && SAYING) { var s0 = SAYING; SAYING = null; SPEAK.stop(); clearSay(s0); }
   mp.classList.remove('open');
   document.body.style.overflow = '';
   setTimeout(function () {
@@ -3254,9 +3586,34 @@ function wireWall() {
   if (!grid) return;
 
   grid.addEventListener('click', function (ev) {
+    /* the voice is checked first: it sits over the arch, so a click that
+       lands on it must not also open the page behind it */
+    var v = ev.target.closest('.soul-say');
+    if (v) {
+      ev.stopPropagation();
+      var sid = v.getAttribute('data-say');
+      var e2 = WALL.all.filter(function (x) { return x.id === sid; })[0];
+      if (e2) {
+        var p = memorialPrayer(e2.nameSr, e2.name);
+        sayToggle(v, null, p.sr, p.en);
+      }
+      return;
+    }
     var b = ev.target.closest('.soul');
     if (b) openPage(b.getAttribute('data-id'));
   });
+
+  /* the prayer over the whole wall */
+  if (SPEAK) {
+    var pray = $('#pray'), prayBtn = $('#prayBtn'), prayLbl = $('#prayLbl');
+    pray.hidden = false;
+    $('#prayBy').textContent = SPEAK.describe();
+    prayBtn.setAttribute('aria-pressed', 'false');
+    prayBtn.addEventListener('click', function () {
+      var p = memorialPrayer(null, null);
+      sayToggle(prayBtn, prayLbl, p.sr, p.en);
+    });
+  }
   $$('#wallFilters .fchip').forEach(function (btn) {
     btn.addEventListener('click', function () {
       $$('#wallFilters .fchip').forEach(function (o) { o.classList.remove('on'); });

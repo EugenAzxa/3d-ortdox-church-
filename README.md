@@ -272,6 +272,40 @@ textarea.
 
 If this ever goes live, the answers are the thing to replace first, with his own words.
 
+### The wall, read aloud
+
+Each arch carries a speaker, and there is one over the wall and one on every Memory Page. They
+speak the Orthodox memorial: `Са светима упокој, Христе...` followed by the name and `Вечан
+спомен` three times.
+
+There is no audio file in this project and there is not going to be one. A recording of a
+fictional parishioner would be a forgery and a real one is not ours to publish, so the page
+uses `speechSynthesis` and the voice already on the visitor's machine, and says so under every
+button: *read by this device, not a recording of anyone.*
+
+A Serbian voice reads the Serbian. Failing that, any Slavic voice does, in order: hr, bs, sh,
+me, mk, sl, ru, uk, bg. Croatian is on most Macs and reads Serbian Cyrillic correctly. With no
+Slavic voice at all the button reads the **English** text instead, because an English voice
+handed Cyrillic produces noise, and noise over a memorial prayer is worse than English. The
+line under the button changes to say which happened.
+
+The prayer names the person but never guesses their gender: the general form is in the plural
+(`душе слугу Твојих`), so it does not have to choose between `слуге Твога` and `слушкиње Твоје`
+from a name.
+
+One voice at a time across the page. `cancel()` can deliver the cancelled utterance's `onend`
+after the next one has started, which cleared the button that had just lit, so every utterance
+carries the sequence it was spoken at and a stale callback is dropped. Closing a Memory Page
+stops the voice: one that keeps reading after the page is shut is a haunting, not a feature.
+
+### Saylavy, and opening a page
+
+The wall says who keeps it. `Powered by Saylavy` sits under the grid with a link to
+saylavy.com, and beside it the four steps a family actually goes through, which begin with a
+telephone call to the parish and not with a file upload. The last step says the name joins the
+list read at Zadušnice and the Parastos whether or not there is a page, because that is true
+and the parish should not appear to be selling remembrance.
+
 ### Asking for a candle
 
 Chapter 03 carries the parish's candle offering: three things it will light, an intention,
