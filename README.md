@@ -263,6 +263,24 @@ Chapter 03 carries the parish's candle offering: three things it will light, an 
 a name, an address for the photograph, and a note to the priest. Submitting shows what would
 come back, with the coming Sunday worked out from today's date.
 
+The intention is written on a commemoration slip, because in the parish that is what it is:
+a narrow piece of ruled paper with a printed heading, filled in by hand and handed over the
+counter before the Liturgy. The whole sheet hangs off one number. `--rule` sets the spacing
+of the ruling, and every field is `line-height: --rule` and a whole multiple of `--rule`
+tall, so the words land on the ruling with the descenders crossing it instead of floating
+between the lines. `--rule-off` shifts the ruling so the line falls under the baseline
+rather than under the descenders, and the note grows in whole rules for the same reason:
+growing it to `scrollHeight` the usual way leaves half a rule of paper and puts every line
+after it out of register. The printed heading follows the intention toggle, in Serbian
+first. Focus lifts the sheet rather than boxing one field. The email address stays off the
+paper, where it belongs, because it is a delivery detail and not part of what is read.
+
+Two things are asked for and both are itemised, the candle and the name on the commemoration
+list at five dollars, so a person can see what the second five is for before agreeing to it.
+The line under the total says what it is: an offering to the parish, not a price for prayer,
+and a name is read whether or not anything is given. A church that appears to sell prayer has
+made a different thing than this one.
+
 It is a request, not a checkout. The parish office would take the payment. This page asks
 for no card details anywhere, accepts none, and says so under the form; a test asserts that
 no payment field exists. Nothing is posted to any server.

@@ -1057,11 +1057,39 @@ img{ max-width:100%; display:block; }
 
 .offer-foot{
   margin-top:clamp(20px,3vh,30px); padding-top:18px; border-top:1px solid var(--line);
-  display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap;
+  display:flex; align-items:flex-end; justify-content:space-between; gap:22px; flex-wrap:wrap;
 }
-.offer-total b{
-  display:block; font-family:var(--serif); font-weight:400;
-  font-size:clamp(22px,2.6vw,34px); color:var(--bone); line-height:1;
+.offer-total{ min-width:0; flex:1 1 380px; }
+.offer-bill{
+  list-style:none; margin:0 0 12px; padding:0; max-width:46ch;
+}
+.offer-bill li{
+  display:flex; align-items:baseline; gap:14px; padding:7px 0;
+  border-bottom:1px solid var(--line-soft);
+}
+.offer-bill li span{ font-size:15px; line-height:1.5; color:var(--bone-dim); }
+/* the dotted leader that carries the eye from the item to the figure,
+   the way a printed list of offerings in a parish porch does it */
+.offer-bill li::after{
+  content:""; order:1; flex:1 1 auto; min-width:18px; align-self:flex-end;
+  margin-bottom:5px; height:0;
+  border-bottom:1px dotted var(--line);
+}
+.offer-bill li b{
+  order:2; font-family:var(--serif); font-weight:400; font-size:19px;
+  color:var(--bone); white-space:nowrap;
+}
+.offer-sum{ display:flex; align-items:baseline; gap:14px; }
+.offer-sum span{
+  font-family:var(--mono); font-size:var(--label-fs);
+  letter-spacing:var(--label-track); text-transform:uppercase; color:var(--muted);
+}
+.offer-sum b{
+  font-family:var(--serif); font-weight:400;
+  font-size:clamp(24px,2.6vw,34px); color:var(--bone); line-height:1;
+}
+.offer-offering{
+  margin:10px 0 0; max-width:46ch; font-size:14px; line-height:1.6; color:var(--muted);
 }
 .offer-go{
   display:inline-flex; align-items:center; gap:12px;
@@ -1795,11 +1823,13 @@ img{ max-width:100%; display:block; }
       <span class="k"><b>03b</b> - From far away</span><span class="rule"></span><span class="k cyr">Свећа</span>
     </div>
     <div class="offer-top">
-      <h3 class="display h-sec" data-rv="up">A real candle, and a photograph that it burned.</h3>
+      <h3 class="display h-sec" data-rv="up">A real candle, a name read aloud, and a photograph that it burned.</h3>
       <p class="lead" data-rv="up">A candle on a screen is an intention. This is a wax candle, on the
         stand in Richmond Hill, lit by a parishioner at the next Liturgy, photographed where it
-        stands, and the picture sent to you. If you are in Belgrade, Vancouver or Melbourne, this is
-        the closest you can come.</p>
+        stands, and the picture sent to you. The name written on the slip goes onto the
+        commemoration list and is read at the proskomedia, whether or not you ask for the
+        photograph. If you are in Belgrade, Vancouver or Melbourne, this is the closest you
+        can come.</p>
     </div>
 
     <form class="offer-form" id="offerForm" novalidate>
@@ -1886,8 +1916,23 @@ img{ max-width:100%; display:block; }
 
       <div class="offer-foot" data-rv="up">
         <div class="offer-total">
-          <span class="offer-lg">Total</span>
-          <b id="offTotal" aria-live="polite">$5</b>
+          <span class="offer-lg">What is asked</span>
+          <ul class="offer-bill">
+            <li>
+              <span id="offBillCandle">A candle</span>
+              <b id="offBillCandlePrice">$5</b>
+            </li>
+            <li>
+              <span>The name on the commemoration list</span>
+              <b>$5</b>
+            </li>
+          </ul>
+          <div class="offer-sum">
+            <span>Total</span>
+            <b id="offTotal" aria-live="polite">$10</b>
+          </div>
+          <p class="offer-offering">Both are offerings to the parish, not a price for prayer.
+            A name is read whether or not anything is given: ask the office.</p>
         </div>
         <button type="submit" class="offer-go" data-cursor>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2s5.5 4.8 5.5 9.5a5.5 5.5 0 0 1-11 0C6.5 6.8 12 2 12 2z"/></svg>
@@ -2336,8 +2381,17 @@ function wireOffer() {
   var totalEl = $('#offTotal'), errEl = $('#offErr');
   var done = $('#offerDone'), egEl = $('#offEg');
   var price = 5, intent = 'repose';
+  /* The candle and the commemoration are two separate things and the parish
+     asks for both, so the total is itemised rather than presented as one
+     figure: a person should be able to see what the second five dollars is
+     for before they agree to it. */
+  var INTENTION = 5;
+  var billName = $('#offBillCandle'), billPrice = $('#offBillCandlePrice');
 
-  function setTotal() { totalEl.textContent = '$' + price; }
+  function setTotal() {
+    billPrice.textContent = '$' + price;
+    totalEl.textContent = '$' + (price + INTENTION);
+  }
 
   $$('.offer-opts .opt').forEach(function (b) {
     b.addEventListener('click', function () {
@@ -2346,6 +2400,7 @@ function wireOffer() {
       });
       b.classList.add('on'); b.setAttribute('aria-pressed', 'true');
       price = +b.getAttribute('data-price');
+      billName.textContent = b.querySelector('b').textContent;
       setTotal();
     });
   });
