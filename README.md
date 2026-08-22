@@ -298,6 +298,18 @@ after the next one has started, which cleared the button that had just lit, so e
 carries the sequence it was spoken at and a stale callback is dropped. Closing a Memory Page
 stops the voice: one that keeps reading after the page is shut is a haunting, not a feature.
 
+### What the site is about
+
+It is a church site. That had to be corrected: the wordmark, the page title, the hero and the
+finale were all `Вечан спомен`, which made it a memorial site with a church inside it rather
+than a parish site with a memorial in it. The parish now carries its own name everywhere,
+`Свети арханђел Гаврило`, the hero is the open door rather than the names of the dead, and
+chapter 05 is `Дођите и видите` with the Liturgy, the school and the kitchen in it instead of
+Zadušnice and the parastos.
+
+The memorial is one chapter of five, and its own copy says so: one wall of the parish hall,
+with the Memory Pages behind it kept by Saylavy.
+
 ### Saylavy, and opening a page
 
 The wall says who keeps it. `Powered by Saylavy` sits under the grid with a link to
@@ -305,6 +317,11 @@ saylavy.com, and beside it the four steps a family actually goes through, which 
 telephone call to the parish and not with a file upload. The last step says the name joins the
 list read at Zadušnice and the Parastos whether or not there is a page, because that is true
 and the parish should not appear to be selling remembrance.
+
+Every route to Saylavy goes to `https://saylavy.com/memory-page`, declared once as `SAY_URL`
+so a change of route is one edit and not five. There are five of them: the mark at the head of
+the memorial, the plate under the grid, the link beside it, the button, and inside each open
+profile, where the reference number and a plain `Open on Saylavy` both lead out.
 
 ### Asking for a candle
 

@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Вечан спомен · Eternal Memory | St. Archangel Gabriel Serbian Orthodox Parish</title>
-<meta name="description" content="A five-chapter night walk through the parish of St. Archangel Gabriel, Richmond Hill, rendered live in WebGL. A memorial where every departed soul keeps a page, a voice, and a candle anyone may light.">
+<title>Свети арханђел Гаврило · St. Archangel Gabriel Serbian Orthodox Parish, Richmond Hill</title>
+<meta name="description" content="The Serbian Orthodox parish of St. Archangel Gabriel, Richmond Hill, Ontario. The Divine Liturgy, the feast days, the Serbian school, the priest, and a memorial wall kept with Saylavy. The church is built in WebGL and rendered live as you scroll.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#06070a">
 
-<meta property="og:title" content="Вечан спомен · Eternal Memory">
-<meta property="og:description" content="A five-chapter night walk through a Serbian Orthodox parish, rendered live in WebGL.">
+<meta property="og:title" content="Свети арханђел Гаврило · St. Archangel Gabriel, Richmond Hill">
+<meta property="og:description" content="A Serbian Orthodox parish in Richmond Hill, Ontario, and the church you can walk into. Rendered live in WebGL.">
 <meta property="og:type" content="website">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1472,6 +1472,26 @@ img.meet-who-face{
 }
 .soul-meta span{ display:inline-flex; align-items:center; gap:5px; }
 .soul-meta svg{ width:11px; height:11px; stroke:var(--gold); stroke-width:1.6; fill:none; }
+.k-say{
+  display:inline-flex; align-items:center; gap:8px; flex:none; margin-left:22px;
+  font-family:var(--mono); font-size:var(--label-fs); letter-spacing:var(--label-track);
+  text-transform:uppercase; color:var(--muted);
+  transition:color .4s var(--ease);
+}
+.k-say b{ font-weight:400; color:var(--gold-lit); }
+.k-say svg{ width:15px; height:15px; flex:none; fill:rgba(231,175,35,.16); stroke:var(--gold-lit); stroke-width:1.4; }
+.k-say .say-w{ fill:none; stroke-linecap:round; }
+.k-say:hover{ color:var(--bone); }
+.mp-eyebrow a{
+  color:var(--gold-lit); border-bottom:1px solid rgba(231,175,35,.4);
+  transition:color .4s var(--ease), border-color .4s var(--ease);
+}
+.mp-eyebrow a:hover{ color:var(--bone); border-color:var(--bone); }
+/* the way out to Saylavy sits with the two candles, built the same */
+.mp-candle--say{ text-decoration:none; }
+.mp-candle--say svg{ fill:rgba(231,175,35,.16); stroke:var(--gold-lit); stroke-width:1.4; }
+.mp-candle--say .say-w{ fill:none; stroke-linecap:round; }
+
 /* ── the prayer, and the pages that Saylavy keeps ── */
 .pray{
   margin:clamp(20px,3vh,30px) 0 clamp(18px,2.6vh,26px);
@@ -1812,7 +1832,7 @@ img.meet-who-face{
         <circle cx="22" cy="5" r="2.1" fill="#c9962b"/>
       </svg>
     </div>
-    <div class="pre-cyr cyr">Вечан спомен</div>
+    <div class="pre-cyr cyr">Свети арханђел Гаврило</div>
     <div class="pre-bar"><i id="pre-fill"></i></div>
     <div class="pre-meta">
       <span>Lighting the church</span><b><span id="pre-pct">0</span>%</b>
@@ -1829,8 +1849,8 @@ img.meet-who-face{
       <circle cx="22" cy="6" r="2.4" fill="#c9962b" fill-opacity=".95"/>
     </svg>
     <span class="brand-tx">
-      <b>Вечан спомен</b>
-      <i>St. Archangel Gabriel · Richmond Hill</i>
+      <b class="cyr">Свети арханђел Гаврило</b>
+      <i>Serbian Orthodox Parish · Richmond Hill</i>
     </span>
   </a>
   <nav class="nav-links" id="navlinks" aria-label="Chapters">
@@ -1839,7 +1859,7 @@ img.meet-who-face{
     <a class="nav-link" href="#voices"      data-cursor><span>Voices</span><span class="alt cyr">Гласови</span></a>
     <a class="nav-link nav-link--sub" href="#priest" data-cursor><span>The Priest</span><span class="alt cyr">Отац</span></a>
     <a class="nav-link" href="#memorial"    data-cursor><span>Memorial</span><span class="alt cyr">Спомен-зид</span></a>
-    <a class="nav-link" href="#remembrance" data-cursor><span>Remembrance</span><span class="alt cyr">Вечан спомен</span></a>
+    <a class="nav-link" href="#remembrance" data-cursor><span>Visit</span><span class="alt cyr">Дођите</span></a>
   </nav>
   <button class="nav-burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="navlinks" data-cursor><i></i><i></i></button>
 </header>
@@ -1891,16 +1911,16 @@ img.meet-who-face{
 <!-- ══════════════════════════════════════════════════ 00 · hero ═══ -->
 <section class="hero" id="hero" data-cam="0">
   <div class="hero-top">
-    <div class="eyebrow" data-rv="fade"><span class="dot"></span> Chapter 00 - Вечан спомен
+    <div class="eyebrow" data-rv="fade"><span class="dot"></span> Chapter 00 - Свети арханђел Гаврило
       <span class="eyebrow-sep"></span><span id="seasonNow">Summer</span></div>
     <h1 class="display h-hero">
-      <span class="mask-line"><span>Where the names</span></span>
-      <span class="mask-line"><span>are read</span></span>
-      <span class="mask-line"><span>aloud.</span></span>
+      <span class="mask-line"><span>The doors</span></span>
+      <span class="mask-line"><span>are open on</span></span>
+      <span class="mask-line"><span>North Lake Road.</span></span>
     </h1>
-    <p class="hero-sub body-lg" data-rv="up">The parish of St. Archangel Gabriel keeps a page for
-      every soul it has buried - a story, a voice, a photograph, and a candle that anyone
-      may light from anywhere in the world.</p>
+    <p class="hero-sub body-lg" data-rv="up">A Serbian Orthodox parish in Richmond Hill, Ontario.
+      The Divine Liturgy on Sunday, the feast days as they fall, a Serbian school for the children,
+      and a priest who answers the telephone. Scroll, and you go in through the west door.</p>
   </div>
 
   <div class="hero-spacer"></div>
@@ -1942,9 +1962,9 @@ img.meet-who-face{
       <div class="chip" data-chip="2" data-rv="up" data-cursor><span class="num">03</span>
         <span class="tx"><b>Voices</b><p>The prayers a parish knows by ear, not by reading.</p></span></div>
       <div class="chip" data-chip="3" data-rv="up" data-cursor><span class="num">04</span>
-        <span class="tx"><b>Memorial</b><p>The wall of arches, and the pages behind them.</p></span></div>
+        <span class="tx"><b>Memorial</b><p>One wall of arches, and the pages Saylavy keeps behind them.</p></span></div>
       <div class="chip" data-chip="4" data-rv="up" data-cursor><span class="num">05</span>
-        <span class="tx"><b>Remembrance</b><p>Zadušnice, the parastos, and the names read aloud.</p></span></div>
+        <span class="tx"><b>Visit</b><p>The Liturgy, the school, the kitchen, and an unlocked door.</p></span></div>
     </div>
   </div>
 
@@ -1960,7 +1980,7 @@ img.meet-who-face{
   </a>
 
   <div class="hero-side" data-rv="up" aria-hidden="true">
-    <span class="v cyr">вечан спомен</span>
+    <span class="v cyr">свети арханђел гаврило</span>
   </div>
 </section>
 
@@ -1986,10 +2006,10 @@ img.meet-who-face{
     </div>
   </div>
   <div class="gate-stats" data-rv="up">
-    <div><b>05</b><span>Chapters</span></div>
-    <div><b>30</b><span>Азбука letters</span></div>
-    <div><b>04</b><span>Zadušnice</span></div>
-    <div><b>&#8734;</b><span>Вечан спомен</span></div>
+    <div><b>1985</b><span>Parish founded</span></div>
+    <div><b>52</b><span>Sundays a year</span></div>
+    <div><b>30</b><span>&#1040;&#1079;&#1073;&#1091;&#1082;&#1072; letters</span></div>
+    <div><b>01</b><span>Door, unlocked</span></div>
   </div>
 </section>
 
@@ -2386,14 +2406,20 @@ img.meet-who-face{
 <!-- ══════════════════════════════════════════════ 04 · the memorial ═══ -->
 <section class="sec" id="memorial" data-cam="4">
   <div class="sec-head" data-rv="fade">
-    <span class="k"><b>04</b> - The Memorial</span><span class="rule"></span><span class="k cyr">Спомен-зид</span>
+    <span class="k"><b>04</b> - The Memorial</span>
+    <a class="k-say" href="https://saylavy.com/memory-page" target="_blank" rel="noopener" data-cursor>
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.5 27 9v10.4L16 28.5 5 19.4V9z"/><path d="M16 11.4v9.2M11.6 14v4M20.4 14v4" class="say-w"/></svg>
+      <span>Powered by <b>Saylavy</b></span>
+    </a>
+    <span class="rule"></span><span class="k cyr">Спомен-зид</span>
   </div>
   <div class="mem-grid">
     <div>
       <h2 class="display h-sec" data-rv="up">Those we carry to the Holy Liturgy.</h2>
-      <p class="lead" data-rv="up" style="margin-top:22px">Every arch on this wall is a name the
-        parish reads aloud. Behind each one is a page a family made: a life written down, a recorded
-        voice, photographs, and where they have chosen it, a time capsule that opens on a set day.</p>
+      <p class="lead" data-rv="up" style="margin-top:22px">One wall of the parish hall, and a name
+        on each arch that the parish reads aloud. Behind each one is a Memory Page a family made and
+        Saylavy keeps: a life written down, a recorded voice, photographs, and where they have chosen
+        it, a time capsule that opens on a set day.</p>
       <div class="powered" data-rv="up">
         <span class="powered-k">The wall belongs to the parish</span>
         <span class="powered-n cyr">Свети арханђел Гаврило</span>
@@ -2486,7 +2512,7 @@ img.meet-who-face{
         <i>Every arch on this wall is a Memory Page kept by Saylavy. The parish keeps the
           remembrance and the wall; each family keeps its own page and owns what is on it.</i>
       </span>
-      <a class="say-link" href="https://saylavy.com" target="_blank" rel="noopener" data-cursor>
+      <a class="say-link" href="https://saylavy.com/memory-page" target="_blank" rel="noopener" data-cursor>
         saylavy.com
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16 16 8M9.5 8H16v6.5"/></svg>
       </a>
@@ -2499,11 +2525,10 @@ img.meet-who-face{
         a family, and nothing has to be ready before you begin: the parish and Saylavy gather it
         with you, and an unfinished page is still a page.</p>
       <div class="say-go">
-        <a class="offer-go" href="https://saylavy.com" target="_blank" rel="noopener" data-cursor>
+        <a class="offer-go" href="https://saylavy.com/memory-page" target="_blank" rel="noopener" data-cursor>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          <span>Open a Memory Page on Saylavy</span>
+          <span>Open a Memory Page</span>
         </a>
-        <span class="say-or">or ask at the church office, 49 N Lake Road</span>
       </div>
       </div>
       <ol class="say-steps">
@@ -2529,20 +2554,21 @@ img.meet-who-face{
 
 <!-- ════════════════════════════════════════════ 05 · remembrance ═══ -->
 <section class="sec fin" id="remembrance" data-cam="5">
-  <div class="eyebrow" data-rv="fade">Chapter 05 - Вечан спомен</div>
-  <h2 class="display h-fin cyr" data-rv="up">Вечан спомен</h2>
-  <p class="body-lg" data-rv="up">Four Saturdays a year the whole parish prays for its departed at
-    once. On every other day of the calendar a single name is enough. The wall does not close
-    behind anyone - come back to it whenever the anniversary comes round.</p>
+  <div class="eyebrow" data-rv="fade">Chapter 05 - Дођите и видите</div>
+  <h2 class="display h-fin cyr" data-rv="up">Дођите и видите</h2>
+  <p class="body-lg" data-rv="up">The Liturgy is served on Sunday morning and the feast days are
+    kept as they fall. The Serbian school teaches the azbuka and the hymns, the Circle of Serbian
+    Sisters keeps the kitchen, and four Saturdays a year the whole parish prays for its departed at
+    once. Nobody has to know the order of things before they come: the first time, standing at the
+    back is enough.</p>
 
   <blockquote class="kontakion" data-rv="up">
-    With the saints give rest, O Christ, to the souls of Thy servants, where there is neither
-    sickness, nor sorrow, nor sighing, but life everlasting.
-    <cite>Kontakion of the memorial service</cite>
+    Come and see.
+    <cite>John 1:46</cite>
   </blockquote>
 
   <a class="cta" href="#top" data-rv="fade" data-cursor>
-    <span>Return to the gate</span>
+    <span>Back to the gate</span>
     <svg viewBox="0 0 14 14" fill="none"><path d="M7 11V3M3.5 6.5 7 3l3.5 3.5" stroke="#e6e0d4" stroke-width="1.3"/></svg>
   </a>
 </section>
@@ -2551,7 +2577,7 @@ img.meet-who-face{
 <footer class="foot" data-cam="6">
   <div class="foot-grid">
     <p class="foot-manifesto" data-rv="up">A parish runs on the people who arrive first and leave
-      last, and on the names it refuses to let go quiet.</p>
+      last, on a kitchen that never closes, and on a door somebody remembered to unlock.</p>
     <div class="foot-col" data-rv="up">
       <h3>The parish</h3>
       <p>Serbian Orthodox Parish of St. Archangel Gabriel</p>
@@ -2565,11 +2591,11 @@ img.meet-who-face{
       <a href="#iconostasis">02 · Iconostasis</a>
       <a href="#voices">03 · Voices</a>
       <a href="#memorial">04 · Memorial</a>
-      <a href="#remembrance">05 · Remembrance</a>
+      <a href="#remembrance">05 · Visit</a>
     </div>
   </div>
   <div class="foot-bar">
-    <span>Вечан спомен · Eternal Memory</span>
+    <span class="cyr">Свети арханђел Гаврило · Richmond Hill</span>
     <span>Design demonstration</span>
   </div>
   <p class="foot-note">A design demonstration, not an official parish publication. Photographs belong
@@ -2593,7 +2619,7 @@ img.meet-who-face{
 <script src="vendor/three.min.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════
-   ВЕЧАН СПОМЕН · a five-chapter night walk through a Serbian Orthodox
+   СВЕТИ АРХАНЂЕЛ ГАВРИЛО · a five-chapter walk through a Serbian Orthodox
    parish. One fixed WebGL churchyard, one continuous camera path driven
    by scroll, editorial type layered over the top.
    Everything below the sky is built at runtime - there is no model file.
@@ -3403,6 +3429,9 @@ function clearSay(btn) {
   if (l) l.textContent = l.getAttribute('data-saylbl');
 }
 
+/* One address for Saylavy, so a change of route is one edit and not five. */
+var SAY_URL = 'https://saylavy.com/memory-page';
+
 var IC_FLAME = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2s5.5 4.8 5.5 9.5a5.5 5.5 0 0 1-11 0C6.5 6.8 12 2 12 2z"/></svg>';
 var IC_MIC   = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="10.5" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5"/></svg>';
 
@@ -3467,7 +3496,9 @@ function openPage(id) {
     '<div class="mp-top">' +
       '<div class="mp-por">' + (e.portrait ? '<img src="' + esc(e.portrait) + '" alt="Portrait of ' + esc(e.name) + '">' : '') + '</div>' +
       '<div>' +
-        '<div class="mp-eyebrow">Memory Page · ' + esc(e.saylavyId || '') + '</div>' +
+        '<div class="mp-eyebrow">Memory Page · ' +
+          '<a href="' + SAY_URL + '" target="_blank" rel="noopener" data-cursor>' +
+          esc(e.saylavyId || 'Saylavy') + '</a></div>' +
         '<h3 class="mp-name" id="mpName">' + esc(e.name) + '</h3>' +
         '<p class="mp-name-sr">' + esc(e.nameSr) + '</p>' +
         '<p class="mp-role">' + esc(e.role) + '</p>' +
@@ -3501,6 +3532,10 @@ function openPage(id) {
           '<span>Light one here</span></button>' +
         '<button class="mp-candle mp-candle--real" id="mpReal" data-cursor>' + IC_FLAME +
           '<span>Ask the parish for a real one</span></button>' +
+        '<a class="mp-candle mp-candle--say" href="' + SAY_URL + '" target="_blank" rel="noopener" data-cursor>' +
+          '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.5 27 9v10.4L16 28.5 5 19.4V9z"/>' +
+          '<path d="M16 11.4v9.2M11.6 14v4M20.4 14v4" class="say-w"/></svg>' +
+          '<span>Open on Saylavy</span></a>' +
       '</div>' +
     '</div>';
 
