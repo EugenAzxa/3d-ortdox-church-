@@ -309,17 +309,19 @@ wrong. Asking the office whether it is really him gets a straight no.
 
 ### His photograph
 
-The priest card opens with a portrait frame cut to the same arch as everything else on the
-page. It currently holds a drawn panel, not a photograph, and says so under itself.
+The priest card opens with his portrait in the same arch the memorial wall uses, cropped to
+head and shoulders with the lit candle in his hand. `assets/priest.webp` is that crop;
+`assets/priest-face.webp` is a tighter one for the small frame beside the meeting, where the
+line says the twenty minutes are with him and not with the office.
 
-To put the real one in: save it as `assets/priest.webp` and replace the `<figure>` contents
-with `<img src="assets/priest.webp" alt="Father Đurađ Kojić">`, then set the figure's
-`data-face` to `photo` so the caption stops showing. The CSS already cuts the photograph to
-the arch and holds the crop high enough for a head-and-shoulders frame.
+He is the one living face on a page full of departed ones, so he is graded lighter than they
+are: `brightness(.84) saturate(.74)` at rest against their `grayscale(1)`, and he comes the
+rest of the way to full colour on hover. The chat keeps the cross instead of taking his face.
+A photograph at the top of a conversation says the man is answering it, and he is not.
 
-It stays a drawing until the parish supplies its own photograph. A stock portrait of some
-other priest under this name would be a lie told to the one parishioner who knows his face,
-and that parishioner is exactly who this site is for.
+Both images carry `width`/`height` attributes for layout stability, which means the CSS must
+release the height explicitly. `aspect-ratio` is ignored while the attribute is setting a used
+height, and the small frame renders 52 x 407 instead of 52 x 69.
 
 ### Twenty minutes on Google Meet
 
