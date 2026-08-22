@@ -786,6 +786,36 @@ img{ max-width:100%; display:block; }
   background:rgba(6,7,10,.86); border:1px solid var(--line);
   padding:clamp(18px,2.4vw,28px); display:flex; flex-direction:column; gap:9px;
 }
+/* the portrait, in the arch the rest of the design is built on */
+.pr-face{
+  margin:0 0 4px; width:100%; max-width:196px; position:relative;
+}
+.pr-face svg, .pr-face img{ display:block; width:100%; height:auto; }
+.pr-face img{
+  /* the photograph is cut to the same arch as the drawn panel */
+  clip-path:path("M6 168V66a60 60 0 0 1 120 0v102z");
+  aspect-ratio:132 / 168; object-fit:cover; object-position:50% 22%;
+}
+.pr-face-bg{ fill:rgba(11,13,18,.96); }
+.pr-face-fig{ fill:rgba(231,175,35,.17); }
+.pr-face-hair{ fill:rgba(231,175,35,.3); }
+.pr-face-line{ fill:none; stroke:rgba(231,175,35,.45); stroke-width:3; stroke-linecap:round; }
+.pr-face-edge{ fill:none; stroke:rgba(231,175,35,.5); stroke-width:2; }
+.pr-face figcaption{
+  margin-top:9px; font-family:var(--mono); font-size:10px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--muted); line-height:1.5;
+}
+.pr-face[data-face="photo"] figcaption{ display:none; }
+
+.meet-who{
+  display:flex; align-items:center; gap:14px; margin:16px 0 0;
+  padding:12px 14px; border:1px solid rgba(231,175,35,.3); background:rgba(34,26,10,.5);
+  font-size:15px; line-height:1.6; color:var(--bone-dim);
+}
+.meet-who b{ color:var(--bone); font-weight:400; }
+.meet-who-face{ width:44px; flex:none; }
+.meet-who-face svg{ display:block; width:100%; height:auto; }
+
 .pr-mark{ width:34px; height:34px; color:var(--gold-lit); display:block; }
 .pr-mark svg{ width:100%; height:100%; }
 .pr-name{
@@ -1924,12 +1954,35 @@ img{ max-width:100%; display:block; }
 
     <div class="priest-grid">
       <aside class="pr-card" data-rv="up">
-        <span class="pr-mark">
-          <svg viewBox="0 0 44 44" fill="none" aria-hidden="true">
-            <path d="M22 6v32M14.5 13h15M9 20h26M13.5 30.8l17-4.4"
-                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- The portrait frame takes the arch the whole design is built on.
+             To put the real photograph in, drop it at assets/priest.webp and
+             swap the <figure> contents for <img src="assets/priest.webp"
+             alt="Father Đurađ Kojić">. Until the parish supplies its own
+             photograph this stays a drawn panel: a stock portrait of some
+             other priest under this name would be a lie told to the one
+             parishioner who knows his face. -->
+        <figure class="pr-face" data-face="placeholder">
+          <svg viewBox="0 0 132 168" role="img" aria-label="A drawn panel, awaiting the parish photograph">
+            <defs>
+              <clipPath id="prArch">
+                <path d="M6 168V66a60 60 0 0 1 120 0v102z"/>
+              </clipPath>
+            </defs>
+            <path d="M6 168V66a60 60 0 0 1 120 0v102z" class="pr-face-bg"/>
+            <g clip-path="url(#prArch)" class="pr-face-fig">
+              <!-- phelonion -->
+              <path d="M66 96c-27 0-44 15-48 40l-6 46h108l-6-46c-4-25-21-40-48-40z"/>
+              <!-- the cross on the back of the vestment -->
+              <path d="M66 132v34M55 143h22" class="pr-face-line"/>
+              <!-- beard, head, hair -->
+              <path d="M66 40c-13 0-21 10-21 24 0 16 9 30 21 30s21-14 21-30c0-14-8-24-21-24z"/>
+              <path d="M51 76c1 19 7 34 15 34s14-15 15-34c-3 12-9 17-15 17s-12-5-15-17z" class="pr-face-hair"/>
+              <path d="M45 60c0-16 9-26 21-26s21 10 21 26c3-20-6-32-21-32S42 40 45 60z" class="pr-face-hair"/>
+            </g>
+            <path d="M6 168V66a60 60 0 0 1 120 0v102z" class="pr-face-edge"/>
           </svg>
-        </span>
+          <figcaption>A photograph of Father &#272;ura&#273; goes here</figcaption>
+        </figure>
         <b class="pr-name">Father &#272;ura&#273; Koji&#263;</b>
         <i class="pr-role">Parish Priest</i>
         <p class="pr-blurb">Serves the Divine Liturgy, leads the parastos and the Zadu&#353;nice,
@@ -1988,6 +2041,22 @@ img{ max-width:100%; display:block; }
     <div class="meet" id="meet" data-rv="up">
       <div class="meet-say">
         <span class="offer-lg">Face to face</span>
+        <p class="meet-who">
+          <span class="meet-who-face" aria-hidden="true">
+            <svg viewBox="0 0 132 168">
+              <path d="M6 168V66a60 60 0 0 1 120 0v102z" class="pr-face-bg"/>
+              <g class="pr-face-fig">
+                <path d="M66 96c-27 0-44 15-48 40l-6 46h108l-6-46c-4-25-21-40-48-40z"/>
+                <path d="M66 40c-13 0-21 10-21 24 0 16 9 30 21 30s21-14 21-30c0-14-8-24-21-24z"/>
+              <path d="M51 76c1 19 7 34 15 34s14-15 15-34c-3 12-9 17-15 17s-12-5-15-17z" class="pr-face-hair"/>
+                <path d="M45 60c0-16 9-26 21-26s21 10 21 26c3-20-6-32-21-32S42 40 45 60z" class="pr-face-hair"/>
+              </g>
+              <path d="M6 168V66a60 60 0 0 1 120 0v102z" class="pr-face-edge"/>
+            </svg>
+          </span>
+          <span>The twenty minutes are with <b>Father &#272;ura&#273; Koji&#263;</b> himself, the
+            priest of this parish, and not with the office that answers above.</span>
+        </p>
         <h4 class="meet-h">Twenty minutes with Father &#272;ura&#273;, on Google Meet.</h4>
         <p class="meet-p">Some things should not be answered by a page. A death in the family, a
           marriage, a child not baptised, a question a person has carried for years: for those
@@ -2031,9 +2100,9 @@ img{ max-width:100%; display:block; }
               <span>Twenty minutes</span>
               <b>$10</b>
             </div>
-            <p class="offer-offering">An offering to the parish for the priest's time, not a
-              price for counsel. If ten dollars is the reason you would not write, say so in the
-              box and the parish will waive it.</p>
+            <p class="offer-offering">A donation to the parish, spent on the needs of the church
+              and not on the priest. It is not a price for counsel. If ten dollars is the reason
+              you would not write, say so in the box and the parish will waive it.</p>
           </div>
           <button type="submit" class="offer-go" data-cursor>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -2180,8 +2249,10 @@ img{ max-width:100%; display:block; }
             <span>Total</span>
             <b id="offTotal" aria-live="polite">$10</b>
           </div>
-          <p class="offer-offering">Both are offerings to the parish, not a price for prayer.
-            A name is read whether or not anything is given: ask the office.</p>
+          <p class="offer-offering">Both are donations to the parish, spent on the needs of the
+            church: the beeswax and the oil, the heating through an Ontario winter, the upkeep of
+            the building and the work of the office. They are not a price for prayer. A name is
+            read whether or not anything is given: ask the office.</p>
         </div>
         <button type="submit" class="offer-go" data-cursor>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2s5.5 4.8 5.5 9.5a5.5 5.5 0 0 1-11 0C6.5 6.8 12 2 12 2z"/></svg>
@@ -2208,7 +2279,7 @@ img{ max-width:100%; display:block; }
     <p class="offer-note" data-rv="fade">
       <b>Design demonstration.</b> Nothing is charged and nothing is sent, and no payment details
       are asked for or accepted anywhere on this page. In a live installation this would be a
-      payment and a job in the parish office. The candle is always lit, even if the email fails:
+      donation to the parish and a job in the parish office. The candle is always lit, even if the email fails:
       the photograph is the proof, not the service.
     </p>
   </div>
@@ -2627,9 +2698,12 @@ var ASKS = [
   { hide: true, q: 'What does it cost?',
     k: ['cost','price','how much','fee','pay','payment','money','charge','expensive','koliko','cena','placanje'],
     a: ['A candle and the name on the commemoration list are five dollars each, and twenty minutes '
-      + 'with the priest is ten. They are offerings to the parish, not prices for prayer.',
-        'A name is read whether or not anything is given, and nobody is turned away over ten '
-      + 'dollars. If that is the reason you would not write, say so and the parish will waive it.'] },
+      + 'with the priest is ten. Every one of them is a donation to the parish, spent on the needs '
+      + 'of the church: the beeswax and the oil, the heating, the upkeep of the building and the '
+      + 'work of the office.',
+        'None of it is a price for prayer, and none of it goes to the priest. A name is read '
+      + 'whether or not anything is given, and nobody is turned away over ten dollars. If that is '
+      + 'the reason you would not write, say so and the parish will waive it.'] },
 
   { hide: true, q: 'Do you speak English?',
     k: ['english','serbian','srpski','language','translate','jezik'],

@@ -307,6 +307,20 @@ for Father Đurađ, not Father Đurađ. A chat window carrying a priest's name i
 believe they are speaking to him, and on a page about death that is not a small thing to get
 wrong. Asking the office whether it is really him gets a straight no.
 
+### His photograph
+
+The priest card opens with a portrait frame cut to the same arch as everything else on the
+page. It currently holds a drawn panel, not a photograph, and says so under itself.
+
+To put the real one in: save it as `assets/priest.webp` and replace the `<figure>` contents
+with `<img src="assets/priest.webp" alt="Father Đurađ Kojić">`, then set the figure's
+`data-face` to `photo` so the caption stops showing. The CSS already cuts the photograph to
+the arch and holds the crop high enough for a head-and-shoulders frame.
+
+It stays a drawing until the parish supplies its own photograph. A stock portrait of some
+other priest under this name would be a lie told to the one parishioner who knows his face,
+and that parishioner is exactly who this site is for.
+
 ### Twenty minutes on Google Meet
 
 Ten dollars, four hours offered, and the hours are worked out from today rather than written
@@ -314,9 +328,12 @@ into the page, so a demonstration opened in a year still offers a date that has 
 The parish keeps two evenings after work, Saturday morning and the hour after the Sunday
 Liturgy; Sunday morning is the Liturgy itself and is never offered.
 
-The same rule as the candle applies to the money. It is an offering for the priest's time and
-not a price for counsel, the page says so under the total, and it says that anyone for whom
-ten dollars is the reason they would not write should say so and have it waived. Confession is
+The same rule as the candle applies to the money. Every figure on the page is a donation to
+the parish spent on the needs of the church, the beeswax and the oil, the heating through an
+Ontario winter, the upkeep of the building and the work of the office. Not a price for prayer,
+and in the case of the meeting, not money that goes to the priest. The page says so under both
+totals, and it says that anyone for whom ten dollars is the reason they would not write should
+say so and have it waived. Confession is
 answered honestly wherever it is raised: it is made in church, in person, and neither a page
 nor a video call can carry it.
 
