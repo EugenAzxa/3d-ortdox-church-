@@ -103,6 +103,28 @@ fixing a face that is eighteen pixels tall.
 lathe-and-sphere figure will not pass, which is not true of stonework or trees. Use a
 photographic cut-out, or leave the figure out.
 
+## Controls people can actually use
+
+The default instinct of a designer working in this idiom is 9px mono capitals tracked out to
+0.22em, in a grey two steps off the background. It photographs beautifully and it is close
+to unreadable, especially for the audience a parish site actually has.
+
+Three rules fix most of it:
+
+- **46px of height** on anything that can be pressed. A finger, or a hand that is not steady,
+  needs a target.
+- **15px and up, in the sans, sentence case.** Small tracked capitals are a house style, not
+  a legible one. Reserve them for labels of two or three words and set those at 12px.
+- **A border you can see, and a filled state for the selected one.** Hairline ghost buttons
+  give no answer to "which one is on".
+
+Then check the greys. Lifting the two that carry nearly all the small text, and the two
+hairline borders, does more for legibility than any type change.
+
+Reading matter laid over a lit 3D scene needs a ground of its own, not just a text shadow.
+Shadows work against a dark scene and fail against a bright one, and with a season and hour
+cycling underneath you get both.
+
 ## Verify it, do not assume it
 
 Drive a real browser headlessly and assert. Every one of these caught something:
