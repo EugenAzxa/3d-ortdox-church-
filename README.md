@@ -45,15 +45,30 @@ assets are the parish photographs, which are graded into the night palette in CS
 
 ### Crossing between the two
 
-The veil and the swap must come off the same number. They did not: the veil was a function
-of scroll and the swap a function of camera position, so the blink happened at one moment
-and the world changed half a second later with nothing covering it. Both now derive from the
-signed distance from the lens to the room taken as a box - negative inside, positive
-outside, its size being the distance to the nearest face either way.
+**Cut on the threshold.** The room's west wall stood at z=1.4 while the doors a person walks
+through are at z=6.16, so for four and a half metres the camera was inside the building and
+the renderer was still drawing the outside of it: the entry was spent looking at the backs of
+the exterior walls. The wall now sits at z=6.0, just inside the leaves, and the world changes
+hands in the doorway where the architecture covers it. A transition wants a surface to happen
+on, and a door is the one the building already provides.
 
-Distance to the wall planes is not the same as distance to the room. Using the planes lit the
-veil to 94% at the top of the page, because the opening shot sits at y=4.07 and that is the
-ceiling's height thirty metres away.
+**Two questions, not one.** Which world to draw is a box test. How much to hide is the
+distance to the surface the lens actually crosses. Taking both from the box meant the floor
+plane, which the camera floats a metre above and never crosses, held the veil at three per
+cent for the whole length of the room. The veil now comes from the two surfaces that are
+genuinely crossed, the threshold at the door and the ceiling on the way out, and is zero
+everywhere else.
+
+**The veil has to reach one.** Easing straight to a peak left it at 0.78, so a fifth of the
+swap showed through and the two worlds traded places in plain sight. It holds a plateau at
+full black for a third of a metre either side of each surface before it eases away. The
+forced blink on the visibility change stays as the backstop for a fast scroll, but it is no
+longer doing the work on its own: before the ceiling was added as a surface, the roof exit
+had no approach at all and read as a flash rather than a passage.
+
+Both surfaces are gated to the room's footprint. Without that the opening shot at y=4.07
+lights the veil from thirty metres away, because that is the ceiling's height: distance to a
+plane is not distance to the room, and this is how it went wrong the first time.
 
 The room also has to be built hidden. The swap only acts on a change and both groups are
 created visible, so until the first crossing the interior was being drawn inside the church
