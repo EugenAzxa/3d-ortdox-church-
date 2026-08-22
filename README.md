@@ -272,6 +272,13 @@ person's name down into the form.
 
 ### The memorial wall
 
+The parish is the subject, not the platform and not the departed. The wall leads with the
+parish's own name in Cyrillic, and says what the parish does: the arch, the candles, and the
+name on the list read at Zadušnice and the Parastos. Saylavy appears as a quiet credit for
+keeping the pages, with ownership stated as the family's. It had been the other way round,
+with the brand set large in gold at the head of the section, which made a church memorial
+read as a product page.
+
 The six people are fictional and the notice above the grid says so; that notice is load
 bearing and must stay. Candles lit in the browser are kept in `localStorage` only, because
 the real stand is in Richmond Hill and the page should not pretend otherwise.

@@ -710,6 +710,7 @@ img{ max-width:100%; display:block; }
 }
 
 /* ══════════════════════════════════ 13 · chapter IV · the memorial ══ */
+.mem-feats-wrap{ min-width:0; }
 .mem-grid{
   display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.06fr);
   gap:clamp(26px,4.4vw,72px); align-items:start;
@@ -727,9 +728,12 @@ img{ max-width:100%; display:block; }
   text-transform:uppercase; color:var(--muted);
 }
 .powered-n{
-  font-family:var(--serif); font-size:clamp(21px,2.5vw,34px);
-  letter-spacing:.06em; color:var(--gold-lit);
-  text-shadow:0 0 34px rgba(231,175,35,.32);
+  display:block; font-family:var(--serif); font-size:clamp(20px,2.2vw,30px);
+  letter-spacing:.03em; color:var(--bone); line-height:1.2;
+}
+.powered-sub{
+  display:block; margin-top:10px; max-width:52ch;
+  font-size:14.5px; line-height:1.62; color:var(--bone-dim);
 }
 
 .mem-feats{
@@ -1762,14 +1766,19 @@ img{ max-width:100%; display:block; }
   <div class="mem-grid">
     <div>
       <h2 class="display h-sec" data-rv="up">Those we carry to the Holy Liturgy.</h2>
-      <p class="lead" data-rv="up" style="margin-top:22px">Every arch on this wall opens a Memory Page:
-        a life written down, a recorded voice, photographs, and where a family has chosen it, a time
-        capsule that opens on a set day. Kept for good, and never charged by the month.</p>
+      <p class="lead" data-rv="up" style="margin-top:22px">Every arch on this wall is a name the
+        parish reads aloud. Behind each one is a page a family made: a life written down, a recorded
+        voice, photographs, and where they have chosen it, a time capsule that opens on a set day.</p>
       <div class="powered" data-rv="up">
-        <span class="powered-k">Every page on this wall is kept by</span>
-        <span class="powered-n">Saylavy</span>
+        <span class="powered-k">The wall belongs to the parish</span>
+        <span class="powered-n cyr">Свети арханђел Гаврило</span>
+        <span class="powered-sub">Richmond Hill, Ontario. The parish keeps the remembrance: the arch
+          on this wall, the candles, and the name on the list read at Zadu&#353;nice and the Parastos.
+          The pages themselves are kept by Saylavy, and the family keeps ownership.</span>
       </div>
     </div>
+    <div class="mem-feats-wrap">
+    <span class="offer-lg" data-rv="fade">What a page holds</span>
     <div class="mem-feats">
       <div class="mem-feat" data-rv="up">
         <b>Memory Pages</b>
@@ -1791,6 +1800,7 @@ img{ max-width:100%; display:block; }
         <p>A message or recording that opens on a chosen date: an eighteenth birthday, a wedding, an
           anniversary. It stays sealed until the day comes.</p>
       </div>
+    </div>
     </div>
   </div>
   <div class="wall-note" data-rv="up">
@@ -3012,8 +3022,12 @@ function buildChurch() {
   var foot = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.11, 0.12), barM);
   foot.position.set(0, 0.86, 0); foot.rotation.z = 0.42;
   cross.add(stem, top, main, foot);
-  cross.position.set(0, 15.2, -0.6);
+  cross.position.set(0, 15.1, -0.6);
   K.add(cross);
+  var orb1 = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 10), goldM);
+  orb1.position.set(0, 15.16, -0.6); K.add(orb1);
+  var collar1 = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.19, 0.16, 10), goldM);
+  collar1.position.set(0, 15.0, -0.6); K.add(collar1);
   WORLD.cross = cross;
 
   /* Bell tower over the west door: square shaft with a string course, an
@@ -3063,8 +3077,14 @@ function buildChurch() {
   var spire = new THREE.Mesh(new THREE.ConeGeometry(2.34, 3.1, 8), roofM);
   spire.position.set(0, 16.7, 10.4);
   K.add(spire);
-  var cross2 = cross.clone(); cross2.scale.setScalar(0.62); cross2.position.set(0, 18.5, 10.4);
+  var cross2 = cross.clone(); cross2.scale.setScalar(0.62);
+  cross2.position.set(0, 18.1, 10.4);
   K.add(cross2);
+  /* the orb it stands on, so it is mounted rather than hovering */
+  var orb2 = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 8), goldM);
+  orb2.position.set(0, 18.14, 10.4); K.add(orb2);
+  var collar2 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.13, 0.12, 8), goldM);
+  collar2.position.set(0, 18.02, 10.4); K.add(collar2);
 
   /* The west portal: a recessed order of stone, two timber leaves standing
      open, and the light of the nave on the step. */
