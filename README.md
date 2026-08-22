@@ -272,6 +272,39 @@ textarea.
 
 If this ever goes live, the answers are the thing to replace first, with his own words.
 
+### The parish, photographed
+
+Everything else on the page is drawn, and a page that is entirely drawn has no way of proving
+the parish exists. Chapter 05 carries eleven of the parish's own photographs from
+arhangelgavrilotoronto.com: the church from the road, the congregation standing, the hall full,
+clergy with candles, the icon stands, the home blessing set. A viewer opens on click with
+arrow-key and Escape handling, and releases the full image on close rather than holding it.
+
+The grid is deliberately built in a different language from everything around it: full-bleed
+frames on the section ground rather than the panel surface the drawn parts use, because these
+are the part that is not drawn.
+
+Three of the fourteen images on the parish site were left out on purpose. One reads as stock
+food photography rather than a parish table, one is a catacomb fresco and one is an event
+flyer. A gallery whose whole job is to show the parish is real cannot carry an image that is
+not of it.
+
+Captions describe what is in the frame and nothing beyond it. Naming a feast or a person from
+a photograph I am reading rather than one I was at would be inventing parish history, and the
+parish would know.
+
+### Where it is
+
+Not a street map. Embedding one means a remote tile server, which this project does not do, and
+drawing streets for a real address I have not surveyed would be inventing the geography of a
+real place. The plate is a locator: the one road the parish is on, the footprint with the drum
+and the cross, the fence, and north. The link hands off to a real map, which is the thing that
+actually knows the way.
+
+It lies down rather than standing up, `rotateX` on a perspective, coming level as it is
+revealed. It is the one element on the page that borrows the render's perspective instead of
+sitting flat on top of it.
+
 ### The surface under the panels
 
 Every panel over the render used to be a flat near-black rectangle, `rgba(6,7,10,.86)` and
