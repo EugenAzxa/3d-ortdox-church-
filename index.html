@@ -809,28 +809,86 @@ img{ max-width:100%; display:block; }
 .pr-links a:hover{ color:var(--gold-lit); }
 .pr-where{ font-size:11.5px; color:var(--muted); }
 
+.pr-chat{
+  margin-top:clamp(20px,3vh,30px);
+  border:1px solid var(--line); background:rgba(6,7,10,.9);
+}
+.pr-chat-head{
+  display:flex; align-items:center; gap:12px;
+  padding:13px 16px; border-bottom:1px solid var(--line-soft);
+}
+.pr-av{
+  width:36px; height:36px; flex:none; display:grid; place-items:center;
+  border:1px solid rgba(231,175,35,.42); background:rgba(34,26,10,.7);
+}
+.pr-av svg{ width:16px; height:16px; fill:var(--gold-lit); }
+.pr-who{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.pr-who b{ font-size:15px; font-weight:400; color:var(--bone); }
+.pr-who i{ font-style:normal; font-size:12.5px; color:var(--muted); }
+.pr-chat .pr-clear{ margin:0 0 0 auto; flex:none; }
+
 .pr-log{
-  margin-top:clamp(20px,3vh,30px); min-height:110px;
-  border:1px solid var(--line-soft); border-left:0; border-right:0;
-  background:linear-gradient(to right, rgba(6,7,10,.82), rgba(6,7,10,.62) 70%, rgba(6,7,10,.5));
-  padding:16px 18px 18px;
+  min-height:132px; max-height:52vh; overflow-y:auto;
+  padding:18px 16px;
 }
 .pr-empty{
   margin:0; font-size:15px; color:var(--muted);
 }
-.pr-turn{ margin-bottom:20px; }
+.pr-turn{ margin-bottom:22px; }
 .pr-turn:last-child{ margin-bottom:0; }
+/* what the person asked, set apart on its own side */
 .pr-ask{
-  display:block; font-family:var(--serif); font-size:16px; letter-spacing:.01em;
-  color:var(--gold-lit); margin-bottom:9px;
+  display:block; margin:0 0 12px auto; max-width:44ch; width:fit-content;
+  padding:11px 15px; text-align:left;
+  background:rgba(34,26,10,.78); border:1px solid rgba(231,175,35,.34);
+  font-family:var(--serif); font-size:16.5px; line-height:1.5; letter-spacing:.01em;
+  color:var(--bone);
 }
 .pr-ans{
-  margin:0; padding-left:18px; border-left:2px solid rgba(231,175,35,.55);
+  margin:0; max-width:58ch; padding-left:18px;
+  border-left:2px solid rgba(231,175,35,.55);
   font-size:16px; line-height:1.72; color:var(--bone-dim);
   opacity:0; transform:translate3d(0,8px,0);
   animation:prIn .6s var(--ease-out) forwards;
 }
 .pr-ans + .pr-ans{ margin-top:.9em; }
+/* the office is reading the question, not thinking about it */
+.pr-wait{
+  display:flex; gap:5px; padding-left:18px;
+  border-left:2px solid rgba(231,175,35,.28);
+}
+.pr-wait i{
+  width:5px; height:5px; border-radius:50%; background:var(--gold);
+  animation:prWait 1.15s var(--ease-io) infinite;
+}
+.pr-wait i:nth-child(2){ animation-delay:.16s; }
+.pr-wait i:nth-child(3){ animation-delay:.32s; }
+@keyframes prWait{ 0%,60%,100%{ opacity:.25; transform:none } 30%{ opacity:1; transform:translateY(-3px) } }
+/* an answer that hands the question on rather than inventing one */
+.pr-ans--pass{ border-left-color:rgba(142,39,57,.75); }
+
+.pr-form{
+  display:flex; gap:0; border-top:1px solid var(--line-soft);
+}
+.pr-form input{
+  flex:1 1 auto; min-width:0; background:transparent; border:0;
+  color:var(--bone); font-size:16px; font-weight:300;
+  padding:0 16px; min-height:56px;
+}
+.pr-form input::placeholder{ color:var(--muted); }
+.pr-form input:focus{ outline:none; }
+.pr-chat:focus-within{ border-color:rgba(231,175,35,.5); }
+.pr-send{
+  flex:none; width:56px; min-height:56px; cursor:pointer;
+  background:none; border:0; border-left:1px solid var(--line-soft);
+  display:grid; place-items:center;
+  transition:background-color .35s var(--ease);
+}
+.pr-send svg{
+  width:20px; height:20px; fill:none; stroke:var(--gold-lit);
+  stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;
+}
+.pr-send:hover{ background:rgba(34,26,10,.85); }
 @keyframes prIn{ to{ opacity:1; transform:none } }
 
 .pr-qs{ display:flex; flex-wrap:wrap; gap:8px; margin-top:clamp(18px,2.6vh,26px); }
@@ -843,6 +901,12 @@ img{ max-width:100%; display:block; }
 .pr-q:hover{ border-color:rgba(231,175,35,.55); color:var(--bone); background:rgba(11,13,18,.9); }
 .pr-q.done{ color:var(--muted); border-color:var(--line-soft); }
 .pr-q.done::before{ content:"\2022  "; color:var(--gold); }
+/* the one chip the office offers rather than the person choosing */
+.pr-q--go{
+  margin-top:16px; border-color:rgba(231,175,35,.5); color:var(--gold-lit);
+  background:rgba(34,26,10,.7);
+}
+.pr-q--go:hover{ border-color:var(--gold-lit); background:rgba(45,34,12,.9); }
 .pr-clear{
   margin-top:16px; background:none; border:1px solid var(--line); cursor:pointer;
   color:var(--bone-dim); padding:9px 16px;
@@ -852,15 +916,98 @@ img{ max-width:100%; display:block; }
 .pr-clear[hidden]{ display:none; }
 .pr-clear:hover{ border-color:var(--gold-lit); color:var(--gold-lit); }
 
+/* ── twenty minutes with the priest, on a call ── */
+.meet{
+  margin-top:clamp(30px,4.6vh,54px); padding-top:clamp(24px,3.4vh,38px);
+  border-top:1px solid var(--line);
+  display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+  gap:clamp(24px,4vw,58px); align-items:start;
+}
+.meet-h{
+  margin:12px 0 0; font-family:var(--serif); font-weight:400;
+  font-size:clamp(22px,2.5vw,33px); line-height:1.16; color:var(--bone);
+}
+.meet-p{ margin:14px 0 0; font-size:16px; line-height:1.68; color:var(--bone-dim); }
+.meet-say{
+  text-shadow:0 1px 14px rgba(4,5,8,.98), 0 0 34px rgba(4,5,8,.9);
+}
+.meet-list{ list-style:none; margin:20px 0 0; padding:0; }
+.meet-list li{
+  padding:11px 0; border-top:1px solid var(--line-soft);
+  font-size:15px; line-height:1.6; color:var(--muted);
+}
+.meet-list li b{ color:var(--bone-dim); font-weight:500; }
+
+.meet-form{ min-width:0; }
+.meet-set{ border:0; padding:0; margin:0 0 clamp(18px,2.6vh,26px); min-width:0; }
+.meet-set legend{ padding:0; }
+.meet-slots{ display:grid; gap:1px; background:var(--line-soft); border-top:1px solid var(--line); }
+.slot{
+  background:rgba(6,7,10,.94); border:0; cursor:pointer; text-align:left;
+  color:inherit; font:inherit; padding:14px 16px; position:relative;
+  display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+  transition:background-color .4s var(--ease);
+}
+.slot::before{
+  content:""; position:absolute; left:0; right:0; top:-1px; height:1px;
+  background:var(--gold-lit); transform:scaleX(0); transform-origin:left;
+  transition:transform .5s var(--ease);
+}
+.slot:hover{ background:rgba(13,15,20,.95); }
+.slot.on{ background:rgba(34,26,10,.95); }
+.slot.on::before{ transform:scaleX(1); }
+.slot b{
+  font-family:var(--serif); font-weight:400; font-size:clamp(15px,1.4vw,19px);
+  color:var(--bone);
+}
+.slot.on b{ color:var(--gold-lit); }
+.slot span{ font-size:13.5px; color:var(--bone-dim); }
+.slot i{
+  font-style:normal; margin-left:auto; font-family:var(--mono);
+  font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+}
+
+.meet-fields{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:clamp(14px,2vw,20px);
+}
+.meet-foot{
+  margin-top:clamp(20px,3vh,28px); padding-top:18px; border-top:1px solid var(--line);
+  display:flex; align-items:flex-end; justify-content:space-between; gap:22px; flex-wrap:wrap;
+}
+.meet-total{ min-width:0; flex:1 1 300px; }
+
+.meet-done{
+  grid-column:1 / -1;
+  border:1px solid rgba(231,175,35,.4); background:rgba(34,26,10,.5);
+  padding:clamp(20px,3vw,32px);
+}
+.meet-done[hidden]{ display:none; }
+.meet-eg{
+  margin:12px 0 0; font-family:var(--serif); font-size:clamp(18px,2vw,25px);
+  line-height:1.34; color:var(--bone);
+}
+.meet-eg-sub{ margin:14px 0 0; max-width:62ch; font-size:15px; line-height:1.65; color:var(--bone-dim); }
+
 .pr-note{
   margin:clamp(20px,3vh,30px) 0 0; max-width:70ch;
   font-size:14px; line-height:1.68; color:var(--bone-dim);
   padding-top:15px; border-top:1px solid var(--line-soft);
 }
 .pr-note b{ color:var(--bone-dim); font-weight:500; }
-@media (max-width:880px){ .priest-grid{ grid-template-columns:1fr; } }
+@media (max-width:880px){
+  .priest-grid{ grid-template-columns:1fr; }
+  .meet{ grid-template-columns:1fr; }
+  .meet-fields{ grid-template-columns:1fr; }
+  .pr-ask{ max-width:100%; }
+  /* the hour on its own line, then what kind of hour it is */
+  .slot{ display:grid; grid-template-columns:1fr auto; gap:4px 12px; }
+  .slot b{ grid-column:1 / -1; }
+  .slot i{ margin-left:0; }
+}
 @media (prefers-reduced-motion:reduce){
   .pr-ans{ opacity:1 !important; transform:none !important; animation:none !important; }
+  .pr-wait i{ animation:none !important; opacity:.7 !important; }
 }
 
 /* ══════════════════════════════════ 12b · a candle, asked for ══ */
@@ -1800,12 +1947,112 @@ img{ max-width:100%; display:block; }
           parish office knowing the order of things. These are the questions that come first, and
           the answers the office gives.</p>
 
-        <div class="pr-log" id="prLog" role="log" aria-live="polite" aria-label="Answers">
-          <p class="pr-empty" id="prEmpty">Choose a question below.</p>
+        <div class="pr-chat" data-rv="up">
+          <!-- The header says whose words these are before anyone reads one of
+               them. A chat window with a priest's name on it invites a person
+               to believe they are speaking to him, and on a page about death
+               that is not a small thing to get wrong. -->
+          <div class="pr-chat-head">
+            <span class="pr-av" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M11 2h2v3.4h3.2v2H13v3.1h5v2h-5V22h-2v-9.5H6v-2h5V7.4H7.8v-2H11z"/></svg>
+            </span>
+            <span class="pr-who">
+              <b>The parish office</b>
+              <i>Answering for Father &#272;ura&#273;. These are not his own words.</i>
+            </span>
+            <button type="button" class="pr-clear" id="prClear" hidden data-cursor>Start again</button>
+          </div>
+
+          <div class="pr-log" id="prLog" role="log" aria-live="polite" aria-label="Answers">
+            <p class="pr-empty" id="prEmpty">Ask in your own words, or choose one of the questions
+              below. If the office cannot answer it here, it will say so and tell you who can.</p>
+          </div>
+
+          <form class="pr-form" id="prForm" novalidate>
+            <label class="sr-only" for="prInput">Ask the parish office a question</label>
+            <input type="text" id="prInput" autocomplete="off" enterkeyhint="send"
+                   placeholder="Ask a question in your own words">
+            <button type="submit" class="pr-send" data-cursor aria-label="Ask">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4.5 12h14M13 6.5l5.5 5.5L13 17.5"/>
+              </svg>
+            </button>
+          </form>
         </div>
 
-        <div class="pr-qs" id="prQs" data-rv="up" role="group" aria-label="Questions"></div>
-        <button type="button" class="pr-clear" id="prClear" hidden data-cursor>Start again</button>
+        <div class="pr-qs" id="prQs" data-rv="up" role="group" aria-label="Questions people ask"></div>
+      </div>
+    </div>
+
+    <!-- ── twenty minutes with the priest himself ── -->
+    <div class="meet" id="meet" data-rv="up">
+      <div class="meet-say">
+        <span class="offer-lg">Face to face</span>
+        <h4 class="meet-h">Twenty minutes with Father &#272;ura&#273;, on Google Meet.</h4>
+        <p class="meet-p">Some things should not be answered by a page. A death in the family, a
+          marriage, a child not baptised, a question a person has carried for years: for those
+          the parish opens twenty minutes with the priest himself, by video, wherever in the
+          world you are.</p>
+        <ul class="meet-list">
+          <li><b>It is a conversation, not a service.</b> A confession is made in church, in
+            person. This is the talk that comes before it.</li>
+          <li><b>Serbian or English.</b> Whichever the family is more at home in.</li>
+          <li><b>Nothing is recorded.</b> What is said stays between you and the priest.</li>
+          <li><b>If the hour does not suit,</b> write to the office and another will be found.
+            No one is turned away over a time or over ten dollars.</li>
+        </ul>
+      </div>
+
+      <form class="meet-form" id="meetForm" novalidate>
+        <fieldset class="meet-set">
+          <legend class="offer-lg">When</legend>
+          <div class="meet-slots" id="meetSlots" role="radiogroup" aria-label="Available times"></div>
+        </fieldset>
+
+        <div class="meet-fields">
+          <label class="fld">
+            <span class="offer-lg">Your name</span>
+            <input type="text" id="meetName" autocomplete="name" placeholder="How the priest should greet you">
+          </label>
+          <label class="fld">
+            <span class="offer-lg">Where to send the link</span>
+            <input type="email" id="meetMail" autocomplete="email" placeholder="you@example.com">
+          </label>
+          <label class="fld fld--row">
+            <span class="offer-lg">What it is about, if you wish to say</span>
+            <textarea id="meetNote" rows="2" placeholder="Optional. It helps him prepare, and nothing here is shared."></textarea>
+          </label>
+        </div>
+
+        <div class="meet-foot">
+          <div class="meet-total">
+            <span class="offer-lg">What is asked</span>
+            <div class="offer-sum">
+              <span>Twenty minutes</span>
+              <b>$10</b>
+            </div>
+            <p class="offer-offering">An offering to the parish for the priest's time, not a
+              price for counsel. If ten dollars is the reason you would not write, say so in the
+              box and the parish will waive it.</p>
+          </div>
+          <button type="submit" class="offer-go" data-cursor>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3.5 6.6h11.2v10.8H3.5zM14.7 10.2l5.8-3v9.6l-5.8-3z"/>
+            </svg>
+            <span>Ask for a meeting</span>
+          </button>
+        </div>
+        <p class="offer-err" id="meetErr" hidden></p>
+      </form>
+
+      <div class="meet-done" id="meetDone" hidden>
+        <span class="offer-lg">What comes back</span>
+        <p class="meet-eg" id="meetEg"></p>
+        <p class="meet-eg-sub">The office confirms by email, usually the same day, and the Google
+          Meet link comes with it. If Father &#272;ura&#273; is at a funeral or a hospital when
+          the hour comes, the office writes and moves it: a family in front of him always comes
+          before a screen.</p>
+        <button type="button" class="offer-again" id="meetAgain" data-cursor>Ask for another time</button>
       </div>
     </div>
 
@@ -1813,7 +2060,9 @@ img{ max-width:100%; display:block; }
       <b>Design demonstration.</b> These answers were written for this page from the parish's own
       published information. They are not Father &#272;ura&#273;'s words and are not a substitute
       for speaking to him: in a live installation the wording would be his, and anything touching a
-      particular family would be settled in the office. Nothing typed here is sent anywhere.
+      particular family would be settled in the office. Nothing typed here is sent anywhere, no
+      meeting is booked and nothing is charged. The office answers from a written list, so it will
+      often say it cannot answer and give you the telephone instead, which is the honest reply.
     </p>
   </div>
 
@@ -2269,8 +2518,16 @@ setTimeout(function () {
    that the parish has not agreed to. Everything is procedural - what the
    office does, in what order - and the notice under it says whose words
    these are. Nothing typed or clicked leaves the page. */
+/* The office answers from a written list, and a person may type in their own
+   words or in Cyrillic. Matching is deliberately blunt: normalise, then score
+   each entry by the keywords it carries. There is no model here and no server,
+   so the important behaviour is the failure: below the threshold the office
+   says it cannot answer and hands the question to a telephone or to the
+   priest himself. An invented answer about a funeral would be worse than no
+   answer at all. */
 var ASKS = [
   { q: 'Someone has died. What do we do first?',
+    k: ['died','death','dead','passed away','repose','reposed','funeral','umro','umrla','smrt','sahrana','preminuo','what do we do first'],
     a: ['Telephone the parish before anything else. Father Đurađ will come to the family, at home '
       + 'or in hospital, and the office will take the details it needs: the name as it should be '
       + 'read, the date, and who is arranging things.',
@@ -2278,6 +2535,7 @@ var ASKS = [
       + 'each other directly once the parish knows.'] },
 
   { q: 'What is a parastos, and how do we arrange one?',
+    k: ['parastos','memorial service','pomen','panihida','arrange a service','requiem'],
     a: ['A parastos is the memorial service for one person. It is served on the third, ninth and '
       + 'fortieth days, at six months and a year, and on the anniversary after that, as a family '
       + 'wishes.',
@@ -2285,6 +2543,7 @@ var ASKS = [
       + 'like, and whether koljivo is being brought.'] },
 
   { q: 'When are the third, ninth and fortieth days?',
+    k: ['third day','ninth day','fortieth','forty days','40 days','third ninth','cetrdeset','devet dana','tri dana','count the days'],
     a: ['They are counted from the day of repose itself, which counts as the first. So the third '
       + 'day falls two days after, the ninth eight days after, and the fortieth thirty-nine days '
       + 'after.',
@@ -2292,18 +2551,22 @@ var ASKS = [
       + 'service to the nearest suitable day where it has to.'] },
 
   { q: 'What are Zadušnice?',
+    k: ['zadusnice','all souls','soul saturday','saturday of souls','dusni dan'],
     a: ['Four Saturdays in the year on which the whole parish prays for its departed at once, '
       + 'rather than one name at a time. Every name on the list is read.',
         'They are movable: they follow Pascha and the calendar rather than a fixed day of the '
       + 'month, so the parish confirms the exact dates each year.'] },
 
   { q: 'What is koljivo, and who brings it?',
+    k: ['koljivo','kolivo','zito','boiled wheat','wheat'],
     a: ['Boiled wheat, sweetened, brought for the memorial and blessed at the service. The wheat '
       + 'is the sign the Gospel uses for the body that is buried and rises.',
         'A family may bring it themselves. If nobody can, the Circle of Serbian Sisters prepares '
       + 'it, and the office will arrange that when you ask for the parastos.'] },
 
   { q: 'How do we add someone to the memorial wall?',
+    k: ['memorial wall','memory page','add someone','add a name','add my','wall','spomen',
+        'page for my','page for her','page for him','archive'],
     a: ['Ask at the church office, or tick the box on the parastos request. Nothing technical is '
       + 'required of anyone.',
         'The parish helps older families gather what there is: photographs, letters, recordings, '
@@ -2311,54 +2574,197 @@ var ASKS = [
       + 'and keeps ownership of the page.'] },
 
   { q: 'We are not in Canada. Can a candle still be lit?',
+    k: ['candle','svece','sveca','light a candle','abroad','not in canada','far away','overseas','from serbia','belgrade'],
     a: ['Yes. Ask for one below and a parishioner lights it on the stand at the next Liturgy, '
       + 'photographs it where it stands, and the picture is sent to you.',
         'The name goes on the commemoration list either way. The candle is always lit, even if the '
       + 'email fails: the photograph is the proof, not the service.'] },
 
   { q: 'Our child does not read Cyrillic. Can they still take part?',
+    k: ['cyrillic','azbuka','child','children','kids','sunday school','serbian school','deca','dete'],
     a: ['Yes. The Sunday and Serbian school teaches the azbuka, the hymns and the feast days, and '
       + 'the older children record the oldest parishioners for the archive.',
         'A child who records their grandmother at eight will not have to remember her: they will '
       + 'have her.'] },
 
   { q: 'How do we ask about a baptism, a wedding or a slava?',
+    k: ['baptism','baptise','baptize','christening','krstenje','wedding','marry','marriage','vencanje','slava','krsna slava'],
     a: ['The same way, and to the same person. Father Đurađ is the first one a family speaks to '
       + 'for any of them, and the office settles the date.',
-        'There is no form to find first. A telephone call is enough to begin.'] }
+        'There is no form to find first. A telephone call is enough to begin.'] },
+
+  /* typed only: these never appear as buttons, but a person who writes them
+     should not be met with the fallback */
+  { hide: true, q: 'Hello', k: ['hello','hi there','good morning','good evening','good day','zdravo','pozdrav','dobar dan','dobro jutro','hvaljen'],
+    a: ['Welcome. Ask what you came to ask, in Serbian or in English, and if the office cannot '
+      + 'answer it from what is written here it will tell you who can.'] },
+
+  { hide: true, q: 'Are you really Father Đurađ?',
+    k: ['are you real','real priest','a real person','are you a person','are you human',
+        'a robot','a bot','are you a bot','is this really','is this a robot','who am i talking',
+        'who are you','artificial','chatbot','really father','you a person','human','machine'],
+    a: ['No. This is the parish office answering from a written list, so that the questions a '
+      + 'family asks first can be answered at two in the morning without waking anybody.',
+        'Father Đurađ himself is a telephone call, a Sunday, or the twenty minutes below. Nothing '
+      + 'written here is his own wording, and nothing about a particular family should be settled '
+      + 'from a page.'], meet: true },
+
+  { hide: true, q: 'Can I speak to Father Đurađ himself?',
+    k: ['speak to father','speak with father','talk to father','talk with father','speak to him',
+        'talk to him','speak with him','speak with the priest','talk to the priest','father durad',
+        'durad himself','the priest himself','him himself','meet him','see him','call him',
+        'video','google meet','zoom','appointment','book a','razgovor','sastanak','licno'],
+    a: ['Yes. Twenty minutes by video are set out below, and the parish telephone and the church '
+      + 'office are the older way and the better one if you are near Richmond Hill.',
+        'For anything to do with a death, a marriage or a child, ask for him directly rather than '
+      + 'asking here.'], meet: true },
+
+  { hide: true, q: 'Where is the church?',
+    k: ['where is the church','address','directions','how do i get','location','adresa','richmond hill','lake road'],
+    a: ['St. Archangel Gabriel, 49 N Lake Road, Richmond Hill, Ontario. The official parish site '
+      + 'is linked beside this conversation and carries the service times as they are kept.'] },
+
+  { hide: true, q: 'What does it cost?',
+    k: ['cost','price','how much','fee','pay','payment','money','charge','expensive','koliko','cena','placanje'],
+    a: ['A candle and the name on the commemoration list are five dollars each, and twenty minutes '
+      + 'with the priest is ten. They are offerings to the parish, not prices for prayer.',
+        'A name is read whether or not anything is given, and nobody is turned away over ten '
+      + 'dollars. If that is the reason you would not write, say so and the parish will waive it.'] },
+
+  { hide: true, q: 'Do you speak English?',
+    k: ['english','serbian','srpski','language','translate','jezik'],
+    a: ['Both. Father Đurađ serves and speaks in Serbian and in English, and a family uses '
+      + 'whichever it is more at home in. The same is true of the twenty minutes below.'] },
+
+  { hide: true, q: 'When is the Liturgy?',
+    k: ['liturgy','service time','what time','sunday','mass','when is church','sluzba','liturgija','open'],
+    a: ['The Divine Liturgy is served on Sunday morning, with the feast days kept as they fall. '
+      + 'The parish site carries the times as they are kept, and it is the place to check rather '
+      + 'than this page: a page goes stale and a parish does not.'] },
+
+  { hide: true, q: 'Confession',
+    k: ['confession','confess','ispovest','ispovijed','sin','penance','communion','pricest'],
+    a: ['Confession is made in church, to the priest, in person. It is not something a page or a '
+      + 'video call can carry, and the parish would not pretend otherwise.',
+        'The talk that comes before it is another matter, and Father Đurađ will have that talk '
+      + 'with anyone who asks. That is what the twenty minutes below are for.'], meet: true }
 ];
+
+/* ── the office reading a question ── */
+var PR_CYR = {
+  'а':'a','б':'b','в':'v','г':'g','д':'d','ђ':'d','е':'e','ж':'z','з':'z','и':'i',
+  'ј':'j','к':'k','л':'l','љ':'lj','м':'m','н':'n','њ':'nj','о':'o','п':'p','р':'r',
+  'с':'s','т':'t','ћ':'c','у':'u','ф':'f','х':'h','ц':'c','ч':'c','џ':'d','ш':'s'
+};
+var PR_LAT = { 'ć':'c','č':'c','š':'s','ž':'z','đ':'d','ǆ':'d' };
+
+function prNorm(v) {
+  var out = '', t = String(v || '').toLowerCase();
+  for (var i = 0; i < t.length; i++) {
+    var c = t[i];
+    out += PR_CYR[c] || PR_LAT[c] || c;
+  }
+  return ' ' + out.replace(/[^a-z0-9]+/g, ' ').trim() + ' ';
+}
+
+/* Score by the length of what matched, so "candle" beats "ai". A single
+   short keyword is never enough on its own. */
+function prMatch(q) {
+  var n = prNorm(q), best = null, bestScore = 0;
+  if (n.trim().length < 2) return null;
+  ASKS.forEach(function (item) {
+    var score = 0, longest = 0;
+    (item.k || []).forEach(function (kw) {
+      var w = prNorm(kw).trim();
+      if (!w) return;
+      if (n.indexOf(' ' + w + ' ') >= 0 || (w.length > 3 && n.indexOf(w) >= 0)) {
+        score += w.length;
+        if (w.length > longest) longest = w.length;
+      }
+    });
+    /* also match against the printed question itself, for someone who
+       retypes one of the buttons */
+    if (n.indexOf(prNorm(item.q).trim().slice(0, 22)) >= 0) score += 14;
+    if (score > bestScore && (longest >= 4 || score >= 9)) { bestScore = score; best = item; }
+  });
+  return best;
+}
+
+var PR_PASS = {
+  pass: true, meet: true,
+  a: ['The office cannot answer that one from what is written here, and it will not guess at it. '
+    + 'A wrong answer about a funeral, a date or a family is worse than none.',
+      'Telephone the parish, or ask Father Đurađ himself: twenty minutes with him are set out '
+    + 'below. For anything urgent, the telephone is the right way and always has been.']
+};
 
 function wirePriest() {
   var qs = $('#prQs'), log = $('#prLog'), empty = $('#prEmpty'), clear = $('#prClear');
-  if (!qs) return;
+  var form = $('#prForm'), input = $('#prInput');
+  if (!qs || !log) return;
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
 
-  ASKS.forEach(function (item, i) {
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'pr-q';
-    b.textContent = item.q;
-    b.setAttribute('data-cursor', '');
-    b.addEventListener('click', function () {
-      if (empty) empty.hidden = true;
-      b.classList.add('done');
-      var turn = document.createElement('div');
-      turn.className = 'pr-turn';
-      var ask = document.createElement('span');
-      ask.className = 'pr-ask';
-      ask.textContent = item.q;
-      turn.appendChild(ask);
-      item.a.forEach(function (para, k) {
-        var pEl = document.createElement('p');
-        pEl.className = 'pr-ans';
-        pEl.style.animationDelay = (k * 260) + 'ms';
-        pEl.textContent = para;
-        turn.appendChild(pEl);
-      });
-      log.appendChild(turn);
-      clear.hidden = false;
-      turn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function answer(turn, item) {
+    (item.a || []).forEach(function (para, k) {
+      var p = el('p', 'pr-ans' + (item.pass ? ' pr-ans--pass' : ''), para);
+      if (!calm) p.style.animationDelay = (k * 260) + 'ms';
+      turn.appendChild(p);
     });
+    if (item.meet) {
+      var go = el('button', 'pr-q pr-q--go', 'Ask for twenty minutes on Google Meet');
+      go.type = 'button';
+      go.setAttribute('data-cursor', '');
+      go.addEventListener('click', function () {
+        var m = $('#meet');
+        if (m) m.scrollIntoView({ block: 'center', behavior: calm ? 'auto' : 'smooth' });
+        setTimeout(function () {
+          var n = $('#meetName');
+          if (n) n.focus({ preventScroll: true });
+        }, calm ? 0 : 650);
+      });
+      turn.appendChild(go);
+    }
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function say(question, item) {
+    if (empty) empty.hidden = true;
+    var turn = el('div', 'pr-turn');
+    turn.appendChild(el('span', 'pr-ask', question));
+    log.appendChild(turn);
+    clear.hidden = false;
+    log.scrollTop = log.scrollHeight;
+
+    if (calm) { answer(turn, item); return; }
+    var wait = el('div', 'pr-wait');
+    wait.appendChild(el('i')); wait.appendChild(el('i')); wait.appendChild(el('i'));
+    turn.appendChild(wait);
+    log.scrollTop = log.scrollHeight;
+    setTimeout(function () { turn.removeChild(wait); answer(turn, item); }, 620);
+  }
+
+  ASKS.forEach(function (item) {
+    if (item.hide) return;
+    var b = el('button', 'pr-q', item.q);
+    b.type = 'button';
+    b.setAttribute('data-cursor', '');
+    b.addEventListener('click', function () { b.classList.add('done'); say(item.q, item); });
     qs.appendChild(b);
+  });
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var v = input.value.trim();
+    if (!v) return;
+    input.value = '';
+    say(v, prMatch(v) || PR_PASS);
   });
 
   clear.addEventListener('click', function () {
@@ -2367,9 +2773,103 @@ function wirePriest() {
     empty.hidden = false;
     clear.hidden = true;
     $$('.pr-q').forEach(function (b) { b.classList.remove('done'); });
+    input.focus();
   });
 }
 wirePriest();
+
+/* ═══════════════════════════════ 1b2 · twenty minutes with the priest ═══ */
+/* A request, like the candle. The hours are worked out from today rather
+   than written into the page, so a demonstration opened in a year still
+   offers a date that has not already passed. Nothing is posted anywhere and
+   no card details are asked for. */
+function wireMeet() {
+  var form = $('#meetForm');
+  if (!form) return;
+  var slotsEl = $('#meetSlots'), errEl = $('#meetErr');
+  var done = $('#meetDone'), egEl = $('#meetEg');
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* The parish keeps evenings after work and the hour after Sunday Liturgy.
+     Sunday morning is the Liturgy itself and is never offered. */
+  var HOURS = [
+    { day: 2, h: 19, m: 0, note: 'Tuesday evening' },
+    { day: 4, h: 19, m: 0, note: 'Thursday evening' },
+    { day: 6, h: 10, m: 0, note: 'Saturday morning' },
+    { day: 0, h: 13, m: 0, note: 'After the Sunday Liturgy' }
+  ];
+  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MON = ['January','February','March','April','May','June','July',
+             'August','September','October','November','December'];
+
+  function clock(h, m) {
+    var ap = h >= 12 ? 'pm' : 'am', hh = h % 12 || 12;
+    return hh + (m ? ':' + (m < 10 ? '0' : '') + m : '') + ' ' + ap;
+  }
+
+  var now = new Date();
+  var slots = HOURS.map(function (s) {
+    var d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), s.h, s.m, 0, 0);
+    var ahead = (s.day - d.getDay() + 7) % 7;
+    /* today only counts if the hour has not already gone */
+    if (ahead === 0 && d <= now) ahead = 7;
+    d.setDate(d.getDate() + ahead);
+    return { when: d, note: s.note };
+  }).sort(function (a, b) { return a.when - b.when; });
+
+  var chosen = 0;
+  slots.forEach(function (s, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'slot' + (i === 0 ? ' on' : '');
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', i === 0 ? 'true' : 'false');
+    b.setAttribute('data-cursor', '');
+    var t = DAYS[s.when.getDay()] + ' ' + s.when.getDate() + ' ' + MON[s.when.getMonth()];
+    b.innerHTML = '<b></b><span></span><i>Eastern Time</i>';
+    b.querySelector('b').textContent = t + ', ' + clock(s.when.getHours(), s.when.getMinutes());
+    b.querySelector('span').textContent = s.note;
+    b.addEventListener('click', function () {
+      $$('.slot').forEach(function (o) {
+        o.classList.remove('on'); o.setAttribute('aria-checked', 'false');
+      });
+      b.classList.add('on'); b.setAttribute('aria-checked', 'true');
+      chosen = i;
+    });
+    slotsEl.appendChild(b);
+  });
+
+  function fail(msg, el) {
+    errEl.textContent = msg; errEl.hidden = false;
+    if (el) { el.setAttribute('aria-invalid', 'true'); el.focus(); }
+    return false;
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    errEl.hidden = true;
+    var nameEl = $('#meetName'), mailEl = $('#meetMail');
+    [nameEl, mailEl].forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    var name = nameEl.value.trim(), mail = mailEl.value.trim();
+    if (!name) return fail('A name is needed, so the priest knows who he is meeting.', nameEl);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) {
+      return fail('An address is needed, or the link has nowhere to go.', mailEl);
+    }
+    var s = slots[chosen];
+    egEl.textContent = 'Twenty minutes with Father \u0110ura\u0111, ' +
+      DAYS[s.when.getDay()] + ' ' + s.when.getDate() + ' ' + MON[s.when.getMonth()] +
+      ' at ' + clock(s.when.getHours(), s.when.getMinutes()) + ' Eastern Time.';
+    form.hidden = true;
+    done.hidden = false;
+    done.scrollIntoView({ block: 'center', behavior: calm ? 'auto' : 'smooth' });
+  });
+
+  $('#meetAgain').addEventListener('click', function () {
+    done.hidden = true; form.hidden = false;
+    form.scrollIntoView({ block: 'center', behavior: calm ? 'auto' : 'smooth' });
+  });
+}
+wireMeet();
 
 /* ═══════════════════════════════════════ 1c · a candle, asked for ═══ */
 /* A request, not a checkout. The parish office would take the payment; this

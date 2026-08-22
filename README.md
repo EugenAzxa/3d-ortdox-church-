@@ -288,6 +288,38 @@ no payment field exists. Nothing is posted to any server.
 From a Memory Page, "ask the parish for a real one" closes the page and carries that
 person's name down into the form.
 
+### Speaking with the priest
+
+Chapter 03a is a conversation, not a list of buttons. A person types in their own words, in
+Serbian or in English, in Latin or in Cyrillic, and the parish office answers from a written
+list. Matching is deliberately blunt: normalise the text, transliterate Cyrillic, fold the
+diacritics, then score each entry by the length of the keywords that matched, so `candle`
+beats `ai` and a single short word is never enough on its own.
+
+There is no model here and no server, so the important behaviour is the failure. Below the
+threshold the office says it cannot answer, marks that reply in burgundy rather than gold, and
+hands the question to the telephone or to the priest himself. A wrong answer about a funeral,
+a date or a family is worse than no answer at all, and a page that invents one has done real
+harm to a real family.
+
+The header says whose words these are before anyone reads one: the parish office, answering
+for Father Đurađ, not Father Đurađ. A chat window carrying a priest's name invites a person to
+believe they are speaking to him, and on a page about death that is not a small thing to get
+wrong. Asking the office whether it is really him gets a straight no.
+
+### Twenty minutes on Google Meet
+
+Ten dollars, four hours offered, and the hours are worked out from today rather than written
+into the page, so a demonstration opened in a year still offers a date that has not passed.
+The parish keeps two evenings after work, Saturday morning and the hour after the Sunday
+Liturgy; Sunday morning is the Liturgy itself and is never offered.
+
+The same rule as the candle applies to the money. It is an offering for the priest's time and
+not a price for counsel, the page says so under the total, and it says that anyone for whom
+ten dollars is the reason they would not write should say so and have it waived. Confession is
+answered honestly wherever it is raised: it is made in church, in person, and neither a page
+nor a video call can carry it.
+
 ### The memorial wall
 
 The parish is the subject, not the platform and not the departed. The wall leads with the
